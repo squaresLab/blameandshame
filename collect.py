@@ -55,7 +55,13 @@ def analyze_fix_commit(repo_url: str,
     # Don't clone the repo if it already exists.
     if os.path.exists(path):
         try:
+            # ensure that the `${PWD}/.repos` directory exists
+            if not os.path.exists(REPOS_DIR):
+                os.makedir(REPOS_DIR)
+
             repo = git.Repo.clone_from(repo_url, path)
+
+        # ensure that we don't end up with corrupted clones
         except:
             shutil.rmtree(path, ignore_errors=True)
             raise
