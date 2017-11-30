@@ -26,6 +26,37 @@ def repo_path(repo_url: str) -> str:
     return os.path.join(REPOS_DIR, name)
 
 
+def get_repo(repo_url: str) -> git.Repo:
+    """
+    Returns the GitPython Repo object for a given remote Git repository,
+    specified by its URL.
+
+    Internally, this function uses GitPython to clone the entire history for
+    Git repositories to disk. Each repository is cloned to its own
+    subdirectory within `${PWD}/.repos`.
+
+    Warning: This can potentially consume quite a bit of disk space.
+    """
+    # Determine the (intended) location of the given repo on disk
+    path = repo_path(repo_url)
+
+    # Don't clone the repo if it already exists.
+    if os.path.exists(path):
+        try:
+            # ensure that the `${PWD}/.repos` directory exists
+            if not os.path.exists(REPOS_DIR):
+                os.makedir(REPOS_DIR)
+
+            return git.Repo.clone_from(repo_url, path)
+
+        # ensure that we don't end up with corrupted clones
+        except:
+            shutil.rmtree(path, ignore_errors=True)
+            raise
+
+    return git.Repo(path)
+
+
 def analyze_fix_commit(repo_url: str,
                        fix_sha: str) -> None:
     """
@@ -42,32 +73,7 @@ def analyze_fix_commit(repo_url: str,
         repo_url:   URL of the repository that hosts the fixed program.
         fix_sha:    SHA for the bug-fixing commit.
     """
-
-    # Use GitPython to clone the entire history for the given repository to
-    # disk. Repositories are cloned to their own subdirectories within
-    # `${PWD}/.repos`.
-    #
-    # Warning: This can potentially consume quite a bit of disk space!
-
-    # Determine the (intended) location of the given repo on disk
-    path = repo_path(repo_url)
-
-    # Don't clone the repo if it already exists.
-    if os.path.exists(path):
-        try:
-            # ensure that the `${PWD}/.repos` directory exists
-            if not os.path.exists(REPOS_DIR):
-                os.makedir(REPOS_DIR)
-
-            repo = git.Repo.clone_from(repo_url, path)
-
-        # ensure that we don't end up with corrupted clones
-        except:
-            shutil.rmtree(path, ignore_errors=True)
-            raise
-    else:
-        repo = git.Repo(path)
-
+    repo = get_repo(repo_url)
 
 
 def build_parser():
