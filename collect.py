@@ -75,9 +75,14 @@ def analyze_fix_commit(repo_url: str,
     """
     repo = get_repo(repo_url)
     fix_commit = repo.commit(fix_sha)
+    prev_commit = repo.commit("{}~1".format(fix_sha))
     fixed_files = list(fix_commit.stats.files.keys())
 
-    print(fixed_files)
+    # iterate through each file that was modified by the fix commit
+    diff = prev_commit.diff(fix_commit, create_patch=True)
+    for d in diff.iter_change_type('M'):
+        print(d.diff)
+        # print("A blob:\n{}".format(d.a_blob.data_stream.read().decode('utf-8')))
 
 
 def build_parser():
