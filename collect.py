@@ -4,6 +4,7 @@ import os
 import git
 import argparse
 import urllib.parse
+from typing import FrozenSet, Tuple
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -57,6 +58,25 @@ def get_repo(repo_url: str) -> git.Repo:
     return git.Repo(path)
 
 
+def lines_modified_by_commit(repo: git.Repo,
+                             fix_sha: str) -> FrozenSet[Tuple[str, int]]:
+    """
+    Returns the set of lines that were modified by a given commit. Each line
+    is represented by a tuple of the form: (file name, line number).
+    """
+    # TODO
+    raise NotImplementedError
+
+    lines = set()
+
+    diff = prev_commit.diff(fix_commit, create_patch=True)
+    for d in diff.iter_change_type('M'):
+        print(d.diff)
+
+
+    return frozenset(lines)
+
+
 def analyze_fix_commit(repo_url: str,
                        fix_sha: str) -> dict:
     """
@@ -82,14 +102,7 @@ def analyze_fix_commit(repo_url: str,
 
     # find the set of lines that were modified by the bug-fix.
     # represented as tuple of the form: (file, line).
-    modified_lines = set()
-
-    # TODO: extract set of modified lines
-    diff = prev_commit.diff(fix_commit, create_patch=True)
-    for d in diff.iter_change_type('M'):
-        print(d.diff)
-        # print("A blob:\n{}".format(d.a_blob.data_stream.read().decode('utf-8')))
-
+    modified_lines = lines_modified_by_commit(repo, fix_sha)
 
     # generate historical information for each modified line
     # TODO
