@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 import unittest
-from blameandshame.util import repo_path
+from blameandshame.util import  repo_path, \
+                                files_modified_by_commit
 
 
 class UtilTestCase(unittest.TestCase):
@@ -17,6 +18,12 @@ class UtilTestCase(unittest.TestCase):
                          os.path.join(repos_dir, 'cilium'))
         self.assertEqual(repo_path('https://github.com/golang/dep'),
                          os.path.join(repos_dir, 'dep'))
+
+
+    def test_files_modified_by_commit(self):
+        repo = get_repo('https://github.com/google/protobuf')
+        fx1 = files_modified_by_commit(repo, 'baed06e')
+        self.assertEqual(fx1, frozenset('objectivec/GPBCodedOutputStream.m'))
 
 
 if __name__ == '__main__':
