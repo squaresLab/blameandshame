@@ -75,9 +75,9 @@ def analyze_fix_commit(repo_url: str,
     """
     repo = get_repo(repo_url)
     fix_commit = repo.commit(fix_sha)
+    fixed_files = list(fix_commit.stats.files.keys())
 
-    # Let's figure out the files and lines that were changed by the
-    # bug-fixing commit
+    print(fixed_files)
 
 
 def build_parser():
