@@ -58,7 +58,7 @@ def get_repo(repo_url: str) -> git.Repo:
 
 
 def analyze_fix_commit(repo_url: str,
-                       fix_sha: str) -> None:
+                       fix_sha: str) -> dict:
     """
     Collects historical information for a given bug fix, and writes that
     information to disk.
@@ -79,10 +79,23 @@ def analyze_fix_commit(repo_url: str,
     fixed_files = list(fix_commit.stats.files.keys())
 
     # iterate through each file that was modified by the fix commit
+
+    # find the set of lines that were modified by the bug-fix.
+    # represented as tuple of the form: (file, line).
+    modified_lines = set()
+
+    # TODO: extract set of modified lines
     diff = prev_commit.diff(fix_commit, create_patch=True)
     for d in diff.iter_change_type('M'):
         print(d.diff)
         # print("A blob:\n{}".format(d.a_blob.data_stream.read().decode('utf-8')))
+
+
+    # generate historical information for each modified line
+    # TODO
+    hist_data = {}
+
+    return hist_data
 
 
 def build_parser():
