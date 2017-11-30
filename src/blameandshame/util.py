@@ -56,6 +56,17 @@ def get_repo(repo_url: str) -> git.Repo:
     return git.Repo(path)
 
 
+def files_modified_by_commit(repo: git.Repo,
+                             fix_sha: str) -> FrozenSet[str]:
+    """
+    Returns the set of files, given by name, that were modified by a given
+    commit.
+    """
+    fix_commit = repo.commit(fix_sha)
+    prev_commit = repo.commit("{}~1".format(fix_sha))
+    return frozenset(fix_commit.stats.files.keys())
+
+
 def lines_modified_by_commit(repo: git.Repo,
                              fix_sha: str) -> FrozenSet[Tuple[str, int]]:
     """
