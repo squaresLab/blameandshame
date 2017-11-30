@@ -8,7 +8,7 @@ from typing import FrozenSet, Tuple
 DESC = "TODO: Add a description of how this tool works."
 
 # Path to the directory used to hold downloaded Git repositories.
-REPOS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+REPOS_DIR = os.path.join(os.getcwd(),
                          '.repos')
 
 
