@@ -45,7 +45,7 @@ def get_repo(repo_url: str) -> git.Repo:
         try:
             # ensure that the `${PWD}/.repos` directory exists
             if not os.path.exists(REPOS_DIR):
-                os.makedir(REPOS_DIR)
+                os.mkdir(REPOS_DIR)
 
             return git.Repo.clone_from(repo_url, path)
 
