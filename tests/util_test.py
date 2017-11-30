@@ -23,10 +23,18 @@ class UtilTestCase(unittest.TestCase):
 
     def test_files_modified_by_commit(self):
         repo = get_repo('https://github.com/google/protobuf')
-        files = files_modified_by_commit(repo, 'baed06e')
-        self.assertEqual(files, frozenset(['objectivec/GPBCodedOutputStream.m']))
-
-
+        self.assertEqual(files_modified_by_commit(repo, 'baed06e'),
+                         frozenset(['objectivec/GPBCodedOutputStream.m']))
+        self.assertEqual(files_modified_by_commit(repo, '949596e'),
+                         frozenset(['objectivec/GPBMessage.m']))
+        self.assertEqual(files_modified_by_commit(repo, 'cd5f49d'),
+                         frozenset(['ruby/travis-test.sh',
+                                    'ruby/ext/google/protobuf_c/protobuf.c',
+                                    'ruby/ext/google/protobuf_c/defs.c',
+                                    'ruby/Rakefile',
+                                    'Makefile.am',
+                                    '.gitignore',
+                                    'ruby/ext/google/protobuf_c/protobuf.h']))
 
 
 if __name__ == '__main__':
