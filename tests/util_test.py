@@ -3,6 +3,7 @@ import os
 import unittest
 from blameandshame.util import  repo_path, \
                                 files_modified_by_commit, \
+                                lines_modified_by_commit, \
                                 get_repo
 
 
