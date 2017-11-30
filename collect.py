@@ -41,7 +41,7 @@ def get_repo(repo_url: str) -> git.Repo:
     path = repo_path(repo_url)
 
     # Don't clone the repo if it already exists.
-    if os.path.exists(path):
+    if not os.path.exists(path):
         try:
             # ensure that the `${PWD}/.repos` directory exists
             if not os.path.exists(REPOS_DIR):
