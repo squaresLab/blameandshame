@@ -24,7 +24,7 @@ class UtilTestCase(unittest.TestCase):
     def test_files_modified_by_commit(self):
         repo = get_repo('https://github.com/google/protobuf')
         files = files_modified_by_commit(repo, 'baed06e')
-        self.assertEqual(files, frozenset('objectivec/GPBCodedOutputStream.m'))
+        self.assertEqual(files, frozenset(['objectivec/GPBCodedOutputStream.m']))
 
 
 
