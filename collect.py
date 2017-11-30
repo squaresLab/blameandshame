@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import shutil
 import os
 import git
 import argparse
@@ -51,7 +52,16 @@ def analyze_fix_commit(repo_url: str,
     # Determine the (intended) location of the given repo on disk
     path = repo_path(repo_url)
 
-    #repo = git.Repo.clone_from()
+    # Don't clone the repo if it already exists.
+    if os.path.exists(path):
+        try:
+            repo = git.Repo.clone_from(repo_url, path)
+        except:
+            shutil.rmtree(path, ignore_errors=True)
+            raise
+    else:
+        repo = git.Repo(path)
+
 
 
 def build_parser():
