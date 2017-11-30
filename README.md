@@ -1,8 +1,8 @@
 # blameandshame
 
 
-### Requirements
+### Installation
 
 ```
-$ pip3 install gitpython
+# python3 setup.py install
 ```
