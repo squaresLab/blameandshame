@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
 import shutil
 import os
 import git
-import argparse
 import urllib.parse
 from typing import FrozenSet, Tuple
 
