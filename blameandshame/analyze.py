@@ -109,17 +109,3 @@ def analyze_fix_commit(repo_url: str,
     hist_data = {}
 
     return hist_data
-
-
-def build_parser():
-    parser = argparse.ArgumentParser(description=DESC)
-    return parser
-
-
-if __name__ == '__main__':
-    # parser = build_parser()
-    # args = parser.parse_args()
-    # if 'func' in args:
-    #     args.func(args)
-
-    analyze_fix_commit('https://github.com/google/protobuf', '74f64b6')
