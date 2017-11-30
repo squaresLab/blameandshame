@@ -3,7 +3,7 @@ import shutil
 import os
 import git
 import argparse
-import urlparse
+import urllib.parse
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -19,7 +19,7 @@ def repo_path(repo_url: str) -> str:
     specified by its URL.
     """
     # get the name of the repo
-    path = urlparse.urlparse(repo_url)
+    path = urllib.parse.urlparse(repo_url).path
     path, ext = os.path.splitext(path)
     _, name = os.path.split(path)
 
@@ -74,6 +74,10 @@ def analyze_fix_commit(repo_url: str,
         fix_sha:    SHA for the bug-fixing commit.
     """
     repo = get_repo(repo_url)
+    fix_commit = repo.commits[fix_sha]
+
+    # Let's figure out the files and lines that were changed by the
+    # bug-fixing commit
 
 
 def build_parser():
@@ -82,7 +86,9 @@ def build_parser():
 
 
 if __name__ == '__main__':
-    parser = build_parser()
-    args = parser.parse_args()
-    if 'func' in args:
-        args.func(args)
+    # parser = build_parser()
+    # args = parser.parse_args()
+    # if 'func' in args:
+    #     args.func(args)
+
+    analyze_fix_commit('https://github.com/google/protobuf', '74f64b6')
