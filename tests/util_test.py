@@ -4,7 +4,7 @@ import unittest
 from blameandshame.util import repo_path
 
 
-class UtilsTestCase(unittest.TestCase):
+class UtilTestCase(unittest.TestCase):
     def test_repo_path(self):
         cwd = os.getcwd()
         repos_dir = os.path.join(cwd, '.repos')
