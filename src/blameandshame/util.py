@@ -68,10 +68,14 @@ def files_modified_by_commit(repo: git.Repo,
 
 
 def lines_modified_by_commit(repo: git.Repo,
-                             fix_sha: str) -> FrozenSet[Tuple[str, int]]:
+                             fix_sha: str) -> Tuple[FrozenSet[Tuple[str, int]],
+                                                    FrozenSet[Tuple[str, int]]]:
     """
     Returns the set of lines that were modified by a given commit. Each line
-    is represented by a tuple of the form: (file name, line number).
+    is represented by a tuple of the form: (file name, line number). Two sets
+    are created, one containing lines deleted from the old version of the file
+    and one containing lines added in the new version of the file. These are
+    returned in a tuple of the form (old version, new version).
     """
     # TODO
     raise NotImplementedError
