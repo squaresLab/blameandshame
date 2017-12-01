@@ -40,9 +40,11 @@ class UtilTestCase(unittest.TestCase):
 
     def test_lines_modified_by_commit(self):
         repo = get_repo('https://github.com/google/protobuf')
-        self.assertEqual(lines_modified_by_commit(repo, 'baed06e'),
-                         (frozenset(('objectivec/GPBCodedOutputStream.m', 177),),
-                          frozenset(('objectivec/GPBCodedOutputStream.m', 180),))
+        self.assertEqual(
+            lines_modified_by_commit(repo, 'baed06e'),
+            (frozenset(('objectivec/GPBCodedOutputStream.m', 177),),
+             frozenset(('objectivec/GPBCodedOutputStream.m', 180),))
+        )
 
 if __name__ == '__main__':
     unittest.main()
