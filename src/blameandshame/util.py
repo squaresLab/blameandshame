@@ -94,15 +94,15 @@ def lines_modified_by_commit(repo: git.Repo,
             line_tokens = line.split()
             # If the line starts with @@, there's line numbers
             # format: @@ -start,lines +start,lines @@
-            first_token = line_tokens[0] if len(line_tokens) > 0 else  ''
-            if (first_token == '@@'):
+            first_char = line_tokens[0][0] if len(line_tokens) > 0 else  ''
+            if (first_char == '@'):
                 _, old_line_num, new_line_num, *_ = line_tokens
                 old_line_num = int(old_line_num[1:].split(',')[0])
                 new_line_num = int(new_line_num[1:].split(',')[0])
-            elif (first_token == '-'):
+            elif (first_char == '-'):
                 old_lines.add((old_file, old_line_num))
                 old_line_num += 1
-            elif (first_token == '+'):
+            elif (first_char == '+'):
                 new_lines.add((new_file, new_line_num))
                 new_line_num += 1
             else:
