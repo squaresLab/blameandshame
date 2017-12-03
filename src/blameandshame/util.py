@@ -64,7 +64,9 @@ def files_modified_by_commit(repo: git.Repo,
     """
     fix_commit = repo.commit(fix_sha)
     prev_commit = repo.commit("{}~1".format(fix_sha))
-    return frozenset(fix_commit.stats.files.keys())
+    diff = prev_commit.diff(fix_commit)
+
+    return frozenset(d.a_path for d in diff.iter_change_type('M'))
 
 
 def lines_modified_by_commit(repo: git.Repo,
