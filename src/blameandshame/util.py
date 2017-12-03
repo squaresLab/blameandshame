@@ -67,26 +67,36 @@ def files_modified_by_commit(repo: git.Repo,
     return frozenset(fix_commit.stats.files.keys())
 
 
+def commits_to_file(repo: git.Repo,
+                    filename: str,
+                    since: Optional[git.Commit] = None,
+                    until: Optional[git.Commit] = None) -> FrozenSet[git.Commit]:
+    """
+    Returns the set of all commits that been made to a given file, specified by
+    its name.
+
+    Params:
+      since: An optional parameter used to restrict the search to all commits
+        that have occurred since a given commit, inclusive.
+      until: An optional parameter used to restrict the search to all commits
+        that have occurred upto and including a given commit.
+    """
+    raise NotImplementedError
+
+
 def authors_of_file(repo: git.Repo,
                     filename: str,
                     since: Optional[git.Commit] = None,
                     until: Optional[git.Commit] = None) -> FrozenSet[git.Actor]:
     """
     Returns the set the names of all authors that have modified a file in a
-    given repository.
+    given repository. See `commits_to_file` for details about optional
+    `since` and `until` parameters.
 
     Params:
       repo: The repository that should be inspected for authorship information.
       filename: The name of the file, according to `until`, whose authorship
         information should be obtained.
-      since: An optional parameter, used to restrict the consideration of
-        authors to all those who modified the file since a particular commit.
-        By default, this function will look at all
-        commits since the initial commit.
-      until: An optional parameter, used to restrict the consideration of
-        authors to all those who modified the file up to and including a given
-        commit. By default, this function will look at all commits up to and
-        including the latest commit.
     """
     if not until:
         until = repo.head.reference.commit
