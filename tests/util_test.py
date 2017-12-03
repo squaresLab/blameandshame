@@ -30,7 +30,7 @@ class UtilTestCase(unittest.TestCase):
     def test_files_renamed_by_commit(self):
         def check_one(repo, sha, renamings):
             renamings = frozenset(renamings)
-            self.assertEqual(files_renamed_by_commit(repo.commit(sha), renamings))
+            self.assertEqual(files_renamed_by_commit(repo.commit(sha)), renamings)
 
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, '474ea04', [('file.txt', 'file-one.txt')])
