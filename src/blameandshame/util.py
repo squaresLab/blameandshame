@@ -57,6 +57,14 @@ def get_repo(repo_url: str) -> git.Repo:
     return git.Repo(path)
 
 
+def files_renamed_by_commit(commit: git.Commit) -> FrozenSet[Tuple[str, str]]:
+    """
+    Returns the set of files that were renamed by a given commit as a set
+    of tuples of the form: (old-name, new-name).
+    """
+    raise NotImplementedError
+
+
 def files_modified_by_commit(repo: git.Repo,
                              fix_sha: str) -> FrozenSet[str]:
     """
@@ -87,7 +95,6 @@ def commits_to_file(repo: git.Repo,
     if not until:
         until = repo.head.reference.commit
 
-    # TODO: refactor
     # did the most recent commit, `until`, touch the given file?
     for f in until.stats.files.keys():
 
