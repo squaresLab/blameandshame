@@ -5,6 +5,7 @@ from blameandshame.util import  repo_path, \
                                 files_modified_by_commit, \
                                 lines_modified_by_commit, \
                                 authors_of_file, \
+                                commits_to_file, \
                                 get_repo
 
 
@@ -23,6 +24,17 @@ class UtilTestCase(unittest.TestCase):
                          os.path.join(repos_dir, 'dep'))
         self.assertEqual(repo_path('https://github.com/opencv/opencv.git'),
                          os.path.join(repos_dir, 'opencv'))
+
+
+    def test_commits_to_file(self):
+        def diffs(repo, shas):
+            return frozenset(repo.commit(sha) for sha in shas)
+
+        repo = get_repo('https://github.com/php/php-src')
+        self.assertEqual(commits_to_file(repo,
+                                         'ext/ext_skel.php',
+                                         until=repo.commit('216d711')),
+                         diffs(repo, ['216d711', 'f35f459', 'b079cc2', '941dc72']))
 
 
     def test_authors_of_file(self):
