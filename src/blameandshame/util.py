@@ -81,7 +81,19 @@ def commits_to_file(repo: git.Repo,
       until: An optional parameter used to restrict the search to all commits
         that have occurred upto and including a given commit.
     """
-    raise NotImplementedError
+    commits = set()
+
+    if not until:
+        until = repo.head.reference.commit
+
+    if filename in until.stats.files.keys():
+        commits.add(until)
+
+    # TODO: ignore all commits before `since`
+    for commit in until.iter_parents(paths=filename):
+        commits.add(commit)
+
+    return frozenset(commits)
 
 
 def authors_of_file(repo: git.Repo,
@@ -98,18 +110,8 @@ def authors_of_file(repo: git.Repo,
       filename: The name of the file, according to `until`, whose authorship
         information should be obtained.
     """
-    if not until:
-        until = repo.head.reference.commit
-
-    authors = set()
-    if filename in until.stats.files.keys():
-        authors.add(until.author)
-    for commit in until.iter_parents(paths=filename):
-        authors.add(commit.author)
-
-        # TODO: ignore all commits before `since`
-
-    return frozenset(authors)
+    commits = commits_to_file(repo, filename, since, until)
+    return frozenset(c.author for c in commits)
 
 
 def authors_of_line(repo: git.Repo,
