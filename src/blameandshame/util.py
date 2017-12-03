@@ -145,6 +145,11 @@ def commits_to_line(repo: git.Repo,
     """
     raise NotImplementedError
 
+    # TODO: `commits_to_file` should do most of the heavy lifting for this
+    #       function. The tough bit lies in trying to track line numbers
+    #       between commits -- no doubt we'll need another trusty utility
+    #       function to glean that information.
+
 
 def authors_of_file(repo: git.Repo,
                     filename: str,
