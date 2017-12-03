@@ -87,14 +87,22 @@ def commits_to_file(repo: git.Repo,
     if not until:
         until = repo.head.reference.commit
 
+    # TODO: refactor
     # did the most recent commit, `until`, touch the given file?
     for f in until.stats.files.keys():
+
+        # yes, it renamed the file
         if ' ' in f:
-            f = f.rpartition(' ')[-1]
+            filename = f.partition(' ')[0]
+            return frozenset({until}) | \
+                   commits_to_file(repo, filename, since, until.parents[0])
+
+        # yes, but it didn't rename the file
         if f == filename:
             commits.add(until)
 
     # TODO: ignore all commits before `since`
+    #
     # if the commit renamed the file, stop iterating through the commits
     # that touch files with the current name of the file and instead look
     # at commits since `commit` that touch the file with its original
