@@ -69,8 +69,8 @@ def files_modified_by_commit(repo: git.Repo,
 
 def authors_of_file(repo: git.Repo,
                     filename: str,
-                    since: Optional[str] = None,
-                    until: Optional[str] = None) -> FrozenSet[str]:
+                    since: Optional[git.Commit] = None,
+                    until: Optional[git.Commit] = None) -> FrozenSet[str]:
     """
     Returns the set the names of all authors that have modified a file in a
     given repository.
@@ -80,13 +80,13 @@ def authors_of_file(repo: git.Repo,
       filename: The name of the file whose authorship information should be
         obtained.
       since: An optional parameter, used to restrict the consideration of
-        authors to all those who modified the file since a particular commit,
-        identified by its SHA. By default, this function will look at all
+        authors to all those who modified the file since a particular commit.
+        By default, this function will look at all
         commits since the initial commit.
       until: An optional parameter, used to restrict the consideration of
         authors to all those who modified the file up to and including a given
-        commit, identified by its SHA. By default, this function will look at
-        all commits up to and including the latest commit.
+        commit. By default, this function will look at all commits up to and
+        including the latest commit.
     """
     raise NotImplementedError
 
