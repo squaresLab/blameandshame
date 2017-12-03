@@ -34,13 +34,15 @@ class UtilTestCase(unittest.TestCase):
                                   'php/composer.json',
                                   until=repo.commit('21b0e55'))
         self.assertEqual(author_names(authors),
-                         frozenset(['TeBoring', 'michaelbausor', 'bshaffer']))
+                         frozenset(['Paul Yang',
+                                    'michaelbausor',
+                                    'Brent Shaffer']))
 
         authors = authors_of_file(repo,
                                   'php/composer.json',
                                   until=repo.commit('6b27c1f'))
         self.assertEqual(author_names(authors),
-                         frozenset(['TeBoring']))
+                         frozenset(['Paul Yang']))
 
 
     def test_files_modified_by_commit(self):
