@@ -82,6 +82,13 @@ def files_modified_by_commit(repo: git.Repo,
     return frozenset(fix_commit.stats.files.keys())
 
 
+def line_mapping(repo: git.Repo,
+                 filename: str,
+                 x: git.Commit,
+                 y: git.Commit) -> Tuple[Map[int, Optional[int]], Map[int, Optional[int]]]:
+    raise NotImplementedError
+
+
 def commits_to_file(repo: git.Repo,
                     filename: str,
                     since: Optional[git.Commit] = None,
@@ -149,6 +156,23 @@ def commits_to_line(repo: git.Repo,
     #       function. The tough bit lies in trying to track line numbers
     #       between commits -- no doubt we'll need another trusty utility
     #       function to glean that information.
+    file_commits = commits_to_file(repo, filename, since, until)
+    line_commits = set()
+
+    #
+    for commit in file_commits:
+
+        # find the number of the line in the previous commit
+        prev_lineno = None
+
+        # check if the line was introduced by this commit
+        if prev_lineno is None:
+            line_commits.add(commit)
+            break
+
+        x
+
+    return frozenset(line_commits)
 
 
 def authors_of_file(repo: git.Repo,
