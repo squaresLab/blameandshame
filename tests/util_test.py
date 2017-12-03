@@ -37,8 +37,9 @@ class UtilTestCase(unittest.TestCase):
                                     'ruby/Rakefile',
                                     'Makefile.am',
                                     '.gitignore',
-                                    'ruby/ext/google/protobuf_c/protobuf.h',
-                                    'ruby/tests/gc_test.rb']))
+                                    'ruby/ext/google/protobuf_c/protobuf.h']))
+        # note: `ruby/tests/gc_test.rb` is added and thus should not be
+        #       considered as 'modified'.
 
 
     def test_lines_modified_by_commit(self):
