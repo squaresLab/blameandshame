@@ -4,6 +4,7 @@ import unittest
 from blameandshame.util import  repo_path, \
                                 files_modified_by_commit, \
                                 lines_modified_by_commit, \
+                                authors_of_file, \
                                 get_repo
 
 
@@ -22,6 +23,19 @@ class UtilTestCase(unittest.TestCase):
                          os.path.join(repos_dir, 'dep'))
         self.assertEqual(repo_path('https://github.com/opencv/opencv.git'),
                          os.path.join(repos_dir, 'opencv'))
+
+
+    def test_authors_of_file(self):
+        repo = get_repo('https://github.com/google/protobuf')
+        authors = authors_of_file(repo,
+                                  'protobuf/php/composer.json',
+                                  until=repo.commit('21b0e55'))
+        self.assertEqual(authors, frozenset('TeBoring', 'michaelbausor', 'bshaffer'))
+
+        authors = authors_of_file(repo,
+                                  'protobuf/php/composer.json',
+                                  until=repo.commit('6b27c1f'))
+        self.assertEqual(authors, frozenset('TeBoring',))
 
 
     def test_files_modified_by_commit(self):
