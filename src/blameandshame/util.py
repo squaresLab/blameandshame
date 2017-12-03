@@ -3,7 +3,7 @@ import re
 import os
 import git
 import urllib.parse
-from typing import FrozenSet, Tuple, Optional
+from typing import FrozenSet, Tuple, Optional, Dict
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -84,9 +84,29 @@ def files_modified_by_commit(repo: git.Repo,
 
 def line_mapping(repo: git.Repo,
                  filename: str,
-                 x: git.Commit,
-                 y: git.Commit) -> Tuple[Map[int, Optional[int]], Map[int, Optional[int]]]:
-    raise NotImplementedError
+                 commit: git.Commit) -> Tuple[Dict[int, Optional[int]], Dict[int, Optional[int]]]:
+    """
+    Obtains a mapping between the lines in two versions of a given file.
+    """
+
+    prev_commit = repo.commit("{}~1".format(commit.hexsha))
+    diff = prev_commit.diff(commit, create_patch=True)#, unified=0)
+    diff = next(d for d in diff if d.b_path == filename)
+
+    # file was changed by commit; compute mapping
+    if diff:
+        print(diff.diff)
+
+    # file wasn't changed by commit; create an identity mapping
+    else:
+        try:
+            blob = commit.tree.blobs.join(filename)
+            print(blob)
+
+        except KeyError:
+            print("ERROR: no file with given name exists in specified version of repo.")
+            raise
+        return identical
 
 
 def commits_to_file(repo: git.Repo,
@@ -150,29 +170,22 @@ def commits_to_line(repo: git.Repo,
         linenno: The one-indexed number of the line in the most recent version
             of the specified file.
     """
-    raise NotImplementedError
+    commits = set()
 
-    # TODO: `commits_to_file` should do most of the heavy lifting for this
-    #       function. The tough bit lies in trying to track line numbers
-    #       between commits -- no doubt we'll need another trusty utility
-    #       function to glean that information.
-    file_commits = commits_to_file(repo, filename, since, until)
-    line_commits = set()
+    if not until:
+        until = 'HEAD'
 
-    #
-    for commit in file_commits:
+    if not since:
+        rev_range = until.hexsha
+    else:
+        rev_range = '{}^..{}'.format(since, until)
 
-        # find the number of the line in the previous commit
-        prev_lineno = None
-
-        # check if the line was introduced by this commit
-        if prev_lineno is None:
-            line_commits.add(commit)
-            break
-
-        x
-
-    return frozenset(line_commits)
+    # line
+    line_range = '{},{}:{}'.format(lineno, lineno, filename)
+    log = repo.git.log(until, L=line_range)
+    commits = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
+    commits = frozenset(repo.commit(l[7:]) for l in commits)
+    return frozenset(commits)
 
 
 def authors_of_file(repo: git.Repo,
