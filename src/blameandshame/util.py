@@ -82,33 +82,6 @@ def files_modified_by_commit(repo: git.Repo,
     return frozenset(fix_commit.stats.files.keys())
 
 
-def line_mapping(repo: git.Repo,
-                 filename: str,
-                 commit: git.Commit) -> Tuple[Dict[int, Optional[int]], Dict[int, Optional[int]]]:
-    """
-    Obtains a mapping between the lines in two versions of a given file.
-    """
-
-    prev_commit = repo.commit("{}~1".format(commit.hexsha))
-    diff = prev_commit.diff(commit, create_patch=True)#, unified=0)
-    diff = next(d for d in diff if d.b_path == filename)
-
-    # file was changed by commit; compute mapping
-    if diff:
-        print(diff.diff)
-
-    # file wasn't changed by commit; create an identity mapping
-    else:
-        try:
-            blob = commit.tree.blobs.join(filename)
-            print(blob)
-
-        except KeyError:
-            print("ERROR: no file with given name exists in specified version of repo.")
-            raise
-        return identical
-
-
 def commits_to_file(repo: git.Repo,
                     filename: str,
                     since: Optional[git.Commit] = None,
@@ -170,8 +143,6 @@ def commits_to_line(repo: git.Repo,
         linenno: The one-indexed number of the line in the most recent version
             of the specified file.
     """
-    commits = set()
-
     if not until:
         until = 'HEAD'
 

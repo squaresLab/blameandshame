@@ -44,7 +44,7 @@ class UtilTestCase(unittest.TestCase):
                              frozenset(expected))
 
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(repo, 'file-one.txt', 1, ['922e13d', '422cab3'])
+        check_one(repo, 'file.txt', 1, ['922e13d', '422cab3'])
 
 
     def test_commits_to_file(self):
