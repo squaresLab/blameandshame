@@ -30,12 +30,12 @@ class UtilTestCase(unittest.TestCase):
         authors = authors_of_file(repo,
                                   'protobuf/php/composer.json',
                                   until=repo.commit('21b0e55'))
-        self.assertEqual(authors, frozenset('TeBoring', 'michaelbausor', 'bshaffer'))
+        self.assertEqual(authors, frozenset(['TeBoring', 'michaelbausor', 'bshaffer']))
 
         authors = authors_of_file(repo,
                                   'protobuf/php/composer.json',
                                   until=repo.commit('6b27c1f'))
-        self.assertEqual(authors, frozenset('TeBoring',))
+        self.assertEqual(authors, frozenset(['TeBoring']))
 
 
     def test_files_modified_by_commit(self):
