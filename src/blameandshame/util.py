@@ -101,18 +101,16 @@ def commits_to_file(repo: git.Repo,
     if not until:
         until = repo.head.reference.commit
 
-    # did the most recent commit, `until`, touch the given file?
-    for f in until.stats.files.keys():
+    # did the most recent commit rename the given file?
+    renamed_from = [old for (old, new) in files_renamed_by_commit(until) if new == filename]
+    if renamed_from:
+        filename = renamed_from[0]
+        return frozenset({until}) | \
+               commits_to_file(repo, filename, since, until.parents[0])
 
-        # yes, it renamed the file
-        if ' ' in f:
-            filename = f.partition(' ')[0]
-            return frozenset({until}) | \
-                   commits_to_file(repo, filename, since, until.parents[0])
-
-        # yes, but it didn't rename the file
-        if f == filename:
-            commits.add(until)
+    # did the most recent commit modify or add the given file?
+    if filename in until.stats.files.keys():
+        commits.add(until)
 
     # TODO: ignore all commits before `since`
     #
