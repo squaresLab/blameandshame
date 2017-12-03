@@ -27,14 +27,13 @@ class UtilTestCase(unittest.TestCase):
 
 
     def test_commits_to_file(self):
-        def diffs(repo, shas):
-            return frozenset(repo.commit(sha) for sha in shas)
+        def check_one(repo, filename, expected):
+            expected = [repo.commit(sha) for sha in expected]
+            self.assertEqual(commits_to_file(repo, filename, until=expected[0]),
+                             frozenset(expected))
 
         repo = get_repo('https://github.com/php/php-src')
-        self.assertEqual(commits_to_file(repo,
-                                         'ext/ext_skel.php',
-                                         until=repo.commit('216d711')),
-                         diffs(repo, ['216d711', 'f35f459', 'b079cc2', '941dc72']))
+        check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
 
 
     def test_authors_of_file(self):
