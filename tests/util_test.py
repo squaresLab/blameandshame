@@ -35,6 +35,10 @@ class UtilTestCase(unittest.TestCase):
         repo = get_repo('https://github.com/php/php-src')
         check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
 
+        # corner case: file is renamed once
+        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(repo, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
+
 
     def test_authors_of_file(self):
         def author_names(actors):
