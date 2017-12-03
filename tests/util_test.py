@@ -4,6 +4,7 @@ import unittest
 from blameandshame.util import  repo_path, \
                                 files_modified_by_commit, \
                                 lines_modified_by_commit, \
+                                files_renamed_by_commit, \
                                 authors_of_file, \
                                 commits_to_file, \
                                 get_repo
@@ -24,6 +25,15 @@ class UtilTestCase(unittest.TestCase):
                          os.path.join(repos_dir, 'dep'))
         self.assertEqual(repo_path('https://github.com/opencv/opencv.git'),
                          os.path.join(repos_dir, 'opencv'))
+
+
+    def test_files_renamed_by_commit(self):
+        def check_one(repo, sha, renamings):
+            renamings = frozenset(renamings)
+            self.assertEqual(files_renamed_by_commit(repo.commit(sha), renamings))
+
+        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(repo, '474ea04', [('file.txt', 'file-one.txt')])
 
 
     def test_commits_to_file(self):
