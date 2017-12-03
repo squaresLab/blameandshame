@@ -3,7 +3,7 @@ import shutil
 import os
 import git
 import urllib.parse
-from typing import FrozenSet, List, Tuple, Set
+from typing import FrozenSet, Tuple, Set
 
 
 DESC = "TODO: Add a description of how this tool works."
