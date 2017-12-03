@@ -70,7 +70,7 @@ def files_modified_by_commit(repo: git.Repo,
 def authors_of_file(repo: git.Repo,
                     filename: str,
                     since: Optional[git.Commit] = None,
-                    until: Optional[git.Commit] = None) -> FrozenSet[str]:
+                    until: Optional[git.Commit] = None) -> FrozenSet[git.Actor]:
     """
     Returns the set the names of all authors that have modified a file in a
     given repository.
@@ -88,14 +88,25 @@ def authors_of_file(repo: git.Repo,
         commit. By default, this function will look at all commits up to and
         including the latest commit.
     """
-    raise NotImplementedError
+    if not until:
+        until = repo.head.reference.commit
+
+    authors = set()
+    if filename in until.stats.files.keys():
+        authors.add(until.author)
+    for commit in until.iter_parents(paths=filename):
+        authors.add(commit.author)
+
+        # TODO: ignore all commits before `since`
+
+    return frozenset(authors)
 
 
 def authors_of_line(repo: git.Repo,
                     filename: str,
                     lineno: int,
                     since: Optional[git.Commit] = None,
-                    until: Optional[git.Commit] = None) -> FrozenSet[str]:
+                    until: Optional[git.Commit] = None) -> FrozenSet[git.Actor]:
     """
     Returns the set the names of all authors that have modified a specific line
     in a certain file that belongs to a given repository.
