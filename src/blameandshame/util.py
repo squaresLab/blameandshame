@@ -1,4 +1,5 @@
 import shutil
+import re
 import os
 import git
 import urllib.parse
@@ -86,9 +87,12 @@ def commits_to_file(repo: git.Repo,
     if not until:
         until = repo.head.reference.commit
 
-    # BUG: renamed files are given a single entry of the form: "old name -> new name"
-    if filename in until.stats.files.keys():
-        commits.add(until)
+    # did the most recent commit, `until`, touch the given file?
+    for f in until.stats.files.keys():
+        if ' ' in f:
+            f = f.rpartition(' ')[-1]
+        if f == filename:
+            commits.add(until)
 
     # TODO: ignore all commits before `since`
     # if the commit renamed the file, stop iterating through the commits
