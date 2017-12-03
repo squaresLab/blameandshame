@@ -66,7 +66,7 @@ class Change(Enum):
 
 def files_in_commit(repo: git.Repo,
                     fix_sha: str,
-                    filter_by: FrozenSet[Change] = frozenset(Change)
+                    filter_by: Set[Change] = {f for f in Change}
                    ) -> FrozenSet[str]:
     """
     Returns the set of files, given by name, that were modified by a given
