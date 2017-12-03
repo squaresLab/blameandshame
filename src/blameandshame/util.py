@@ -91,6 +91,25 @@ def authors_of_file(repo: git.Repo,
     raise NotImplementedError
 
 
+def authors_of_line(repo: git.Repo,
+                    filename: str,
+                    lineno: int,
+                    since: Optional[git.Commit] = None,
+                    until: Optional[git.Commit] = None) -> FrozenSet[str]:
+    """
+    Returns the set the names of all authors that have modified a specific line
+    in a certain file that belongs to a given repository.
+    See `authors_of_file` for more details.
+
+    Params:
+        lineno: The one-indexed number of the line whose authorship information
+            should be extracted.
+    """
+    assert lineno > 0
+
+    raise NotImplementedError
+
+
 def lines_modified_by_commit(repo: git.Repo,
                              fix_sha: str) -> Tuple[FrozenSet[Tuple[str, int]],
                                                     FrozenSet[Tuple[str, int]]]:
