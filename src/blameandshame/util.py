@@ -84,6 +84,7 @@ def files_modified_by_commit(repo: git.Repo,
 
 def commits_to_file(repo: git.Repo,
                     filename: str,
+                    lineno: Optional[int] = None,
                     since: Optional[git.Commit] = None,
                     until: Optional[git.Commit] = None) -> FrozenSet[git.Commit]:
     """
@@ -96,38 +97,27 @@ def commits_to_file(repo: git.Repo,
       until: An optional parameter used to restrict the search to all commits
         that have occurred upto and including a given commit.
     """
-    commits = set()
+    assert lineno is None or lineno > 0
 
+    # construct the range of revisions that should be searched
     if not until:
         until = repo.head.reference.commit
+    if not since:
+        rev_range = until.hexsha
+    else:
+        rev_range = '{}^..{}'.format(since, until)
 
-    # did the most recent commit rename the given file?
-    for (old, new) in files_renamed_by_commit(until):
-        if new == filename:
-            return frozenset({until}) | \
-                   commits_to_file(repo, old, since, until.parents[0])
+    # construct the range of lines that should be searched
+    if lineno is None:
+        log = repo.git.log(rev_range, '--follow "{}"'.format(filename))
+    else:
+        line_range = '{},{}:{}'.format(lineno, lineno, filename)
+        log = repo.git.log(rev_range, L=line_range)
 
-    # did the most recent commit modify or add the given file?
-    if filename in until.stats.files.keys():
-        commits.add(until)
-
-    # TODO: ignore all commits before `since`
-    #
-    # if the commit renamed the file, stop iterating through the commits
-    # that touch files with the current name of the file and instead look
-    # at commits since `commit` that touch the file with its original
-    # name.
-    for commit in until.iter_parents(paths=filename):
-        until = commit
-        if commit.parents:
-            until = commit.parents[0] # TODO: this could break things
-            for d in commit.diff(until).iter_change_type('R'):
-                if d.rename_to == filename:
-                    return frozenset(commits) | \
-                           commits_to_file(repo, d.rename_from, since, until)
-        commits.add(commit)
-
-    return frozenset(commits)
+    # read the commit hashes from the log
+    commits = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
+    commits = frozenset(repo.commit(l[7:]) for l in commits)
+    return commits
 
 
 def commits_to_line(repo: git.Repo,
@@ -143,20 +133,7 @@ def commits_to_line(repo: git.Repo,
         linenno: The one-indexed number of the line in the most recent version
             of the specified file.
     """
-    if not until:
-        until = 'HEAD'
-
-    if not since:
-        rev_range = until.hexsha
-    else:
-        rev_range = '{}^..{}'.format(since, until)
-
-    # line
-    line_range = '{},{}:{}'.format(lineno, lineno, filename)
-    log = repo.git.log(until, L=line_range)
-    commits = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-    commits = frozenset(repo.commit(l[7:]) for l in commits)
-    return frozenset(commits)
+    return commits_to_file(repo, filename, lineno=lineno, since=since, until=until)
 
 
 def authors_of_file(repo: git.Repo,
