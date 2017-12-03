@@ -130,7 +130,8 @@ def authors_of_line(repo: git.Repo,
     """
     assert lineno > 0
 
-    raise NotImplementedError
+    commits = commits_to_line(repo, filename, lineno, since, until)
+    return frozenset(c.author for c in commits)
 
 
 def lines_modified_by_commit(repo: git.Repo,
