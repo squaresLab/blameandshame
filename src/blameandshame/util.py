@@ -58,6 +58,10 @@ def get_repo(repo_url: str) -> git.Repo:
 
 
 class Change(Enum):
+    """
+    Enum of the possible types of git changes. These values can be used as
+    arguments to the Diff object's iter_change_type method.
+    """
     ADDED = 'A'
     DELETED = 'D'
     MODIFIED = 'M'
