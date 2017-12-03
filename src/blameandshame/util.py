@@ -86,11 +86,23 @@ def commits_to_file(repo: git.Repo,
     if not until:
         until = repo.head.reference.commit
 
+    # BUG: renamed files are given a single entry of the form: "old name -> new name"
     if filename in until.stats.files.keys():
         commits.add(until)
 
     # TODO: ignore all commits before `since`
+    # if the commit renamed the file, stop iterating through the commits
+    # that touch files with the current name of the file and instead look
+    # at commits since `commit` that touch the file with its original
+    # name.
     for commit in until.iter_parents(paths=filename):
+        until = commit
+        if commit.parents:
+            until = commit.parents[0] # TODO: this could break things
+            for d in commit.diff(until).iter_change_type('R'):
+                if d.rename_to == filename:
+                    return frozenset(commits) | \
+                           commits_to_file(repo, d.rename_from, since, until)
         commits.add(commit)
 
     return frozenset(commits)
