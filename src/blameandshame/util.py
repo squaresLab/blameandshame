@@ -96,6 +96,22 @@ def commits_to_file(repo: git.Repo,
     return frozenset(commits)
 
 
+def commits_to_line(repo: git.Repo,
+                    filename: str,
+                    lineno: int,
+                    since: Optional[git.Commit] = None,
+                    until: Optional[git.Commit] = None) -> FrozenSet[git.Commit]:
+    """
+    Returns the set of commits that have touched a given line in a particular
+    file. See `commits_to_file` for more details.
+
+    Params:
+        linenno: The one-indexed number of the line in the most recent version
+            of the specified file.
+    """
+    raise NotImplementedError
+
+
 def authors_of_file(repo: git.Repo,
                     filename: str,
                     since: Optional[git.Commit] = None,
@@ -122,11 +138,7 @@ def authors_of_line(repo: git.Repo,
     """
     Returns the set the names of all authors that have modified a specific line
     in a certain file that belongs to a given repository.
-    See `authors_of_file` for more details.
-
-    Params:
-        lineno: The one-indexed number of the line whose authorship information
-            should be extracted.
+    See `authors_of_file` and `commits_to_line` for more details.
     """
     assert lineno > 0
 
