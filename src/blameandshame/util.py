@@ -77,8 +77,8 @@ def authors_of_file(repo: git.Repo,
 
     Params:
       repo: The repository that should be inspected for authorship information.
-      filename: The name of the file whose authorship information should be
-        obtained.
+      filename: The name of the file, according to `until`, whose authorship
+        information should be obtained.
       since: An optional parameter, used to restrict the consideration of
         authors to all those who modified the file since a particular commit.
         By default, this function will look at all
