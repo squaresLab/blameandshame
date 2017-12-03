@@ -20,6 +20,8 @@ class UtilTestCase(unittest.TestCase):
                          os.path.join(repos_dir, 'cilium'))
         self.assertEqual(repo_path('https://github.com/golang/dep'),
                          os.path.join(repos_dir, 'dep'))
+        self.assertEqual(repo_path('https://github.com/opencv/opencv.git'),
+                         os.path.join(repos_dir, 'opencv'))
 
 
     def test_files_modified_by_commit(self):
