@@ -2,7 +2,7 @@ import shutil
 import os
 import git
 import urllib.parse
-from typing import FrozenSet, Tuple
+from typing import FrozenSet, Tuple, Optional
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -65,6 +65,30 @@ def files_modified_by_commit(repo: git.Repo,
     fix_commit = repo.commit(fix_sha)
     prev_commit = repo.commit("{}~1".format(fix_sha))
     return frozenset(fix_commit.stats.files.keys())
+
+
+def authors_of_file(repo: git.Repo,
+                    filename: str,
+                    since: Optional[str] = None,
+                    until: Optional[str] = None) -> FrozenSet[str]:
+    """
+    Returns the set the names of all authors that have modified a file in a
+    given repository.
+
+    Params:
+      repo: The repository that should be inspected for authorship information.
+      filename: The name of the file whose authorship information should be
+        obtained.
+      since: An optional parameter, used to restrict the consideration of
+        authors to all those who modified the file since a particular commit,
+        identified by its SHA. By default, this function will look at all
+        commits since the initial commit.
+      until: An optional parameter, used to restrict the consideration of
+        authors to all those who modified the file up to and including a given
+        commit, identified by its SHA. By default, this function will look at
+        all commits up to and including the latest commit.
+    """
+    raise NotImplementedError
 
 
 def lines_modified_by_commit(repo: git.Repo,
