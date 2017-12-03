@@ -1,8 +1,9 @@
+from enum import Enum
 import shutil
 import os
 import git
 import urllib.parse
-from typing import FrozenSet, Tuple
+from typing import FrozenSet, Tuple, Set
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -56,15 +57,34 @@ def get_repo(repo_url: str) -> git.Repo:
     return git.Repo(path)
 
 
-def files_modified_by_commit(repo: git.Repo,
-                             fix_sha: str) -> FrozenSet[str]:
+class Change(Enum):
+    """
+    Enum of the possible types of git changes. These values can be used as
+    arguments to the Diff object's iter_change_type method.
+    """
+    ADDED = 'A'
+    DELETED = 'D'
+    MODIFIED = 'M'
+    RENAMED = 'R'
+
+
+def files_in_commit(repo: git.Repo,
+                    fix_sha: str,
+                    filter_by: Set[Change] = {f for f in Change}
+                   ) -> FrozenSet[str]:
     """
     Returns the set of files, given by name, that were modified by a given
     commit.
     """
     fix_commit = repo.commit(fix_sha)
     prev_commit = repo.commit("{}~1".format(fix_sha))
-    return frozenset(fix_commit.stats.files.keys())
+    diff = prev_commit.diff(fix_commit)
+
+    files: Set[str] = set()
+    for f in filter_by:
+        files.update(d.a_path for d in diff.iter_change_type(f.value))
+
+    return frozenset(files)
 
 
 def lines_modified_by_commit(repo: git.Repo,
