@@ -7,6 +7,7 @@ from blameandshame.util import  repo_path, \
                                 files_renamed_by_commit, \
                                 authors_of_file, \
                                 commits_to_file, \
+                                commits_to_line, \
                                 get_repo
 
 
@@ -34,6 +35,16 @@ class UtilTestCase(unittest.TestCase):
 
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, '474ea04', [('file.txt', 'file-one.txt')])
+
+
+    def test_commits_to_line(self):
+        def check_one(repo, filename, lineno, expected):
+            expected = [repo.commit(sha) for sha in expected]
+            self.assertEqual(commits_to_line(repo, filename, lineno, until=expected[0]),
+                             frozenset(expected))
+
+        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(repo, 'file-one.txt', 1, ['922e13d', '422cab3'])
 
 
     def test_commits_to_file(self):
