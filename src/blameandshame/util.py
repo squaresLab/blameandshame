@@ -56,11 +56,13 @@ def get_repo(repo_url: str) -> git.Repo:
 
     return git.Repo(path)
 
+
 class Change(Enum):
     ADDED = 'A'
     DELETED = 'D'
     MODIFIED = 'M'
     RENAMED = 'R'
+
 
 def files_in_commit(repo: git.Repo,
                     fix_sha: str,
@@ -79,6 +81,7 @@ def files_in_commit(repo: git.Repo,
         files.update(d.a_path for d in diff.iter_change_type(f.value))
 
     return frozenset(files)
+
 
 def lines_modified_by_commit(repo: git.Repo,
                              fix_sha: str) -> Tuple[FrozenSet[Tuple[str, int]],
