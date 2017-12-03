@@ -4,7 +4,7 @@ import unittest
 from blameandshame.util import Change
 from blameandshame.util import repo_path, \
                                files_in_commit, \
-                               lines_modified_by_commit, \
+                               lines_in_commit, \
                                get_repo
 
 
@@ -50,28 +50,27 @@ class UtilTestCase(unittest.TestCase):
                                     '.gitignore',
                                     'ruby/ext/google/protobuf_c/protobuf.h',
                                     'ruby/tests/gc_test.rb']))
-        # note: `ruby/tests/gc_test.rb` is added and thus should not be
-        #       considered as 'modified'.
 
 
-    def test_lines_modified_by_commit(self):
+    def test_lines_in_commit(self):
         repo = get_repo('https://github.com/google/protobuf')
         self.assertEqual(
-            lines_modified_by_commit(repo, 'baed06e'),
+            lines_in_commit(repo, 'baed06e'),
             (frozenset({('objectivec/GPBCodedOutputStream.m', 177)}),
              frozenset({('objectivec/GPBCodedOutputStream.m', 180)}))
         )
         # Only add
         self.assertEqual(
-            lines_modified_by_commit(repo, 'ac5371d'),
+            lines_in_commit(repo, 'ac5371d'),
             (frozenset(), frozenset({('BUILD', 27), ('BUILD', 28)}))
         )
         # Only delete
         self.assertEqual(
-            lines_modified_by_commit(repo, 'd680159'),
+            lines_in_commit(repo, 'd680159'),
             (frozenset({('src/google/protobuf/stubs/time.cc', 24)}),
              frozenset())
         )
+
 
 if __name__ == '__main__':
     unittest.main()
