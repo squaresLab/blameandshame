@@ -46,7 +46,7 @@ class Project(object):
                 if not os.path.exists(Project.REPOS_DIR):
                     os.mkdir(Project.REPOS_DIR)
 
-                repo = git.Repo.clone_from(repo_url, path)
+                repo = git.Repo.clone_from(url, path)
                 return Project(repo)
 
             # ensure that we don't end up with corrupted clones
