@@ -120,8 +120,8 @@ def commits_to_file(repo: git.Repo,
         log = repo.git.log(rev_range, L=line_range)
 
     # read the commit hashes from the log
-    commits = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-    commits = frozenset(repo.commit(l[7:]) for l in commits)
+    commit_hashes = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
+    commits = frozenset(repo.commit(l[7:]) for l in commit_hashes)
     return commits
 
 
