@@ -1,34 +1,33 @@
 #!/usr/bin/env python3
 import os
 import unittest
+from blameandshame.base import  Project
 from blameandshame.util import  Change, \
-                                repo_path, \
                                 files_in_commit, \
                                 lines_modified_by_commit, \
                                 authors_of_file, \
                                 commits_to_file, \
                                 commits_to_line, \
-                                get_repo, \
                                 last_commit_to_line
 
 
-class UtilTestCase(unittest.TestCase):
+class ProjectTestCase(unittest.TestCase):
     def test_repo_path(self):
-        cwd = os.getcwd()
-        repos_dir = os.path.join(cwd, '.repos')
+        repos_dir = os.path.join(os.getcwd(), '.repos')
 
-        self.assertEqual(repo_path('https://github.com/uber/pyro'),
+        self.assertEqual(Project._url_to_path('https://github.com/uber/pyro'),
                          os.path.join(repos_dir, 'pyro'))
-        self.assertEqual(repo_path('https://github.com/google/protobuf'),
+        self.assertEqual(Project._url_to_path('https://github.com/google/protobuf'),
                          os.path.join(repos_dir, 'protobuf'))
-        self.assertEqual(repo_path('https://github.com/cilium/cilium'),
+        self.assertEqual(Project._url_to_path('https://github.com/cilium/cilium'),
                          os.path.join(repos_dir, 'cilium'))
-        self.assertEqual(repo_path('https://github.com/golang/dep'),
+        self.assertEqual(Project._url_to_path('https://github.com/golang/dep'),
                          os.path.join(repos_dir, 'dep'))
-        self.assertEqual(repo_path('https://github.com/opencv/opencv.git'),
+        self.assertEqual(Project._url_to_path('https://github.com/opencv/opencv.git'),
                          os.path.join(repos_dir, 'opencv'))
 
 
+class UtilTestCase(unittest.TestCase):
     def test_commits_to_line(self):
         def check_one(repo, filename, lineno, expected):
             expected = [repo.commit(sha) for sha in expected]
