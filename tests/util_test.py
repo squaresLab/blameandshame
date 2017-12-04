@@ -8,7 +8,8 @@ from blameandshame.util import  Change, \
                                 authors_of_file, \
                                 commits_to_file, \
                                 commits_to_line, \
-                                get_repo
+                                get_repo, \
+                                last_commit_to_line
 
 
 class UtilTestCase(unittest.TestCase):
@@ -116,6 +117,20 @@ class UtilTestCase(unittest.TestCase):
             (frozenset({('src/google/protobuf/stubs/time.cc', 24)}),
              frozenset())
         )
+
+
+    def test_last_commit_to_line(self):
+        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
+                                             repo.commit('9ca70f7')),
+                         repo.commit('922e13d'))
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
+                                             repo.commit('422cab3')),
+                         None)
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
+                                             repo.commit('e1d2532')),
+                         repo.commit('e1d2532'))
+
 
 if __name__ == '__main__':
     unittest.main()
