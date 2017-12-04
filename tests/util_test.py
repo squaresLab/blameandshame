@@ -37,6 +37,7 @@ class UtilTestCase(unittest.TestCase):
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, '474ea04', [('file.txt', 'file-one.txt')])
         check_one(repo, '2282c66', [])
+        check_one(repo, '9ca70f7', [])
 
 
     def test_commits_to_line(self):
