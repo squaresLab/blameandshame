@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 import unittest
-from blameandshame.util import  repo_path, \
+from blameandshame.util import  Change, \
+                                repo_path, \
                                 files_modified_by_commit, \
                                 lines_modified_by_commit, \
                                 files_renamed_by_commit, \
@@ -78,13 +79,23 @@ class UtilTestCase(unittest.TestCase):
                   ['Paul Yang'])
 
 
-    def test_files_modified_by_commit(self):
+    def test_files_in_commit(self):
         repo = get_repo('https://github.com/google/protobuf')
-        self.assertEqual(files_modified_by_commit(repo, 'baed06e'),
+        self.assertEqual(files_in_commit(repo, 'baed06e'),
                          frozenset(['objectivec/GPBCodedOutputStream.m']))
-        self.assertEqual(files_modified_by_commit(repo, '949596e'),
+        self.assertEqual(files_in_commit(repo, '949596e'),
                          frozenset(['objectivec/GPBMessage.m']))
-        self.assertEqual(files_modified_by_commit(repo, 'cd5f49d'),
+        self.assertEqual(files_in_commit(repo, 'cd5f49d', {Change.MODIFIED}),
+                         frozenset(['ruby/travis-test.sh',
+                                    'ruby/ext/google/protobuf_c/protobuf.c',
+                                    'ruby/ext/google/protobuf_c/defs.c',
+                                    'ruby/Rakefile',
+                                    'Makefile.am',
+                                    '.gitignore',
+                                    'ruby/ext/google/protobuf_c/protobuf.h']))
+        self.assertEqual(files_in_commit(repo, 'cd5f49d', {Change.ADDED}),
+                         frozenset(['ruby/tests/gc_test.rb']))
+        self.assertEqual(files_in_commit(repo, 'cd5f49d'),
                          frozenset(['ruby/travis-test.sh',
                                     'ruby/ext/google/protobuf_c/protobuf.c',
                                     'ruby/ext/google/protobuf_c/defs.c',
@@ -93,6 +104,8 @@ class UtilTestCase(unittest.TestCase):
                                     '.gitignore',
                                     'ruby/ext/google/protobuf_c/protobuf.h',
                                     'ruby/tests/gc_test.rb']))
+        # note: `ruby/tests/gc_test.rb` is added and thus should not be
+        #       considered as 'modified'.
 
 
     def test_lines_modified_by_commit(self):
