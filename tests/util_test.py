@@ -11,22 +11,6 @@ from blameandshame.util import  Change, \
                                 last_commit_to_line
 
 
-class ProjectTestCase(unittest.TestCase):
-    def test_repo_path(self):
-        repos_dir = os.path.join(os.getcwd(), '.repos')
-
-        self.assertEqual(Project._url_to_path('https://github.com/uber/pyro'),
-                         os.path.join(repos_dir, 'pyro'))
-        self.assertEqual(Project._url_to_path('https://github.com/google/protobuf'),
-                         os.path.join(repos_dir, 'protobuf'))
-        self.assertEqual(Project._url_to_path('https://github.com/cilium/cilium'),
-                         os.path.join(repos_dir, 'cilium'))
-        self.assertEqual(Project._url_to_path('https://github.com/golang/dep'),
-                         os.path.join(repos_dir, 'dep'))
-        self.assertEqual(Project._url_to_path('https://github.com/opencv/opencv.git'),
-                         os.path.join(repos_dir, 'opencv'))
-
-
 class UtilTestCase(unittest.TestCase):
     def test_commits_to_line(self):
         def check_one(repo, filename, lineno, expected):
