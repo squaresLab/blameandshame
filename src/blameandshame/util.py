@@ -109,9 +109,7 @@ def commits_to_file(repo: git.Repo,
 
     # construct the range of lines that should be searched
     if lineno is None:
-        # TODO: implement revision range
-        follow = '--follow {}'.format(filename)
-        log = repo.git.log(follow)
+        log = repo.git.log(rev_range, '--follow', '--', filename)
     else:
         line_range = '{},{}:{}'.format(lineno, lineno, filename)
         log = repo.git.log(rev_range, L=line_range)
