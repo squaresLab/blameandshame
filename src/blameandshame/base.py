@@ -65,11 +65,19 @@ class Project(object):
 
 
     def __init__(self, repo: git.Repo):
-        self.__repo = repo
+        self.__repo : git.Repo = repo
+        self.update()
+
+
+    def update(self):
+        """
+        Updates the state of the Git repository associated with this project.
+        """
+        self.repo.remotes.origin.pull()
 
 
     @property
-    def repo(self):
+    def repo(self) -> git.Repo:
         """
         The Git repository associated with this project.
         """
