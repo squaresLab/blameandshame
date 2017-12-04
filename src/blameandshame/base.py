@@ -66,3 +66,11 @@ class Project(object):
 
     def __init__(self, repo: git.Repo):
         self.__repo = repo
+
+
+    @property
+    def repo(self):
+        """
+        The Git repository associated with this project.
+        """
+        return self.__repo
