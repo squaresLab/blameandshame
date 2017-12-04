@@ -3,8 +3,8 @@ import os
 import unittest
 from blameandshame.util import  Change, \
                                 repo_path, \
-                                files_modified_by_commit, \
-                                lines_modified_by_commit, \
+                                files_in_commit, \
+                                lines_in_commit, \
                                 files_renamed_by_commit, \
                                 authors_of_file, \
                                 commits_to_file, \
