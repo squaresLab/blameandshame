@@ -228,4 +228,9 @@ def last_commit_to_line(repo: git.Repo,
     Returns a Commit object corresponding to the last commit where lineno was
     touched before (and including) the Commit object passed in before.
     """
-    pass
+    try:
+        commits = commits_to_line(repo, filename, lineno, None, before)
+    except git.exc.GitCommandError:
+        commits = [None]
+
+    return commits[0]
