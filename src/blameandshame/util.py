@@ -166,7 +166,7 @@ def authors_of_line(repo: git.Repo,
     """
     assert lineno > 0
 
-    commits = commits_to_line(repo, filename, lineno, since, until)
+    commits = commits_to_line(repo, filename, lineno, since=since, until=until)
     return frozenset(c.author for c in commits)
 
 
