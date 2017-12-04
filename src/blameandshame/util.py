@@ -57,20 +57,6 @@ def get_repo(repo_url: str) -> git.Repo:
     return git.Repo(path)
 
 
-def files_renamed_by_commit(commit: git.Commit) -> FrozenSet[Tuple[str, str]]:
-    """
-    Returns the set of files that were renamed by a given commit as a set
-    of tuples of the form: (old-name, new-name).
-    """
-    renamed = []
-    for f in commit.stats.files.keys():
-        if ' ' in f:
-            old = f.partition(' ')[0]
-            new = f.rpartition(' ')[2]
-            renamed.append((old, new))
-    return frozenset(renamed)
-
-
 class Change(Enum):
     """
     Enum of the possible types of git changes. These values can be used as
