@@ -32,7 +32,7 @@ class UtilTestCase(unittest.TestCase):
         def check_one(repo, filename, lineno, expected):
             expected = [repo.commit(sha) for sha in expected]
             self.assertEqual(commits_to_line(repo, filename, lineno, until=expected[0]),
-                             frozenset(expected))
+                             expected)
 
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, 'file.txt', 1, ['922e13d', '422cab3'])
@@ -42,7 +42,7 @@ class UtilTestCase(unittest.TestCase):
         def check_one(repo, filename, expected):
             expected = [repo.commit(sha) for sha in expected]
             self.assertEqual(commits_to_file(repo, filename, until=expected[0]),
-                             frozenset(expected))
+                             expected)
 
         repo = get_repo('https://github.com/php/php-src')
         check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
