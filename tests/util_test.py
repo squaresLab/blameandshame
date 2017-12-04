@@ -34,7 +34,7 @@ class UtilTestCase(unittest.TestCase):
             self.assertEqual(commits_to_line(repo, filename, lineno, until=expected[0]),
                              expected)
 
-        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        repo = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, 'file.txt', 1, ['922e13d', '422cab3'])
 
 
@@ -44,14 +44,14 @@ class UtilTestCase(unittest.TestCase):
             self.assertEqual(commits_to_file(repo, filename, until=expected[0]),
                              expected)
 
-        repo = get_repo('https://github.com/php/php-src')
+        repo = Project.from_url('https://github.com/php/php-src')
         check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
 
-        repo = get_repo('https://github.com/google/protobuf')
+        repo = Project.from_url('https://github.com/google/protobuf')
         check_one(repo, 'php/composer.json', ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'])
 
         # corner case: file is renamed once
-        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        repo = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
 
 
@@ -62,7 +62,7 @@ class UtilTestCase(unittest.TestCase):
             authors = frozenset(a.name for a in actors)
             self.assertEqual(authors, frozenset(expected))
 
-        repo = get_repo('https://github.com/google/protobuf')
+        repo = Project.from_url('https://github.com/google/protobuf')
         check_one(repo, 'php/composer.json', '21b0e55',
                   ['Paul Yang', 'michaelbausor', 'Brent Shaffer'])
         check_one(repo, 'php/composer.json', '6b27c1f',
@@ -70,7 +70,7 @@ class UtilTestCase(unittest.TestCase):
 
 
     def test_files_in_commit(self):
-        repo = get_repo('https://github.com/google/protobuf')
+        repo = Project.from_url('https://github.com/google/protobuf')
         self.assertEqual(files_in_commit(repo, 'baed06e'),
                          frozenset(['objectivec/GPBCodedOutputStream.m']))
         self.assertEqual(files_in_commit(repo, '949596e'),
@@ -99,7 +99,7 @@ class UtilTestCase(unittest.TestCase):
 
 
     def test_lines_modified_by_commit(self):
-        repo = get_repo('https://github.com/google/protobuf')
+        repo = Project.from_url('https://github.com/google/protobuf')
         self.assertEqual(
             lines_modified_by_commit(repo, 'baed06e'),
             (frozenset({('objectivec/GPBCodedOutputStream.m', 177)}),
@@ -119,7 +119,7 @@ class UtilTestCase(unittest.TestCase):
 
 
     def test_last_commit_to_line(self):
-        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        repo = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
                                              repo.commit('9ca70f7')),
                          repo.commit('922e13d'))
