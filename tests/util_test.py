@@ -56,6 +56,9 @@ class UtilTestCase(unittest.TestCase):
         repo = get_repo('https://github.com/php/php-src')
         check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
 
+        repo = get_repo('https://github.com/google/protobuf')
+        check_one(repo, 'php/composer.json', ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'])
+
         # corner case: file is renamed once
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
