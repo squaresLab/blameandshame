@@ -124,6 +124,9 @@ class UtilTestCase(unittest.TestCase):
         self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
                                              repo.commit('9ca70f7')),
                          repo.commit('922e13d'))
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 5,
+                                             repo.commit('e1d2532')),
+                         repo.commit('0d841d1'))
         self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
                                              repo.commit('422cab3')),
                          None)
