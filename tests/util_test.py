@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import unittest
-from blameandshame.base import  Project
-from blameandshame.util import  Change, \
-                                files_in_commit, \
+from blameandshame.base import  Project, Change
+from blameandshame.util import  files_in_commit, \
                                 lines_modified_by_commit, \
                                 authors_of_file, \
                                 commits_to_file, \

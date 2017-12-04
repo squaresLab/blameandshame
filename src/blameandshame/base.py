@@ -1,7 +1,19 @@
+from enum import Enum
 import git
 import os
 import shutil
 import urllib.parse
+
+
+class Change(Enum):
+    """
+    Enum of the possible types of git changes. These values can be used as
+    arguments to the Diff object's iter_change_type method.
+    """
+    ADDED = 'A'
+    DELETED = 'D'
+    MODIFIED = 'M'
+    RENAMED = 'R'
 
 
 class Project(object):
