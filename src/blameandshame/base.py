@@ -43,8 +43,8 @@ class Project(object):
         if not os.path.exists(path):
             try:
                 # ensure that the `${PWD}/.repos` directory exists
-                if not os.path.exists(REPOS_DIR):
-                    os.mkdir(REPOS_DIR)
+                if not os.path.exists(Project.REPOS_DIR):
+                    os.mkdir(Project.REPOS_DIR)
 
                 repo = git.Repo.clone_from(repo_url, path)
                 return Project(repo)
