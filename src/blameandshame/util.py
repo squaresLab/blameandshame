@@ -1,10 +1,9 @@
 from enum import Enum
 import shutil
-import re
 import os
 import git
 import urllib.parse
-from typing import FrozenSet, Tuple, Optional, Dict, Set
+from typing import FrozenSet, Tuple, Optional, Set
 
 
 DESC = "TODO: Add a description of how this tool works."
