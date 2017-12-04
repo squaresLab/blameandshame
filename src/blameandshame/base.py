@@ -61,7 +61,7 @@ class Project(object):
         """
         Retrieves a project whose repository is stored at a given local path.
         """
-        return git.Repo(path)
+        return Project(git.Repo(path))
 
 
     def __init__(self, repo: git.Repo):
