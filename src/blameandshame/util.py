@@ -150,7 +150,7 @@ def authors_of_file(repo: git.Repo,
       filename: The name of the file, according to `until`, whose authorship
         information should be obtained.
     """
-    commits = commits_to_file(repo, filename, since, until)
+    commits = commits_to_file(repo, filename, since=since, until=until)
     return frozenset(c.author for c in commits)
 
 
