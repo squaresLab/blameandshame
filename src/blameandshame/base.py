@@ -17,7 +17,7 @@ class Project(object):
         specified by the URL of its repository.
         """
         # get the name of the repo
-        path = urllib.parse.urlparse(repo_url).path
+        path = urllib.parse.urlparse(url).path
         path, ext = os.path.splitext(path)
         _, name = os.path.split(path)
 
