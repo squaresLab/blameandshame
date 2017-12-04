@@ -62,23 +62,17 @@ class UtilTestCase(unittest.TestCase):
 
 
     def test_authors_of_file(self):
-        def author_names(actors):
-            return frozenset(a.name for a in actors)
+        def check_one(repo, filename, until, expected):
+            until = repo.commit(until)
+            actors = authors_of_file(repo, filename, until=until)
+            authors = frozenset(a.name for a in actors)
+            self.assertEqual(authors, frozenset(expected))
 
         repo = get_repo('https://github.com/google/protobuf')
-        authors = authors_of_file(repo,
-                                  'php/composer.json',
-                                  until=repo.commit('21b0e55'))
-        self.assertEqual(author_names(authors),
-                         frozenset(['Paul Yang',
-                                    'michaelbausor',
-                                    'Brent Shaffer']))
-
-        authors = authors_of_file(repo,
-                                  'php/composer.json',
-                                  until=repo.commit('6b27c1f'))
-        self.assertEqual(author_names(authors),
-                         frozenset(['Paul Yang']))
+        check_one(repo, 'php/composer.json', '21b0e55',
+                  ['Paul Yang', 'michaelbausor', 'Brent Shaffer'])
+        check_one(repo, 'php/composer.json', '6b27c1f',
+                  ['Paul Yang'])
 
 
     def test_files_modified_by_commit(self):
