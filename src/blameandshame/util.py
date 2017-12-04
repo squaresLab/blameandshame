@@ -1,6 +1,4 @@
 from enum import Enum
-import shutil
-import os
 import git
 from typing import FrozenSet, List, Tuple, Optional, Set
 
