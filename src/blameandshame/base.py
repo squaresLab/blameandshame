@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import FrozenSet, List, Tuple, Optional, Set
 import git
 import os
 import shutil
@@ -95,3 +96,22 @@ class Project(object):
         The Git repository associated with this project.
         """
         return self.__repo
+
+
+    def files_in_commit(self,
+                        fix_sha: str,
+                        filter_by: Set[Change] = {f for f in Change}
+                       ) -> FrozenSet[str]:
+        """
+        Returns the set of files, given by name, that were modified by a
+        specified commit.
+        """
+        fix_commit = self.repo.commit(fix_sha)
+        prev_commit = self.repo.commit("{}~1".format(fix_sha))
+        diff = prev_commit.diff(fix_commit)
+
+        files: Set[str] = set()
+        for f in filter_by:
+            files.update(d.a_path for d in diff.iter_change_type(f.value))
+
+        return frozenset(files)
