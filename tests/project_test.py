@@ -103,5 +103,25 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'file-one.txt', 1, 'e1d2532', 'e1d2532')
 
 
+    def test_lines_modified_by_commit(self):
+        project = Project.from_url('https://github.com/google/protobuf')
+        self.assertEqual(
+            project.lines_modified_by_commit('baed06e'),
+            (frozenset({('objectivec/GPBCodedOutputStream.m', 177)}),
+             frozenset({('objectivec/GPBCodedOutputStream.m', 180)}))
+        )
+        # Only add
+        self.assertEqual(
+            project.lines_modified_by_commit('ac5371d'),
+            (frozenset(), frozenset({('BUILD', 27), ('BUILD', 28)}))
+        )
+        # Only delete
+        self.assertEqual(
+            project.lines_modified_by_commit('d680159'),
+            (frozenset({('src/google/protobuf/stubs/time.cc', 24)}),
+             frozenset())
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
