@@ -1,8 +1,7 @@
 import blameandshame.util as util
 
 
-def analyze_fix_commit(repo_url: str,
-                       fix_sha: str) -> dict:
+def analyze_fix_commit(fix_commit: git.Commit) -> dict:
     """
     Collects historical information for a given bug fix, and writes that
     information to disk.
@@ -14,19 +13,18 @@ def analyze_fix_commit(repo_url: str,
         of successive commits.
 
     Args:
-        repo_url:   URL of the repository that hosts the fixed program.
-        fix_sha:    SHA for the bug-fixing commit.
+        fix_commit: Commit object of the bug-fixing commit.
     """
-    repo = util.get_repo(repo_url)
-    fix_commit = repo.commit(fix_sha)
-    prev_commit = repo.commit("{}~1".format(fix_sha))
+    
+    prev_sha = "{}~1".format(commit.hexsha)
+    prev_commit = repo.commit(prev_sha)
     fixed_files = list(fix_commit.stats.files.keys())
 
     # iterate through each file that was modified by the fix commit
 
     # find the set of lines that were modified by the bug-fix.
     # represented as tuple of the form: (file, line).
-    modified_lines = util.lines_modified_by_commit(repo, fix_sha)
+    modified_lines = base.lines_modified_by_commit(fix_commit)
 
     # generate historical information for each modified line
     # TODO
