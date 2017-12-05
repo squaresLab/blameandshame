@@ -3,22 +3,10 @@ import unittest
 from blameandshame.base import  Project, Change
 from blameandshame.util import  lines_modified_by_commit, \
                                 authors_of_file, \
-                                commits_to_line, \
                                 last_commit_to_line
 
 
 class UtilTestCase(unittest.TestCase):
-    def test_commits_to_line(self):
-        def check_one(repo, filename, lineno, expected):
-            expected = [repo.commit(sha) for sha in expected]
-            self.assertEqual(commits_to_line(repo, filename, lineno, until=expected[0]),
-                             expected)
-
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        repo = project.repo
-        check_one(repo, 'file.txt', 1, ['922e13d', '422cab3'])
-
-
     def test_authors_of_file(self):
         def check_one(repo, filename, until, expected):
             until = repo.commit(until)

@@ -3,23 +3,6 @@ from blameandshame.base import Change, Project
 from typing import FrozenSet, List, Tuple, Optional, Set
 
 
-def commits_to_line(repo: git.Repo,
-                    filename: str,
-                    lineno: int,
-                    since: Optional[git.Commit] = None,
-                    until: Optional[git.Commit] = None) -> List[git.Commit]:
-    """
-    Returns the set of commits that have touched a given line in a particular
-    file. See `commits_to_file` for more details.
-
-    Params:
-        linenno: The one-indexed number of the line in the most recent version
-            of the specified file.
-    """
-    project = Project(repo)
-    return project.commits_to_file(filename, lineno=lineno, since=since, until=until)
-
-
 def authors_of_file(repo: git.Repo,
                     filename: str,
                     since: Optional[git.Commit] = None,
@@ -108,8 +91,9 @@ def last_commit_to_line(repo: git.Repo,
     Returns a Commit object corresponding to the last commit where lineno was
     touched before (and including) the Commit object passed in before.
     """
+    project = Project(repo)
     try:
-        commits = commits_to_line(repo, filename, lineno, None, before)
+        commits = project.commits_to_line(filename, lineno, None, before)
     except git.exc.GitCommandError:
         commits = [None]
 

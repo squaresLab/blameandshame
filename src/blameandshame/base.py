@@ -155,3 +155,23 @@ class Project(object):
             [l.strip() for l in log.splitlines() if l.startswith('commit ')]
         commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
+
+
+    def commits_to_line(self,
+                        filename: str,
+                        lineno: int,
+                        since: Optional[git.Commit] = None,
+                        until: Optional[git.Commit] = None
+                        ) -> List[git.Commit]:
+        """
+        Returns the set of commits that have touched a given line in a particular
+        file. See `commits_to_file` for more details.
+
+        Params:
+            linenno: The one-indexed number of the line in the most recent version
+                of the specified file.
+        """
+        return self.commits_to_file(filename,
+                                    lineno=lineno,
+                                    since=since,
+                                    until=until)
