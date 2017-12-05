@@ -256,3 +256,23 @@ class Project(object):
                     new_line_num += 1
 
         return (frozenset(old_lines), frozenset(new_lines))
+
+
+    def authors_of_line(self,
+                        filename: str,
+                        lineno: int,
+                        since: Optional[git.Commit] = None,
+                        until: Optional[git.Commit] = None
+                        ) -> FrozenSet[git.Actor]:
+        """
+        Returns the set the names of all authors that have modified a specific line
+        in a certain file that belongs to a given repository.
+        See `authors_of_file` and `commits_to_line` for more details.
+        """
+        assert lineno > 0
+
+        commits = self.commits_to_line(filename,
+                                       lineno,
+                                       since=since,
+                                       until=until)
+        return frozenset(c.author for c in commits)

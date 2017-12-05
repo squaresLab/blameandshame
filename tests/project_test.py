@@ -123,5 +123,9 @@ class ProjectTestCase(unittest.TestCase):
         )
 
 
+    def test_authors_of_line(self):
+        raise NotImplementedError
+
+
 if __name__ == '__main__':
     unittest.main()
