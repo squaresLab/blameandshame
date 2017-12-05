@@ -32,8 +32,8 @@ class Project(object):
         """
         # get the name of the repo
         path = urllib.parse.urlparse(url).path
-        path = os.path.splitext(path)[0]
-        name = os.path.split(path)[1]
+        path, _ = os.path.splitext(path)
+        _, name = os.path.split(path)
 
         return os.path.join(Project.REPOS_DIR, name)
 
