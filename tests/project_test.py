@@ -124,7 +124,15 @@ class ProjectTestCase(unittest.TestCase):
 
 
     def test_authors_of_line(self):
-        raise NotImplementedError
+        def check_one(project, filename, line, until, expected):
+            until = project.repo.commit(until)
+            actors = project.authors_of_line(filename, line, until=until)
+            authors = frozenset(a.name for a in actors)
+            self.assertEqual(authors, frozenset(expected))
+
+        project = Project.from_url('https://github.com/google/protobuf')
+        check_one(project, 'php/composer.json', 2, '21b0e55',
+                  ['Paul Yang'])
 
 
 if __name__ == '__main__':
