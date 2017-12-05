@@ -14,9 +14,10 @@ def annotate(project: Project,
     Returns a list of tuples corresponding to a table of annotated values.
 
     Params:
-      columns: A list of functions used to generate a column of data. Each
-        function takes as input a Project, a Commit, a filename, and a line
-        number and returns a string. See column_last_commit for an example.
+      columns: A list of functions, each used to generate a single column of
+        annotations. Each function takes as input a Project, a Commit, a
+        filename, and a line number and returns a string.
+        See column_last_commit for an example.
     """
     if columns is None:
         columns = []
