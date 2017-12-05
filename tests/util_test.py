@@ -9,8 +9,12 @@ from blameandshame.util import  Change, \
                                 commits_to_file, \
                                 commits_to_line, \
                                 get_repo, \
+<<<<<<< HEAD
                                 time_between_commits
 from datetime import timedelta
+=======
+                                last_commit_to_line
+>>>>>>> 9a4566ad1f83ee8d17ceb14ec3f6d2eb93193232
 
 
 class UtilTestCase(unittest.TestCase):
@@ -34,7 +38,7 @@ class UtilTestCase(unittest.TestCase):
         def check_one(repo, filename, lineno, expected):
             expected = [repo.commit(sha) for sha in expected]
             self.assertEqual(commits_to_line(repo, filename, lineno, until=expected[0]),
-                             frozenset(expected))
+                             expected)
 
         repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(repo, 'file.txt', 1, ['922e13d', '422cab3'])
@@ -44,7 +48,7 @@ class UtilTestCase(unittest.TestCase):
         def check_one(repo, filename, expected):
             expected = [repo.commit(sha) for sha in expected]
             self.assertEqual(commits_to_file(repo, filename, until=expected[0]),
-                             frozenset(expected))
+                             expected)
 
         repo = get_repo('https://github.com/php/php-src')
         check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
@@ -119,7 +123,7 @@ class UtilTestCase(unittest.TestCase):
              frozenset())
         )
 
-		
+
     def test_time_between_commits(self):
         repo = get_repo('https://github.com/google/protobuf')
         delta = time_between_commits(repo.commit("ac5371d"),repo.commit("9935829"))
@@ -127,5 +131,21 @@ class UtilTestCase(unittest.TestCase):
         self.assertEqual(shouldBe,delta)
 		
 		
+    def test_last_commit_to_line(self):
+        repo = get_repo('https://github.com/squaresLab/blameandshame-test-repo')
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
+                                             repo.commit('9ca70f7')),
+                         repo.commit('922e13d'))
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 5,
+                                             repo.commit('e1d2532')),
+                         repo.commit('0d841d1'))
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
+                                             repo.commit('422cab3')),
+                         None)
+        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
+                                             repo.commit('e1d2532')),
+                         repo.commit('e1d2532'))
+
+
 if __name__ == '__main__':
     unittest.main()

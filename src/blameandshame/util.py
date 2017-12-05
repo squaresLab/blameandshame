@@ -3,8 +3,12 @@ import shutil
 import os
 import git
 import urllib.parse
+<<<<<<< HEAD
 from typing import FrozenSet, Tuple, Optional, Set
 from datetime import timedelta
+=======
+from typing import FrozenSet, List, Tuple, Optional, Set
+>>>>>>> 9a4566ad1f83ee8d17ceb14ec3f6d2eb93193232
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -92,7 +96,7 @@ def commits_to_file(repo: git.Repo,
                     filename: str,
                     lineno: Optional[int] = None,
                     since: Optional[git.Commit] = None,
-                    until: Optional[git.Commit] = None) -> FrozenSet[git.Commit]:
+                    until: Optional[git.Commit] = None) -> List[git.Commit]:
     """
     Returns the set of all commits that been made to a given file, specified by
     its name.
@@ -122,7 +126,7 @@ def commits_to_file(repo: git.Repo,
 
     # read the commit hashes from the log
     commit_hashes = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-    commits = frozenset(repo.commit(l[7:]) for l in commit_hashes)
+    commits = [repo.commit(l[7:]) for l in commit_hashes]
     return commits
 
 
@@ -130,7 +134,7 @@ def commits_to_line(repo: git.Repo,
                     filename: str,
                     lineno: int,
                     since: Optional[git.Commit] = None,
-                    until: Optional[git.Commit] = None) -> FrozenSet[git.Commit]:
+                    until: Optional[git.Commit] = None) -> List[git.Commit]:
     """
     Returns the set of commits that have touched a given line in a particular
     file. See `commits_to_file` for more details.
@@ -219,7 +223,7 @@ def lines_modified_by_commit(repo: git.Repo,
                 new_line_num += 1
 
     return (frozenset(old_lines), frozenset(new_lines))
-	
+
 	
 def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
 	"""
@@ -231,5 +235,20 @@ def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
 	timeY = y.authored_datetime
 	return timeX - timeY
 	
+    
+def last_commit_to_line(repo: git.Repo,
+                        filename: str,
+                        lineno: int,
+                        before: git.Commit) -> Optional[git.Commit]:
+    """
+    Returns a Commit object corresponding to the last commit where lineno was
+    touched before (and including) the Commit object passed in before.
+    """
+    try:
+        commits = commits_to_line(repo, filename, lineno, None, before)
+    except git.exc.GitCommandError:
+        commits = [None]
 
+    return commits[0]
 
+    
