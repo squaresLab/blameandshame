@@ -1,13 +1,15 @@
 from blameandshame.base import Project
-from typing import Optional, List, Tuple, Any
+from typing import Callable, Optional, List, Tuple, Any
 import git
 
 
 def annotate(project: Project,
              version: git.Commit,
              filename: str,
-             columns: Optional[List[List[Any]]] = None
-             ) -> List[Tuple[Any]]:
+             columns: Optional[List[
+                        Callable[[Project, git.Commit, str, int], str]
+                      ]] = None
+             ) -> List[Tuple[Any, ...]]:
     if columns is None:
         columns = []
     tbl = []
@@ -18,8 +20,7 @@ def annotate(project: Project,
         row = [num, line]
 
         for col in columns:
-            col = col(project, version, filename, num)
-            row.append(col)
+            row.append(col(project, version, filename, num))
 
         tbl.append(tuple(row))
 
