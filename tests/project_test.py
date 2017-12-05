@@ -74,5 +74,19 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
 
 
+    def test_authors_of_file(self):
+        def check_one(project, filename, until, expected):
+            until = project.repo.commit(until)
+            actors = project.authors_of_file(filename, until=until)
+            authors = frozenset(a.name for a in actors)
+            self.assertEqual(authors, frozenset(expected))
+
+        project = Project.from_url('https://github.com/google/protobuf')
+        check_one(project, 'php/composer.json', '21b0e55',
+                  ['Paul Yang', 'michaelbausor', 'Brent Shaffer'])
+        check_one(project, 'php/composer.json', '6b27c1f',
+                  ['Paul Yang'])
+
+
 if __name__ == '__main__':
     unittest.main()

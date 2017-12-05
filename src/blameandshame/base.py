@@ -175,3 +175,22 @@ class Project(object):
                                     lineno=lineno,
                                     since=since,
                                     until=until)
+
+
+    def authors_of_file(self,
+                        filename: str,
+                        since: Optional[git.Commit] = None,
+                        until: Optional[git.Commit] = None
+                        ) -> FrozenSet[git.Actor]:
+        """
+        Returns the set the names of all authors that have modified a file in a
+        given repository. See `commits_to_file` for details about optional
+        `since` and `until` parameters.
+
+        Params:
+          repo: The repository that should be inspected for authorship information.
+          filename: The name of the file, according to `until`, whose authorship
+            information should be obtained.
+        """
+        commits = self.commits_to_file(filename, since=since, until=until)
+        return frozenset(c.author for c in commits)
