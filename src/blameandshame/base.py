@@ -4,6 +4,7 @@ import git
 import os
 import shutil
 import urllib.parse
+from datetime import timedelta
 
 
 class Change(Enum):
@@ -99,15 +100,15 @@ class Project(object):
 
 
     def files_in_commit(self,
-                        fix_sha: str,
+                        fix_commit: git.Commit,
                         filter_by: Set[Change] = {f for f in Change}
                        ) -> FrozenSet[str]:
         """
         Returns the set of files, given by name, that were modified by a
         specified commit.
         """
-        fix_commit = self.repo.commit(fix_sha)
-        prev_commit = self.repo.commit("{}~1".format(fix_sha))
+        prev_sha = "{}~1".format(fix_commit.hexsha)
+        prev_commit = fix_commit.repo.commit(prev_sha)
         diff = prev_commit.diff(fix_commit)
 
         files: Set[str] = set()
@@ -214,7 +215,7 @@ class Project(object):
 
 
     def lines_modified_by_commit(self,
-                                 fix_sha: str
+                                 fix_commit: git.Commit
                                  ) -> Tuple[FrozenSet[Tuple[str, int]],
                                             FrozenSet[Tuple[str, int]]]:
         """
@@ -227,8 +228,8 @@ class Project(object):
         old_lines = set()
         new_lines = set()
 
-        fix_commit = self.repo.commit(fix_sha)
-        prev_commit = self.repo.commit("{}~1".format(fix_sha))
+        prev_sha = "{}~1".format(fix_commit.hexsha)
+        prev_commit = fix_commit.repo.commit(prev_sha)
 
         # unified=0 shows zero lines of context
         diff = prev_commit.diff(fix_commit, create_patch=True, unified=0)
@@ -276,3 +277,20 @@ class Project(object):
                                        since=since,
                                        until=until)
         return frozenset(c.author for c in commits)
+
+        
+    def time_between_commits(self,
+                             x: git.Commit, 
+                             y: git.Commit
+                             ) -> timedelta:
+        """
+        Given two commits, this function should return the length of time between them as a timedelta.
+        def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
+        This function can be combined with last_commit_to_line to determine the length of time since the last change to a faulty line.
+        """
+        timeX = x.authored_datetime
+        timeY = y.authored_datetime
+        return timeX - timeY
+    
+    
+    

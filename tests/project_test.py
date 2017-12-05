@@ -2,7 +2,7 @@
 import os
 import unittest
 from blameandshame.base import Project, Change
-
+from datetime import timedelta
 
 class ProjectTestCase(unittest.TestCase):
     def test_url_to_path(self):
@@ -22,11 +22,11 @@ class ProjectTestCase(unittest.TestCase):
 
     def test_files_in_commit(self):
         project = Project.from_url('https://github.com/google/protobuf')
-        self.assertEqual(project.files_in_commit('baed06e'),
+        self.assertEqual(project.files_in_commit(project.repo.commit('baed06e')),
                          frozenset(['objectivec/GPBCodedOutputStream.m']))
-        self.assertEqual(project.files_in_commit('949596e'),
+        self.assertEqual(project.files_in_commit(project.repo.commit('949596e')),
                          frozenset(['objectivec/GPBMessage.m']))
-        self.assertEqual(project.files_in_commit('cd5f49d', {Change.MODIFIED}),
+        self.assertEqual(project.files_in_commit(project.repo.commit('cd5f49d'), {Change.MODIFIED}),
                          frozenset(['ruby/travis-test.sh',
                                     'ruby/ext/google/protobuf_c/protobuf.c',
                                     'ruby/ext/google/protobuf_c/defs.c',
@@ -34,9 +34,9 @@ class ProjectTestCase(unittest.TestCase):
                                     'Makefile.am',
                                     '.gitignore',
                                     'ruby/ext/google/protobuf_c/protobuf.h']))
-        self.assertEqual(project.files_in_commit('cd5f49d', {Change.ADDED}),
+        self.assertEqual(project.files_in_commit(project.repo.commit('cd5f49d'), {Change.ADDED}),
                          frozenset(['ruby/tests/gc_test.rb']))
-        self.assertEqual(project.files_in_commit('cd5f49d'),
+        self.assertEqual(project.files_in_commit(project.repo.commit('cd5f49d')),
                          frozenset(['ruby/travis-test.sh',
                                     'ruby/ext/google/protobuf_c/protobuf.c',
                                     'ruby/ext/google/protobuf_c/defs.c',
@@ -106,18 +106,18 @@ class ProjectTestCase(unittest.TestCase):
     def test_lines_modified_by_commit(self):
         project = Project.from_url('https://github.com/google/protobuf')
         self.assertEqual(
-            project.lines_modified_by_commit('baed06e'),
+            project.lines_modified_by_commit(project.repo.commit('baed06e')),
             (frozenset({('objectivec/GPBCodedOutputStream.m', 177)}),
              frozenset({('objectivec/GPBCodedOutputStream.m', 180)}))
         )
         # Only add
         self.assertEqual(
-            project.lines_modified_by_commit('ac5371d'),
+            project.lines_modified_by_commit(project.repo.commit('ac5371d')),
             (frozenset(), frozenset({('BUILD', 27), ('BUILD', 28)}))
         )
         # Only delete
         self.assertEqual(
-            project.lines_modified_by_commit('d680159'),
+            project.lines_modified_by_commit(project.repo.commit('d680159')),
             (frozenset({('src/google/protobuf/stubs/time.cc', 24)}),
              frozenset())
         )
@@ -133,6 +133,13 @@ class ProjectTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/google/protobuf')
         check_one(project, 'php/composer.json', 2, '21b0e55',
                   ['Paul Yang'])
+                  
+                  
+    def test_time_between_commits(self):
+        project = Project.from_url('https://github.com/google/protobuf')
+        delta = project.time_between_commits(project.repo.commit("ac5371d"), project.repo.commit("9935829"))
+        shouldBe= timedelta(seconds=10628)
+        self.assertEqual(shouldBe,delta)
 
 
 if __name__ == '__main__':
