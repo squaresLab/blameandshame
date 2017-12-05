@@ -15,7 +15,7 @@ def analyze_fix_commit(fix_commit: git.Commit) -> dict:
     Args:
         fix_commit: Commit object of the bug-fixing commit.
     """
-    
+
     prev_sha = "{}~1".format(commit.hexsha)
     prev_commit = repo.commit(prev_sha)
     fixed_files = list(fix_commit.stats.files.keys())

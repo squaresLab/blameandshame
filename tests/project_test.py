@@ -133,7 +133,7 @@ class ProjectTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/google/protobuf')
         check_one(project, 'php/composer.json', 2, '21b0e55',
                   ['Paul Yang'])
-                  
+
                   
     def test_time_between_commits(self):
         project = Project.from_url('https://github.com/google/protobuf')

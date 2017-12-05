@@ -278,9 +278,9 @@ class Project(object):
                                        until=until)
         return frozenset(c.author for c in commits)
 
-        
+
     def time_between_commits(self,
-                             x: git.Commit, 
+                             x: git.Commit,
                              y: git.Commit
                              ) -> timedelta:
         """
@@ -291,6 +291,3 @@ class Project(object):
         timeX = x.authored_datetime
         timeY = y.authored_datetime
         return timeX - timeY
-    
-    
-    
