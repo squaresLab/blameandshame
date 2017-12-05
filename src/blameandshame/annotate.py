@@ -1,5 +1,5 @@
 from blameandshame.base import Project
-from typing import List, Tuple, Any
+from typing import Optional, List, Tuple, Any
 import git
 
 
