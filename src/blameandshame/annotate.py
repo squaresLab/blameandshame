@@ -6,8 +6,10 @@ import git
 def annotate(project: Project,
              version: git.Commit,
              filename: str,
-             columns = []
+             columns: Optional[List[List[Any]]] = None
              ) -> List[Tuple[Any]]:
+    if columns is None:
+        columns = []
     tbl = []
     f = project.repo.git.show('{}:{}'.format(version.hexsha, filename))
 
