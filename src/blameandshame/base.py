@@ -115,3 +115,43 @@ class Project(object):
             files.update(d.a_path for d in diff.iter_change_type(f.value))
 
         return frozenset(files)
+
+
+    def commits_to_file(self,
+                        filename: str,
+                        lineno: Optional[int] = None,
+                        since: Optional[git.Commit] = None,
+                        until: Optional[git.Commit] = None
+                        ) -> List[git.Commit]:
+        """
+        Returns the set of all commits that been made to a given file, specified by
+        its name.
+
+        Params:
+          since: An optional parameter used to restrict the search to all commits
+            that have occurred since a given commit, inclusive.
+          until: An optional parameter used to restrict the search to all commits
+            that have occurred upto and including a given commit.
+        """
+        assert lineno is None or lineno > 0
+
+        # construct the range of revisions that should be searched
+        if not until:
+            until = self.repo.head.reference.commit
+        if not since:
+            rev_range = until.hexsha
+        else:
+            rev_range = '{}^..{}'.format(since, until)
+
+        # construct the range of lines that should be searched
+        if lineno is None:
+            log = self.repo.git.log(rev_range, '--follow', '--', filename)
+        else:
+            line_range = '{},{}:{}'.format(lineno, lineno, filename)
+            log = self.repo.git.log(rev_range, L=line_range)
+
+        # read the commit hashes from the log
+        commit_hashes = \
+            [l.strip() for l in log.splitlines() if l.startswith('commit ')]
+        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+        return commits

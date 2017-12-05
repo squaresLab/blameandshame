@@ -1,44 +1,6 @@
 import git
-from blameandshame.base import Change
+from blameandshame.base import Change, Project
 from typing import FrozenSet, List, Tuple, Optional, Set
-
-
-def commits_to_file(repo: git.Repo,
-                    filename: str,
-                    lineno: Optional[int] = None,
-                    since: Optional[git.Commit] = None,
-                    until: Optional[git.Commit] = None) -> List[git.Commit]:
-    """
-    Returns the set of all commits that been made to a given file, specified by
-    its name.
-
-    Params:
-      since: An optional parameter used to restrict the search to all commits
-        that have occurred since a given commit, inclusive.
-      until: An optional parameter used to restrict the search to all commits
-        that have occurred upto and including a given commit.
-    """
-    assert lineno is None or lineno > 0
-
-    # construct the range of revisions that should be searched
-    if not until:
-        until = repo.head.reference.commit
-    if not since:
-        rev_range = until.hexsha
-    else:
-        rev_range = '{}^..{}'.format(since, until)
-
-    # construct the range of lines that should be searched
-    if lineno is None:
-        log = repo.git.log(rev_range, '--follow', '--', filename)
-    else:
-        line_range = '{},{}:{}'.format(lineno, lineno, filename)
-        log = repo.git.log(rev_range, L=line_range)
-
-    # read the commit hashes from the log
-    commit_hashes = [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-    commits = [repo.commit(l[7:]) for l in commit_hashes]
-    return commits
 
 
 def commits_to_line(repo: git.Repo,
@@ -54,7 +16,8 @@ def commits_to_line(repo: git.Repo,
         linenno: The one-indexed number of the line in the most recent version
             of the specified file.
     """
-    return commits_to_file(repo, filename, lineno=lineno, since=since, until=until)
+    project = Project(repo)
+    return project.commits_to_file(filename, lineno=lineno, since=since, until=until)
 
 
 def authors_of_file(repo: git.Repo,
@@ -71,7 +34,8 @@ def authors_of_file(repo: git.Repo,
       filename: The name of the file, according to `until`, whose authorship
         information should be obtained.
     """
-    commits = commits_to_file(repo, filename, since=since, until=until)
+    project = Project(repo)
+    commits = project.commits_to_file(filename, since=since, until=until)
     return frozenset(c.author for c in commits)
 
 

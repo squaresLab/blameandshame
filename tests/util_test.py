@@ -3,7 +3,6 @@ import unittest
 from blameandshame.base import  Project, Change
 from blameandshame.util import  lines_modified_by_commit, \
                                 authors_of_file, \
-                                commits_to_file, \
                                 commits_to_line, \
                                 last_commit_to_line
 
@@ -18,26 +17,6 @@ class UtilTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         repo = project.repo
         check_one(repo, 'file.txt', 1, ['922e13d', '422cab3'])
-
-
-    def test_commits_to_file(self):
-        def check_one(repo, filename, expected):
-            expected = [repo.commit(sha) for sha in expected]
-            self.assertEqual(commits_to_file(repo, filename, until=expected[0]),
-                             expected)
-
-        project = Project.from_url('https://github.com/php/php-src')
-        repo = project.repo
-        check_one(repo, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
-
-        project = Project.from_url('https://github.com/google/protobuf')
-        repo = project.repo
-        check_one(repo, 'php/composer.json', ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'])
-
-        # corner case: file is renamed once
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        repo = project.repo
-        check_one(repo, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
 
 
     def test_authors_of_file(self):

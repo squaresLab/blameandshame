@@ -47,5 +47,22 @@ class ProjectTestCase(unittest.TestCase):
                                     'ruby/tests/gc_test.rb']))
 
 
+    def test_commits_to_file(self):
+        def check_one(project, filename, expected):
+            expected = [project.repo.commit(sha) for sha in expected]
+            self.assertEqual(project.commits_to_file(filename, until=expected[0]),
+                             expected)
+
+        project = Project.from_url('https://github.com/php/php-src')
+        check_one(project, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
+
+        project = Project.from_url('https://github.com/google/protobuf')
+        check_one(project, 'php/composer.json', ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'])
+
+        # corner case: file is renamed once
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
+
+
 if __name__ == '__main__':
     unittest.main()
