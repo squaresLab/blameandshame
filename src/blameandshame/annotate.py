@@ -10,8 +10,28 @@ def annotate(project: Project,
              ) -> List[Tuple[Any]]:
     tbl = []
     f = project.repo.git.show('{}:{}'.format(version.hexsha, filename))
-    for (i, line) in enumerate(f.splitlines(), 1):
+
+    for (num, line) in enumerate(f.splitlines(), 1):
         line = line.strip()
-        row = (i, line)
-        tbl.append(row)
+        row = [num, line]
+
+        for col in columns:
+            col = col(project, version, filename, num)
+            row.append(col)
+
+        tbl.append(tuple(row))
+
     return tbl
+
+
+def column_last_commit(project : Project,
+                       commit: git.Commit,
+                       filename : str,
+                       line : int
+                       ) -> str:
+    """
+    Used to provide a column that reports the last commit that touched a given
+    version of a file. Does not consider any changes by the provided commit.
+    """
+    last = project.last_commit_to_line(filename, line, commit)
+    return last.hexsha[:7] if last else '-'
