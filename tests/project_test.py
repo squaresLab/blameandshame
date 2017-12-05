@@ -88,5 +88,20 @@ class ProjectTestCase(unittest.TestCase):
                   ['Paul Yang'])
 
 
+    def test_last_commit_to_line(self):
+        def check_one(project, filename, line, before, expected):
+            before = project.repo.commit(before)
+            if expected is not None:
+                expected = project.repo.commit(expected)
+            actual = project.last_commit_to_line(filename, line, before)
+            self.assertEqual(actual, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file-one.txt', 1, '9ca70f7', '922e13d')
+        check_one(project, 'file-one.txt', 5, 'e1d2532', '0d841d1')
+        check_one(project, 'file-one.txt', 1, '422cab3', None)
+        check_one(project, 'file-one.txt', 1, 'e1d2532', 'e1d2532')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 from blameandshame.base import  Project, Change
-from blameandshame.util import  lines_modified_by_commit, \
-                                last_commit_to_line
+from blameandshame.util import  lines_modified_by_commit
 
 
 class UtilTestCase(unittest.TestCase):
@@ -27,21 +26,6 @@ class UtilTestCase(unittest.TestCase):
         )
 
 
-    def test_last_commit_to_line(self):
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        repo = project.repo
-        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
-                                             repo.commit('9ca70f7')),
-                         repo.commit('922e13d'))
-        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 5,
-                                             repo.commit('e1d2532')),
-                         repo.commit('0d841d1'))
-        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
-                                             repo.commit('422cab3')),
-                         None)
-        self.assertEqual(last_commit_to_line(repo, 'file-one.txt', 1,
-                                             repo.commit('e1d2532')),
-                         repo.commit('e1d2532'))
 
 
 if __name__ == '__main__':

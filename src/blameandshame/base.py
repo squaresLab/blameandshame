@@ -194,3 +194,20 @@ class Project(object):
         """
         commits = self.commits_to_file(filename, since=since, until=until)
         return frozenset(c.author for c in commits)
+
+
+    def last_commit_to_line(self,
+                            filename: str,
+                            lineno: int,
+                            before: git.Commit
+                            ) -> Optional[git.Commit]:
+        """
+        Returns a Commit object corresponding to the last commit where lineno was
+        touched before (and including) the Commit object passed in before.
+        """
+        try:
+            commits = self.commits_to_line(filename, lineno, None, before)
+        except git.exc.GitCommandError:
+            commits = [None]
+
+        return commits[0]

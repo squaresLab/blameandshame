@@ -62,20 +62,3 @@ def lines_modified_by_commit(repo: git.Repo,
                 new_line_num += 1
 
     return (frozenset(old_lines), frozenset(new_lines))
-
-
-def last_commit_to_line(repo: git.Repo,
-                        filename: str,
-                        lineno: int,
-                        before: git.Commit) -> Optional[git.Commit]:
-    """
-    Returns a Commit object corresponding to the last commit where lineno was
-    touched before (and including) the Commit object passed in before.
-    """
-    project = Project(repo)
-    try:
-        commits = project.commits_to_line(filename, lineno, None, before)
-    except git.exc.GitCommandError:
-        commits = [None]
-
-    return commits[0]
