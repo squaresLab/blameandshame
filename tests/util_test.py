@@ -9,12 +9,9 @@ from blameandshame.util import  Change, \
                                 commits_to_file, \
                                 commits_to_line, \
                                 get_repo, \
-<<<<<<< HEAD
-                                time_between_commits
-from datetime import timedelta
-=======
+                                time_between_commits,\
                                 last_commit_to_line
->>>>>>> 9a4566ad1f83ee8d17ceb14ec3f6d2eb93193232
+from datetime import timedelta
 
 
 class UtilTestCase(unittest.TestCase):

@@ -3,12 +3,8 @@ import shutil
 import os
 import git
 import urllib.parse
-<<<<<<< HEAD
-from typing import FrozenSet, Tuple, Optional, Set
-from datetime import timedelta
-=======
 from typing import FrozenSet, List, Tuple, Optional, Set
->>>>>>> 9a4566ad1f83ee8d17ceb14ec3f6d2eb93193232
+from datetime import timedelta
 
 
 DESC = "TODO: Add a description of how this tool works."
