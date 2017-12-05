@@ -8,7 +8,9 @@ from blameandshame.util import  Change, \
                                 authors_of_file, \
                                 commits_to_file, \
                                 commits_to_line, \
-                                get_repo
+                                get_repo, \
+                                time_between_commits
+from datetime import timedelta
 
 
 class UtilTestCase(unittest.TestCase):
@@ -117,5 +119,13 @@ class UtilTestCase(unittest.TestCase):
              frozenset())
         )
 
+		
+    def test_time_between_commits(self):
+        repo = get_repo('https://github.com/google/protobuf')
+        delta = time_between_commits(repo.commit("ac5371d"),repo.commit("9935829"))
+        shouldBe= timedelta(seconds=10628)
+        self.assertEqual(shouldBe,delta)
+		
+		
 if __name__ == '__main__':
     unittest.main()

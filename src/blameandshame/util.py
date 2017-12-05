@@ -4,6 +4,7 @@ import os
 import git
 import urllib.parse
 from typing import FrozenSet, Tuple, Optional, Set
+from datetime import timedelta
 
 
 DESC = "TODO: Add a description of how this tool works."
@@ -218,3 +219,17 @@ def lines_modified_by_commit(repo: git.Repo,
                 new_line_num += 1
 
     return (frozenset(old_lines), frozenset(new_lines))
+	
+	
+def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
+	"""
+	Given two commits, this function should return the length of time between them as a timedelta.
+	def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
+	This function can be combined with last_commit_to_line to determine the length of time since the last change to a faulty line.
+	"""
+	timeX = x.authored_datetime
+	timeY = y.authored_datetime
+	return timeX - timeY
+	
+
+
