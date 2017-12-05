@@ -3,25 +3,6 @@ from blameandshame.base import Change
 from typing import FrozenSet, List, Tuple, Optional, Set
 
 
-def files_in_commit(repo: git.Repo,
-                    fix_sha: str,
-                    filter_by: Set[Change] = {f for f in Change}
-                   ) -> FrozenSet[str]:
-    """
-    Returns the set of files, given by name, that were modified by a given
-    commit.
-    """
-    fix_commit = repo.commit(fix_sha)
-    prev_commit = repo.commit("{}~1".format(fix_sha))
-    diff = prev_commit.diff(fix_commit)
-
-    files: Set[str] = set()
-    for f in filter_by:
-        files.update(d.a_path for d in diff.iter_change_type(f.value))
-
-    return frozenset(files)
-
-
 def commits_to_file(repo: git.Repo,
                     filename: str,
                     lineno: Optional[int] = None,
