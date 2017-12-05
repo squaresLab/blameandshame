@@ -10,6 +10,14 @@ def annotate(project: Project,
                         Callable[[Project, git.Commit, str, int], str]
                       ]] = None
              ) -> List[Tuple[Any, ...]]:
+    """
+    Returns a list of tuples corresponding to a table of annotated values.
+
+    Params:
+      columns: A list of functions used to generate a column of data. Each
+        function takes as input a Project, a Commit, a filename, and a line
+        number and returns a string. See column_last_commit for an example.
+    """
     if columns is None:
         columns = []
     tbl = []
