@@ -47,3 +47,16 @@ def column_last_commit(project: Project,
     """
     last = project.last_commit_to_line(filename, line, commit)
     return last.hexsha[:7] if last else '-'
+
+
+def column_num_commits_to_file_since_modified(project: Project,
+                                              commit: git.Commit,
+                                              filename: str,
+                                              line: int,
+                                              ) -> str:
+    """
+    Reports the number of commits that have been made to a given file since
+    a specified commit.
+    """
+    commits = project.commits_to_file(filename, before=commit)
+    return len(commits)
