@@ -173,11 +173,11 @@ class ProjectTestCase(unittest.TestCase):
     def test_time_between_commits(self):
         project = Project.from_url('https://github.com/google/protobuf')
 
-        delta = project.time_between_commits(project.repo.commit("ac5371d"),
+        delta = Project.time_between_commits(project.repo.commit("ac5371d"),
                                              project.repo.commit("9935829"))
         self.assertEqual(delta, timedelta(seconds=10628))
 
-        delta = project.time_between_commits(project.repo.commit("9935829"),
+        delta = Project.time_between_commits(project.repo.commit("9935829"),
                                              project.repo.commit("ac5371d"))
         self.assertEqual(delta, timedelta(seconds=10628))
 
