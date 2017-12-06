@@ -116,6 +116,8 @@ class Project(object):
         """
         Returns a list of all commits that have been made to the repo.
 
+        Note: after == before returns [], matching the behavior of git log
+
         Params:
           after: An optional parameter used to restrict the search to all
             commits that have occurred since a given commit, exclusive.
@@ -142,6 +144,8 @@ class Project(object):
         """
         Returns the set of all commits that been made to a given file,
         specified by its name.
+
+        Note: after == before returns [], matching the behavior of git log
 
         Params:
           after: An optional parameter used to restrict the search to all
