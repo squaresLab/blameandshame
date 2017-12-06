@@ -25,7 +25,7 @@ def annotate(project: Project,
     f = project.repo.git.show('{}:{}'.format(version.hexsha, filename))
 
     for (num, line) in enumerate(f.splitlines(), 1):
-        line = line.strip()
+        line = line.rstrip()
         row = [num, line]
 
         for col in columns:
