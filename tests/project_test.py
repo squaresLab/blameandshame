@@ -47,6 +47,21 @@ class ProjectTestCase(unittest.TestCase):
                                     'ruby/tests/gc_test.rb']))
 
 
+    def test_commits_to_repo(self):
+        def check_one(project, expected, after = None, before = None):
+            self.assertEqual(project.commits_to_repo(after=after,
+                                                     before=before), expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, ['e1d2532', '71622b3', '9ca70f7', '2282c66'],
+                  after = '2282c66', before = 'e1d2532')
+        # Starting from first commit
+        check_one(project, ['922e13d', '422cab3', '964adc5'],
+                  after = '964adc5', before = '922e13d')
+        # after == before
+        check_one(project, ['2282c66'],
+                  after = '2282c66', before = '2282c66')
+
     def test_commits_to_file(self):
         def check_one(project, filename, expected):
             expected = [project.repo.commit(sha) for sha in expected]
