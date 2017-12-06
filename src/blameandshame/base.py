@@ -122,7 +122,7 @@ class Project(object):
           before: An optional parameter used to restrict the search to all
             commits that have occurred up to and including a given commit.
         """
-        pass
+        raise NotImplementedError
 
     def commits_to_file(self,
                         filename: str,
@@ -178,7 +178,7 @@ class Project(object):
           before: An optional parameter used to restrict the search to all
             commits that have occurred up to and including a given commit.
         """
-        pass
+        raise NotImplementedError
 
     def commits_to_line(self,
                         filename: str,
