@@ -47,16 +47,6 @@ class ProjectTestCase(unittest.TestCase):
                                     'ruby/tests/gc_test.rb']))
 
 
-    def test_commits_to_line(self):
-        def check_one(project, filename, lineno, expected):
-            expected = [project.repo.commit(sha) for sha in expected]
-            self.assertEqual(project.commits_to_line(filename, lineno, before=expected[0]),
-                             expected)
-
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, 'file.txt', 1, ['922e13d', '422cab3'])
-
-
     def test_commits_to_file(self):
         def check_one(project, filename, expected):
             expected = [project.repo.commit(sha) for sha in expected]
@@ -72,6 +62,16 @@ class ProjectTestCase(unittest.TestCase):
         # corner case: file is renamed once
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
+
+
+    def test_commits_to_line(self):
+        def check_one(project, filename, lineno, expected):
+            expected = [project.repo.commit(sha) for sha in expected]
+            self.assertEqual(project.commits_to_line(filename, lineno, before=expected[0]),
+                             expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file.txt', 1, ['922e13d', '422cab3'])
 
 
     def test_authors_of_file(self):
