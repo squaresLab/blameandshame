@@ -59,7 +59,7 @@ def column_num_commits_to_file_since_commit(project: Project,
     a specified commit.
     """
     commits = project.commits_to_file(filename, before=commit)
-    return len(commits)
+    return str(len(commits))
 
 
 def column_num_commits_to_project_since_commit(project: Project,
@@ -72,7 +72,7 @@ def column_num_commits_to_project_since_commit(project: Project,
     since a specified commit.
     """
     commits = project.commits_to_repo(before=commit)
-    return len(commits)
+    return str(len(commits))
 
 
 def column_num_days_since_modified(project: Project,
