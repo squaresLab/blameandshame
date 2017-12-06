@@ -20,10 +20,8 @@ class Change(Enum):
 
 class Project(object):
 
-
     # Path to the directory used to hold downloaded Git repositories.
     REPOS_DIR = os.path.join(os.getcwd(), '.repos')
-
 
     @staticmethod
     def _url_to_path(url: str) -> str:
@@ -37,7 +35,6 @@ class Project(object):
         _, name = os.path.split(path)
 
         return os.path.join(Project.REPOS_DIR, name)
-
 
     @staticmethod
     def from_url(url: str) -> 'Project':
@@ -70,7 +67,6 @@ class Project(object):
 
         return Project.from_disk(path)
 
-
     @staticmethod
     def from_disk(path: str) -> 'Project':
         """
@@ -78,11 +74,9 @@ class Project(object):
         """
         return Project(git.Repo(path))
 
-
     def __init__(self, repo: git.Repo):
         self.__repo: git.Repo = repo
         self.update()
-
 
     def update(self):
         """
@@ -90,14 +84,12 @@ class Project(object):
         """
         self.repo.remotes.origin.pull()
 
-
     @property
     def repo(self) -> git.Repo:
         """
         The Git repository associated with this project.
         """
         return self.__repo
-
 
     def files_in_commit(self,
                         fix_commit: git.Commit,
@@ -116,7 +108,6 @@ class Project(object):
             files.update(d.a_path for d in diff.iter_change_type(f.value))
 
         return frozenset(files)
-
 
     def commits_to_file(self,
                         filename: str,
@@ -157,7 +148,6 @@ class Project(object):
         commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
 
-
     def commits_to_line(self,
                         filename: str,
                         lineno: int,
@@ -176,7 +166,6 @@ class Project(object):
                                     lineno=lineno,
                                     since=since,
                                     until=until)
-
 
     def authors_of_file(self,
                         filename: str,
@@ -197,7 +186,6 @@ class Project(object):
         commits = self.commits_to_file(filename, since=since, until=until)
         return frozenset(c.author for c in commits)
 
-
     def last_commit_to_line(self,
                             filename: str,
                             lineno: int,
@@ -213,7 +201,6 @@ class Project(object):
             commits = [None]
 
         return commits[0]
-
 
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
@@ -260,7 +247,6 @@ class Project(object):
 
         return (frozenset(old_lines), frozenset(new_lines))
 
-
     def authors_of_line(self,
                         filename: str,
                         lineno: int,
@@ -279,7 +265,6 @@ class Project(object):
                                        since=since,
                                        until=until)
         return frozenset(c.author for c in commits)
-
 
     def time_between_commits(self,
                              x: git.Commit,
