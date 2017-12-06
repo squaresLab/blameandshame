@@ -311,17 +311,14 @@ class Project(object):
                                        before=before)
         return frozenset(c.author for c in commits)
 
-    def time_between_commits(self,
-                             x: git.Commit,
+    @staticmethod
+    def time_between_commits(x: git.Commit,
                              y: git.Commit
                              ) -> timedelta:
         """
         Given two commits, this function should return the length of time
         between them as a timedelta.
-        def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
-        This function can be combined with last_commit_to_line to determine the
-        length of time since the last change to a faulty line.
         """
-        timeX = x.authored_datetime
-        timeY = y.authored_datetime
-        return timeX - timeY
+        time_x = x.authored_datetime
+        time_y = y.authored_datetime
+        return abs(time_x - time_y)

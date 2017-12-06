@@ -165,7 +165,6 @@ class ProjectTestCase(unittest.TestCase):
              frozenset())
         )
 
-
     def test_authors_of_line(self):
         def check_one(project, filename, line, before, expected):
             before = project.repo.commit(before)
@@ -177,12 +176,16 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'php/composer.json', 2, '21b0e55',
                   ['Paul Yang'])
 
-                  
     def test_time_between_commits(self):
         project = Project.from_url('https://github.com/google/protobuf')
-        delta = project.time_between_commits(project.repo.commit("ac5371d"), project.repo.commit("9935829"))
-        shouldBe= timedelta(seconds=10628)
-        self.assertEqual(shouldBe,delta)
+
+        delta = Project.time_between_commits(project.repo.commit("ac5371d"),
+                                             project.repo.commit("9935829"))
+        self.assertEqual(delta, timedelta(seconds=10628))
+
+        delta = Project.time_between_commits(project.repo.commit("9935829"),
+                                             project.repo.commit("ac5371d"))
+        self.assertEqual(delta, timedelta(seconds=10628))
 
 
 if __name__ == '__main__':

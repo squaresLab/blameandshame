@@ -47,3 +47,49 @@ def column_last_commit(project: Project,
     """
     last = project.last_commit_to_line(filename, line, commit)
     return last.hexsha[:7] if last else '-'
+
+
+def column_num_file_commits_after_modified(project: Project,
+                                           commit: git.Commit,
+                                           filename: str,
+                                           line: int,
+                                           ) -> str:
+    """
+    Reports the number of commits that have been made to a given file since
+    a line was modified.
+    """
+    line_modified_commit = project.last_commit_to_line(filename, line, commit)
+    commits = project.commits_to_file(filename, after=line_modified_commit,
+                                      before=commit)
+    return str(len(commits))
+
+
+def column_num_project_commits_after_modified(project: Project,
+                                              commit: git.Commit,
+                                              filename: str,
+                                              line: int
+                                              ) -> str:
+    """
+    Reports the number of commits that have been made to a given project
+    since a line was modified.
+    """
+    line_modified_commit = project.last_commit_to_line(filename, line, commit)
+    commits = project.commits_to_repo(after=line_modified_commit,
+                                      before=commit)
+    return str(len(commits))
+
+
+def column_num_days_since_modified(project: Project,
+                                   commit: git.Commit,
+                                   filename: str,
+                                   line: int
+                                   ) -> str:
+    """
+    Reports the number of days that have passed, relative to a given commit,
+    since a given line was last changed.
+    """
+    last = project.last_commit_to_line(filename, line, before=commit)
+    if last:
+        delta = Project.time_between_commits(last, commit)
+        return str(delta.days)
+    return '-'
