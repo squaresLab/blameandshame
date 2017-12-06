@@ -60,3 +60,16 @@ def column_num_commits_to_file_since_modified(project: Project,
     """
     commits = project.commits_to_file(filename, before=commit)
     return len(commits)
+
+
+def column_num_commits_to_project_since_modified(project: Project,
+                                                 commit: git.Commit,
+                                                 filename: str,
+                                                 line: int
+                                                 ) -> str:
+    """
+    Reports the number of commits that have been made to a given project
+    since a specified commit.
+    """
+    commits = project.commits_to_project(before=commit)
+    return len(commits)
