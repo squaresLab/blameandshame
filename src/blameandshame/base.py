@@ -321,4 +321,4 @@ class Project(object):
         """
         time_x = x.authored_datetime
         time_y = y.authored_datetime
-        return time_x - time_y
+        return abs(time_x - time_y)
