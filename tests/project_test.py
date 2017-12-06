@@ -50,34 +50,55 @@ class ProjectTestCase(unittest.TestCase):
     def test_commits_to_repo(self):
         def check_one(project, expected, after = None, before = None):
             expected = [project.repo.commit(sha) for sha in expected]
-            self.assertEqual(project.commits_to_repo(after=after,
-                                                     before=before), expected)
+            self.assertEqual(
+                project.commits_to_repo(after = project.repo.commit(after),
+                                        before = project.repo.commit(before)),
+                expected
+            )
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, ['e1d2532', '71622b3', '9ca70f7', '2282c66'],
                   after = '2282c66', before = 'e1d2532')
+
         # Starting from first commit
         check_one(project, ['922e13d', '422cab3', '964adc5'],
                   after = '964adc5', before = '922e13d')
+
         # after == before
         check_one(project, ['2282c66'],
                   after = '2282c66', before = '2282c66')
 
     def test_commits_to_file(self):
-        def check_one(project, filename, expected):
+        def check_one(project, filename, expected, after = None, before = None):
             expected = [project.repo.commit(sha) for sha in expected]
-            self.assertEqual(project.commits_to_file(filename, before=expected[0]),
-                             expected)
+            after_commit = project.repo.commit(after) if after else None
+            before_commit = project.repo.commit(before) if before else None
+            self.assertEqual(
+                project.commits_to_file(filename,
+                                        after = after_commit,
+                                        before = before_commit),
+                expected
+            )
 
         project = Project.from_url('https://github.com/php/php-src')
-        check_one(project, 'ext/ext_skel.php', ['216d711', 'f35f459', 'b079cc2', '941dc72'])
+        check_one(project, 'ext/ext_skel.php',
+                  ['216d711', 'f35f459', 'b079cc2', '941dc72'],
+                  before = '216d711')
 
         project = Project.from_url('https://github.com/google/protobuf')
-        check_one(project, 'php/composer.json', ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'])
+        check_one(project, 'php/composer.json',
+                  ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'],
+                  before = '21b0e55')
 
         # corner case: file is renamed once
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, 'file-one.txt', ['474ea04', '922e13d', '422cab3'])
+        check_one(project, 'file-one.txt',
+                  ['474ea04', '922e13d', '422cab3'],
+                  before = '474ea04')
+
+        # After first commit
+        check_one(project, 'README.md', ['964adc5'],
+                  after = '964adc5', before = '422cab3')
 
 
     def test_commits_to_line(self):
