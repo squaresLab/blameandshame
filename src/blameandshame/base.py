@@ -74,7 +74,7 @@ class Project(object):
         """
         return Project(git.Repo(path))
 
-    def __init__(self, repo: git.Repo):
+    def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
         self.update()
 
