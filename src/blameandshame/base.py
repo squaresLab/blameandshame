@@ -311,6 +311,7 @@ class Project(object):
                                        before=before)
         return frozenset(c.author for c in commits)
 
+    @staticmethod
     def time_between_commits(self,
                              x: git.Commit,
                              y: git.Commit
