@@ -161,6 +161,25 @@ class Project(object):
         commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
 
+    def commits_to_function(self,
+                            filename: str,
+                            regex: str,
+                            after: Optional[git.Commit] = None,
+                            before: Optional[git.Commit] = None,
+                            ) -> List[git.Commit]:
+        """
+        Returns a list of all commits that have been made to the repo.
+
+        Params:
+          filename: The file containing the function.
+          regex: A string corresponding to the regex matching the function.
+          after: An optional parameter used to restrict the search to all
+            commits that have occurred since a given commit, inclusive.
+          before: An optional parameter used to restrict the search to all
+            commits that have occurred up to and including a given commit.
+        """
+        pass
+
     def commits_to_line(self,
                         filename: str,
                         lineno: int,
