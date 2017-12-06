@@ -20,10 +20,8 @@ class Change(Enum):
 
 class Project(object):
 
-
     # Path to the directory used to hold downloaded Git repositories.
     REPOS_DIR = os.path.join(os.getcwd(), '.repos')
-
 
     @staticmethod
     def _url_to_path(url: str) -> str:
@@ -38,14 +36,13 @@ class Project(object):
 
         return os.path.join(Project.REPOS_DIR, name)
 
-
     @staticmethod
     def from_url(url: str) -> 'Project':
         """
         Retrieves a project by the URL of its Git repository.
 
-        Internally, this function uses GitPython to clone the entire history for
-        Git repositories to disk. Each repository is cloned to its own
+        Internally, this function uses GitPython to clone the entire history
+        for Git repositories to disk. Each repository is cloned to its own
         subdirectory within `${PWD}/.repos`.
 
         Warning: This can potentially consume quite a bit of disk space.
@@ -64,12 +61,11 @@ class Project(object):
                 return Project(repo)
 
             # ensure that we don't end up with corrupted clones
-            except:
+            except git.exc.GitCommandError:
                 shutil.rmtree(path, ignore_errors=True)
                 raise
 
         return Project.from_disk(path)
-
 
     @staticmethod
     def from_disk(path: str) -> 'Project':
@@ -78,18 +74,15 @@ class Project(object):
         """
         return Project(git.Repo(path))
 
-
     def __init__(self, repo: git.Repo):
-        self.__repo : git.Repo = repo
+        self.__repo: git.Repo = repo
         self.update()
-
 
     def update(self):
         """
         Updates the state of the Git repository associated with this project.
         """
         self.repo.remotes.origin.pull()
-
 
     @property
     def repo(self) -> git.Repo:
@@ -98,11 +91,10 @@ class Project(object):
         """
         return self.__repo
 
-
     def files_in_commit(self,
                         fix_commit: git.Commit,
                         filter_by: Set[Change] = {f for f in Change}
-                       ) -> FrozenSet[str]:
+                        ) -> FrozenSet[str]:
         """
         Returns the set of files, given by name, that were modified by a
         specified commit.
@@ -117,7 +109,6 @@ class Project(object):
 
         return frozenset(files)
 
-
     def commits_to_file(self,
                         filename: str,
                         lineno: Optional[int] = None,
@@ -125,14 +116,14 @@ class Project(object):
                         before: Optional[git.Commit] = None
                         ) -> List[git.Commit]:
         """
-        Returns the set of all commits that been made to a given file, specified by
-        its name.
+        Returns the set of all commits that been made to a given file,
+        specified by its name.
 
         Params:
-          after: An optional parameter used to restrict the search to all commits
-            that have occurred after a given commit, inclusive.
-          before: An optional parameter used to restrict the search to all commits
-            that have occurred upto and including a given commit.
+          after: An optional parameter used to restrict the search to all
+            commits that have occurred since a given commit, inclusive.
+          before: An optional parameter used to restrict the search to all
+            commits that have occurred upto and including a given commit.
         """
         assert lineno is None or lineno > 0
 
@@ -155,7 +146,6 @@ class Project(object):
         commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
 
-
     def commits_to_line(self,
                         filename: str,
                         lineno: int,
@@ -163,18 +153,17 @@ class Project(object):
                         before: Optional[git.Commit] = None
                         ) -> List[git.Commit]:
         """
-        Returns the set of commits that have touched a given line in a particular
-        file. See `commits_to_file` for more details.
+        Returns the set of commits that have touched a given line in a
+        particular file. See `commits_to_file` for more details.
 
         Params:
-            linenno: The one-indexed number of the line in the most recent version
-                of the specified file.
+            linenno: The one-indexed number of the line in the most recent
+              version of the specified file.
         """
         return self.commits_to_file(filename,
                                     lineno=lineno,
                                     after=after,
                                     before=before)
-
 
     def authors_of_file(self,
                         filename: str,
@@ -187,13 +176,13 @@ class Project(object):
         `after` and `before` parameters.
 
         Params:
-          repo: The repository that should be inspected for authorship information.
-          filename: The name of the file, according to `before`, whose authorship
-            information should be obtained.
+          repo: The repository that should be inspected for authorship
+            information.
+          filename: The name of the file, according to `before`, whose
+            authorship information should be obtained.
         """
         commits = self.commits_to_file(filename, after=after, before=before)
         return frozenset(c.author for c in commits)
-
 
     def last_commit_to_line(self,
                             filename: str,
@@ -201,8 +190,8 @@ class Project(object):
                             before: git.Commit
                             ) -> Optional[git.Commit]:
         """
-        Returns a Commit object corresponding to the last commit where lineno was
-        touched before (and including) the Commit object passed in before.
+        Returns a Commit object corresponding to the last commit where lineno
+        was touched before (and including) the Commit object passed in before.
         """
         try:
             commits = self.commits_to_line(filename, lineno, None, before)
@@ -211,17 +200,17 @@ class Project(object):
 
         return commits[0]
 
-
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
                                  ) -> Tuple[FrozenSet[Tuple[str, int]],
                                             FrozenSet[Tuple[str, int]]]:
         """
-        Returns the set of lines that were modified by a given commit. Each line
-        is represented by a tuple of the form: (file name, line number). Two sets
-        are created, one containing lines deleted from the old version of the file
-        and one containing lines added in the new version of the file. These are
-        returned in a tuple of the form (old version, new version).
+        Returns the set of lines that were modified by a given commit. Each
+        line is represented by a tuple of the form: (file name, line number).
+        Two sets are created, one containing lines deleted from the old version
+        of the file and one containing lines added in the new version of the
+        file. These are returned in a tuple of the form (old version, new
+        version).
         """
         old_lines = set()
         new_lines = set()
@@ -239,7 +228,7 @@ class Project(object):
                 line_tokens = line.split()
                 # If the line starts with @@, there's line numbers
                 # format: @@ -start,lines +start,lines @@
-                first_char = line_tokens[0][0] if len(line_tokens) > 0 else  ''
+                first_char = line_tokens[0][0] if len(line_tokens) > 0 else ''
                 if (first_char == '@'):
                     _, old_line_num, new_line_num, *_ = line_tokens
                     old_line_num = int(old_line_num[1:].split(',')[0])
@@ -256,7 +245,6 @@ class Project(object):
 
         return (frozenset(old_lines), frozenset(new_lines))
 
-
     def authors_of_line(self,
                         filename: str,
                         lineno: int,
@@ -264,8 +252,8 @@ class Project(object):
                         before: Optional[git.Commit] = None
                         ) -> FrozenSet[git.Actor]:
         """
-        Returns the set the names of all authors that have modified a specific line
-        in a certain file that belongs to a given repository.
+        Returns the set the names of all authors that have modified a specific
+        line in a certain file that belongs to a given repository.
         See `authors_of_file` and `commits_to_line` for more details.
         """
         assert lineno > 0
@@ -276,15 +264,16 @@ class Project(object):
                                        before=before)
         return frozenset(c.author for c in commits)
 
-
     def time_between_commits(self,
                              x: git.Commit,
                              y: git.Commit
                              ) -> timedelta:
         """
-        Given two commits, this function should return the length of time between them as a timedelta.
+        Given two commits, this function should return the length of time
+        between them as a timedelta.
         def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
-        This function can be combined with last_commit_to_line to determine the length of time after the last change to a faulty line.
+        This function can be combined with last_commit_to_line to determine the
+        length of time since the last change to a faulty line.
         """
         timeX = x.authored_datetime
         timeY = y.authored_datetime

@@ -36,10 +36,10 @@ def annotate(project: Project,
     return tbl
 
 
-def column_last_commit(project : Project,
+def column_last_commit(project: Project,
                        commit: git.Commit,
-                       filename : str,
-                       line : int
+                       filename: str,
+                       line: int
                        ) -> str:
     """
     Used to provide a column that reports the last commit that touched a given
