@@ -49,29 +49,33 @@ def column_last_commit(project: Project,
     return last.hexsha[:7] if last else '-'
 
 
-def column_num_commits_to_file_after_commit(project: Project,
-                                            commit: git.Commit,
-                                            filename: str,
-                                            line: int,
-                                            ) -> str:
+def column_num_file_commits_after_modified(project: Project,
+                                           commit: git.Commit,
+                                           filename: str,
+                                           line: int,
+                                           ) -> str:
     """
     Reports the number of commits that have been made to a given file since
-    a specified commit.
+    a line was modified.
     """
-    commits = project.commits_to_file(filename, after=commit)
+    line_modified_commit = project.last_commit_to_line(filename, line, commit)
+    commits = project.commits_to_file(filename, after = line_modified_commit,
+                                      before = commit)
     return str(len(commits))
 
 
-def column_num_commits_to_project_after_commit(project: Project,
-                                               commit: git.Commit,
-                                               filename: str,
-                                               line: int
-                                               ) -> str:
+def column_num_project_commits_after_modified(project: Project,
+                                              commit: git.Commit,
+                                              filename: str,
+                                              line: int
+                                              ) -> str:
     """
     Reports the number of commits that have been made to a given project
-    since a specified commit.
+    since a line was modified.
     """
-    commits = project.commits_to_repo(after=commit)
+    line_modified_commit = project.last_commit_to_line(filename, line, commit)
+    commits = project.commits_to_repo(after = line_modified_commit,
+                                      before = commit)
     return str(len(commits))
 
 

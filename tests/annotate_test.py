@@ -3,8 +3,8 @@ import unittest
 from blameandshame.base import Project
 from blameandshame.annotate import  annotate, \
                                     column_last_commit, \
-                                    column_num_commits_to_file_after_commit, \
-                                    column_num_commits_to_project_after_commit, \
+                                    column_num_file_commits_after_modified, \
+                                    column_num_project_commits_after_modified, \
                                     column_num_days_since_modified
 
 
@@ -48,30 +48,34 @@ class AnnotateTestCase(unittest.TestCase):
         check_one(project, 'e1d2532', 'file-one.txt', 1, 'e1d2532')
 
 
-    def test_column_num_commits_to_file_after_commit(self):
+    def test_column_num_file_commits_after_modified(self):
         def check_one(project, commit, filename, line, expected):
             commit = project.repo.commit(commit)
-            num_commits = column_num_commits_to_file_after_commit(project,
-                                                                  commit,
-                                                                  filename,
-                                                                  line)
+            num_commits = column_num_file_commits_after_modified(project,
+                                                                 commit,
+                                                                 filename,
+                                                                 line)
             self.assertEqual(num_commits, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
+        check_one(project, 'e1d2532', 'file-one.txt', 2, '4')
+        check_one(project, 'e1d2532', 'file-one.txt', 4, '2')
 
 
-    def test_column_num_commits_to_project_after_commit(self):
+    def test_column_num_project_commits_after_modified(self):
         def check_one(project, commit, filename, line, expected):
             commit = project.repo.commit(commit)
-            num_commits = column_num_commits_to_project_after_commit(project,
-                                                                     commit,
-                                                                     filename,
-                                                                     line)
+            num_commits = column_num_project_commits_after_modified(project,
+                                                                    commit,
+                                                                    filename,
+                                                                    line)
             self.assertEqual(num_commits, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
+        check_one(project, 'e1d2532', 'file-one.txt', 2, '9')
+        check_one(project, 'e1d2532', 'file-one.txt', 4, '5')
 
 
     def test_column_num_days_since_modified(self):
