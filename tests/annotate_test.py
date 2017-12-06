@@ -3,8 +3,8 @@ import unittest
 from blameandshame.base import Project
 from blameandshame.annotate import  annotate, \
                                     column_last_commit, \
-                                    column_num_commits_to_file_since_commit, \
-                                    column_num_commits_to_project_since_commit, \
+                                    column_num_commits_to_file_after_commit, \
+                                    column_num_commits_to_project_after_commit, \
                                     column_num_days_since_modified
 
 
@@ -48,10 +48,10 @@ class AnnotateTestCase(unittest.TestCase):
         check_one(project, 'e1d2532', 'file-one.txt', 1, 'e1d2532')
 
 
-    def test_column_num_commits_to_file_since_commit(self):
+    def test_column_num_commits_to_file_after_commit(self):
         def check_one(project, commit, filename, line, expected):
             commit = project.repo.commit(commit)
-            num_commits = column_num_commits_to_file_since_commit(project,
+            num_commits = column_num_commits_to_file_after_commit(project,
                                                                   commit,
                                                                   filename,
                                                                   line)
@@ -61,10 +61,10 @@ class AnnotateTestCase(unittest.TestCase):
         check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
 
 
-    def test_column_num_commits_to_project_since_commit(self):
+    def test_column_num_commits_to_project_after_commit(self):
         def check_one(project, commit, filename, line, expected):
             commit = project.repo.commit(commit)
-            num_commits = column_num_commits_to_project_since_commit(project,
+            num_commits = column_num_commits_to_project_after_commit(project,
                                                                      commit,
                                                                      filename,
                                                                      line)

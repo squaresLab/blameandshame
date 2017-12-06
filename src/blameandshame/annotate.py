@@ -49,7 +49,7 @@ def column_last_commit(project: Project,
     return last.hexsha[:7] if last else '-'
 
 
-def column_num_commits_to_file_since_commit(project: Project,
+def column_num_commits_to_file_after_commit(project: Project,
                                             commit: git.Commit,
                                             filename: str,
                                             line: int,
@@ -58,11 +58,11 @@ def column_num_commits_to_file_since_commit(project: Project,
     Reports the number of commits that have been made to a given file since
     a specified commit.
     """
-    commits = project.commits_to_file(filename, before=commit)
+    commits = project.commits_to_file(filename, after=commit)
     return str(len(commits))
 
 
-def column_num_commits_to_project_since_commit(project: Project,
+def column_num_commits_to_project_after_commit(project: Project,
                                                commit: git.Commit,
                                                filename: str,
                                                line: int
@@ -71,7 +71,7 @@ def column_num_commits_to_project_since_commit(project: Project,
     Reports the number of commits that have been made to a given project
     since a specified commit.
     """
-    commits = project.commits_to_repo(before=commit)
+    commits = project.commits_to_repo(after=commit)
     return str(len(commits))
 
 
