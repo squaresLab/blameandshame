@@ -57,15 +57,15 @@ class ProjectTestCase(unittest.TestCase):
             )
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, ['e1d2532', '71622b3', '9ca70f7', '2282c66'],
+        check_one(project, ['e1d2532', '71622b3', '9ca70f7'],
                   after = '2282c66', before = 'e1d2532')
 
         # Starting from first commit
-        check_one(project, ['922e13d', '422cab3', '964adc5'],
+        check_one(project, ['922e13d', '422cab3'],
                   after = '964adc5', before = '922e13d')
 
         # after == before
-        check_one(project, ['2282c66'],
+        check_one(project, [],
                   after = '2282c66', before = '2282c66')
 
     def test_commits_to_file(self):
@@ -97,8 +97,8 @@ class ProjectTestCase(unittest.TestCase):
                   before = '474ea04')
 
         # After first commit
-        check_one(project, 'README.md', ['964adc5'],
-                  after = '964adc5', before = '422cab3')
+        check_one(project, 'file-one.txt', ['474ea04', '922e13d', '422cab3'],
+                  after = '964adc5', before = '474ea04')
 
 
     def test_commits_to_line(self):
