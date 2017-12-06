@@ -44,8 +44,8 @@ class Project(object):
         """
         Retrieves a project by the URL of its Git repository.
 
-        Internally, this function uses GitPython to clone the entire history for
-        Git repositories to disk. Each repository is cloned to its own
+        Internally, this function uses GitPython to clone the entire history
+        for Git repositories to disk. Each repository is cloned to its own
         subdirectory within `${PWD}/.repos`.
 
         Warning: This can potentially consume quite a bit of disk space.
@@ -125,14 +125,14 @@ class Project(object):
                         until: Optional[git.Commit] = None
                         ) -> List[git.Commit]:
         """
-        Returns the set of all commits that been made to a given file, specified by
-        its name.
+        Returns the set of all commits that been made to a given file,
+        specified by its name.
 
         Params:
-          since: An optional parameter used to restrict the search to all commits
-            that have occurred since a given commit, inclusive.
-          until: An optional parameter used to restrict the search to all commits
-            that have occurred upto and including a given commit.
+          since: An optional parameter used to restrict the search to all
+            commits that have occurred since a given commit, inclusive.
+          until: An optional parameter used to restrict the search to all
+            commits that have occurred upto and including a given commit.
         """
         assert lineno is None or lineno > 0
 
@@ -165,12 +165,12 @@ class Project(object):
                         until: Optional[git.Commit] = None
                         ) -> List[git.Commit]:
         """
-        Returns the set of commits that have touched a given line in a particular
-        file. See `commits_to_file` for more details.
+        Returns the set of commits that have touched a given line in a
+        particular file. See `commits_to_file` for more details.
 
         Params:
-            linenno: The one-indexed number of the line in the most recent version
-                of the specified file.
+            linenno: The one-indexed number of the line in the most recent
+              version of the specified file.
         """
         return self.commits_to_file(filename,
                                     lineno=lineno,
@@ -189,9 +189,10 @@ class Project(object):
         `since` and `until` parameters.
 
         Params:
-          repo: The repository that should be inspected for authorship information.
-          filename: The name of the file, according to `until`, whose authorship
-            information should be obtained.
+          repo: The repository that should be inspected for authorship
+            information.
+          filename: The name of the file, according to `until`, whose
+            authorship information should be obtained.
         """
         commits = self.commits_to_file(filename, since=since, until=until)
         return frozenset(c.author for c in commits)
@@ -203,8 +204,8 @@ class Project(object):
                             before: git.Commit
                             ) -> Optional[git.Commit]:
         """
-        Returns a Commit object corresponding to the last commit where lineno was
-        touched before (and including) the Commit object passed in before.
+        Returns a Commit object corresponding to the last commit where lineno
+        was touched before (and including) the Commit object passed in before.
         """
         try:
             commits = self.commits_to_line(filename, lineno, None, before)
@@ -219,11 +220,12 @@ class Project(object):
                                  ) -> Tuple[FrozenSet[Tuple[str, int]],
                                             FrozenSet[Tuple[str, int]]]:
         """
-        Returns the set of lines that were modified by a given commit. Each line
-        is represented by a tuple of the form: (file name, line number). Two sets
-        are created, one containing lines deleted from the old version of the file
-        and one containing lines added in the new version of the file. These are
-        returned in a tuple of the form (old version, new version).
+        Returns the set of lines that were modified by a given commit. Each
+        line is represented by a tuple of the form: (file name, line number).
+        Two sets are created, one containing lines deleted from the old version
+        of the file and one containing lines added in the new version of the
+        file. These are returned in a tuple of the form (old version, new
+        version).
         """
         old_lines = set()
         new_lines = set()
@@ -266,8 +268,8 @@ class Project(object):
                         until: Optional[git.Commit] = None
                         ) -> FrozenSet[git.Actor]:
         """
-        Returns the set the names of all authors that have modified a specific line
-        in a certain file that belongs to a given repository.
+        Returns the set the names of all authors that have modified a specific
+        line in a certain file that belongs to a given repository.
         See `authors_of_file` and `commits_to_line` for more details.
         """
         assert lineno > 0
@@ -284,9 +286,11 @@ class Project(object):
                              y: git.Commit
                              ) -> timedelta:
         """
-        Given two commits, this function should return the length of time between them as a timedelta.
+        Given two commits, this function should return the length of time
+        between them as a timedelta.
         def time_between_commits(x: git.Commit, y: git.Commit) -> timedelta:
-        This function can be combined with last_commit_to_line to determine the length of time since the last change to a faulty line.
+        This function can be combined with last_commit_to_line to determine the
+        length of time since the last change to a faulty line.
         """
         timeX = x.authored_datetime
         timeY = y.authored_datetime
