@@ -33,3 +33,13 @@ class AnnotateTestCase(unittest.TestCase):
             (5, 'Debugging time!',  '0d841d1')
         ]
         self.assertEqual(actual, expected)
+
+
+    def test_column_last_commit(self):
+        def check_one(project, commit, filename, line, expected):
+            commit = project.repo.commit(commit)
+            last_commit = column_last_commit(project, commit, filename, line)
+            self.assertEqual(last_commit, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'e1d2532', 'file-one.txt', 1, 'e1d2532')
