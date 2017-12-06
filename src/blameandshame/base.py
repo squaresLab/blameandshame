@@ -122,7 +122,16 @@ class Project(object):
           before: An optional parameter used to restrict the search to all
             commits that have occurred up to and including a given commit.
         """
-        raise NotImplementedError
+        if not before:
+            before = self.repo.head.reference.commit
+
+        rev_range = '{}^..{}'.format(after, before) if after else before.hexsha
+
+        log = self.repo.git.log(rev_range)
+        commit_hashes = \
+            [l.strip() for l in log.splitlines() if l.startswith('commit ')]
+        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+        return commits
 
     def commits_to_file(self,
                         filename: str,
