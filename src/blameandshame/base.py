@@ -109,6 +109,21 @@ class Project(object):
 
         return frozenset(files)
 
+    def commits_to_repo(self,
+                        after: Optional[git.Commit] = None,
+                        before: Optional[git.Commit] = None,
+                        ) -> List[git.Commit]:
+        """
+        Returns a list of all commits that have been made to the repo.
+
+        Params:
+          after: An optional parameter used to restrict the search to all
+            commits that have occurred since a given commit, inclusive.
+          before: An optional parameter used to restrict the search to all
+            commits that have occurred up to and including a given commit.
+        """
+        pass
+
     def commits_to_file(self,
                         filename: str,
                         lineno: Optional[int] = None,
@@ -123,7 +138,7 @@ class Project(object):
           after: An optional parameter used to restrict the search to all
             commits that have occurred since a given commit, inclusive.
           before: An optional parameter used to restrict the search to all
-            commits that have occurred upto and including a given commit.
+            commits that have occurred up to and including a given commit.
         """
         assert lineno is None or lineno > 0
 
