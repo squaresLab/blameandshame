@@ -64,7 +64,7 @@ class Project(object):
                 return Project(repo)
 
             # ensure that we don't end up with corrupted clones
-            except:
+            except git.exc.GitCommandError:
                 shutil.rmtree(path, ignore_errors=True)
                 raise
 
