@@ -80,7 +80,7 @@ class Project(object):
 
 
     def __init__(self, repo: git.Repo):
-        self.__repo : git.Repo = repo
+        self.__repo: git.Repo = repo
         self.update()
 
 
@@ -102,7 +102,7 @@ class Project(object):
     def files_in_commit(self,
                         fix_commit: git.Commit,
                         filter_by: Set[Change] = {f for f in Change}
-                       ) -> FrozenSet[str]:
+                        ) -> FrozenSet[str]:
         """
         Returns the set of files, given by name, that were modified by a
         specified commit.
@@ -243,7 +243,7 @@ class Project(object):
                 line_tokens = line.split()
                 # If the line starts with @@, there's line numbers
                 # format: @@ -start,lines +start,lines @@
-                first_char = line_tokens[0][0] if len(line_tokens) > 0 else  ''
+                first_char = line_tokens[0][0] if len(line_tokens) > 0 else ''
                 if (first_char == '@'):
                     _, old_line_num, new_line_num, *_ = line_tokens
                     old_line_num = int(old_line_num[1:].split(',')[0])
