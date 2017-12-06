@@ -112,28 +112,26 @@ class Project(object):
     def commits_to_file(self,
                         filename: str,
                         lineno: Optional[int] = None,
-                        since: Optional[git.Commit] = None,
-                        until: Optional[git.Commit] = None
+                        after: Optional[git.Commit] = None,
+                        before: Optional[git.Commit] = None
                         ) -> List[git.Commit]:
         """
         Returns the set of all commits that been made to a given file,
         specified by its name.
 
         Params:
-          since: An optional parameter used to restrict the search to all
+          after: An optional parameter used to restrict the search to all
             commits that have occurred since a given commit, inclusive.
-          until: An optional parameter used to restrict the search to all
+          before: An optional parameter used to restrict the search to all
             commits that have occurred upto and including a given commit.
         """
         assert lineno is None or lineno > 0
 
         # construct the range of revisions that should be searched
-        if not until:
-            until = self.repo.head.reference.commit
-        if not since:
-            rev_range = until.hexsha
-        else:
-            rev_range = '{}^..{}'.format(since, until)
+        if not before:
+            before = self.repo.head.reference.commit
+
+        rev_range = '{}^..{}'.format(after, before) if after else before.hexsha
 
         # construct the range of lines that should be searched
         if lineno is None:
@@ -151,8 +149,8 @@ class Project(object):
     def commits_to_line(self,
                         filename: str,
                         lineno: int,
-                        since: Optional[git.Commit] = None,
-                        until: Optional[git.Commit] = None
+                        after: Optional[git.Commit] = None,
+                        before: Optional[git.Commit] = None
                         ) -> List[git.Commit]:
         """
         Returns the set of commits that have touched a given line in a
@@ -164,26 +162,26 @@ class Project(object):
         """
         return self.commits_to_file(filename,
                                     lineno=lineno,
-                                    since=since,
-                                    until=until)
+                                    after=after,
+                                    before=before)
 
     def authors_of_file(self,
                         filename: str,
-                        since: Optional[git.Commit] = None,
-                        until: Optional[git.Commit] = None
+                        after: Optional[git.Commit] = None,
+                        before: Optional[git.Commit] = None
                         ) -> FrozenSet[git.Actor]:
         """
         Returns the set the names of all authors that have modified a file in a
         given repository. See `commits_to_file` for details about optional
-        `since` and `until` parameters.
+        `after` and `before` parameters.
 
         Params:
           repo: The repository that should be inspected for authorship
             information.
-          filename: The name of the file, according to `until`, whose
+          filename: The name of the file, according to `before`, whose
             authorship information should be obtained.
         """
-        commits = self.commits_to_file(filename, since=since, until=until)
+        commits = self.commits_to_file(filename, after=after, before=before)
         return frozenset(c.author for c in commits)
 
     def last_commit_to_line(self,
@@ -250,8 +248,8 @@ class Project(object):
     def authors_of_line(self,
                         filename: str,
                         lineno: int,
-                        since: Optional[git.Commit] = None,
-                        until: Optional[git.Commit] = None
+                        after: Optional[git.Commit] = None,
+                        before: Optional[git.Commit] = None
                         ) -> FrozenSet[git.Actor]:
         """
         Returns the set the names of all authors that have modified a specific
@@ -262,8 +260,8 @@ class Project(object):
 
         commits = self.commits_to_line(filename,
                                        lineno,
-                                       since=since,
-                                       until=until)
+                                       after=after,
+                                       before=before)
         return frozenset(c.author for c in commits)
 
     def time_between_commits(self,

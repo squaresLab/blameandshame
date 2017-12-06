@@ -50,7 +50,7 @@ class ProjectTestCase(unittest.TestCase):
     def test_commits_to_line(self):
         def check_one(project, filename, lineno, expected):
             expected = [project.repo.commit(sha) for sha in expected]
-            self.assertEqual(project.commits_to_line(filename, lineno, until=expected[0]),
+            self.assertEqual(project.commits_to_line(filename, lineno, before=expected[0]),
                              expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
@@ -60,7 +60,7 @@ class ProjectTestCase(unittest.TestCase):
     def test_commits_to_file(self):
         def check_one(project, filename, expected):
             expected = [project.repo.commit(sha) for sha in expected]
-            self.assertEqual(project.commits_to_file(filename, until=expected[0]),
+            self.assertEqual(project.commits_to_file(filename, before=expected[0]),
                              expected)
 
         project = Project.from_url('https://github.com/php/php-src')
@@ -75,9 +75,9 @@ class ProjectTestCase(unittest.TestCase):
 
 
     def test_authors_of_file(self):
-        def check_one(project, filename, until, expected):
-            until = project.repo.commit(until)
-            actors = project.authors_of_file(filename, until=until)
+        def check_one(project, filename, before, expected):
+            before = project.repo.commit(before)
+            actors = project.authors_of_file(filename, before=before)
             authors = frozenset(a.name for a in actors)
             self.assertEqual(authors, frozenset(expected))
 
@@ -124,9 +124,9 @@ class ProjectTestCase(unittest.TestCase):
 
 
     def test_authors_of_line(self):
-        def check_one(project, filename, line, until, expected):
-            until = project.repo.commit(until)
-            actors = project.authors_of_line(filename, line, until=until)
+        def check_one(project, filename, line, before, expected):
+            before = project.repo.commit(before)
+            actors = project.authors_of_line(filename, line, before=before)
             authors = frozenset(a.name for a in actors)
             self.assertEqual(authors, frozenset(expected))
 
