@@ -50,9 +50,11 @@ class ProjectTestCase(unittest.TestCase):
     def test_commits_to_repo(self):
         def check_one(project, expected, after = None, before = None):
             expected = [project.repo.commit(sha) for sha in expected]
+            after_commit = project.repo.commit(after) if after else None
+            before_commit = project.repo.commit(before) if before else None
             self.assertEqual(
-                project.commits_to_repo(after = project.repo.commit(after),
-                                        before = project.repo.commit(before)),
+                project.commits_to_repo(after = after_commit,
+                                        before = before_commit),
                 expected
             )
 
@@ -67,6 +69,10 @@ class ProjectTestCase(unittest.TestCase):
         # after == before
         check_one(project, [],
                   after = '2282c66', before = '2282c66')
+
+        # no before
+        check_one(project, ['422cab3', '964adc5'],
+                  before = '422cab3')
 
     def test_commits_to_file(self):
         def check_one(project, filename, expected, after = None, before = None):
