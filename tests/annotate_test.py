@@ -4,7 +4,8 @@ from blameandshame.base import Project
 from blameandshame.annotate import  annotate, \
                                     column_last_commit, \
                                     column_num_commits_to_file_since_commit, \
-                                    column_num_commits_to_project_since_commit
+                                    column_num_commits_to_project_since_commit, \
+                                    column_num_days_since_modified
 
 
 class AnnotateTestCase(unittest.TestCase):
@@ -57,7 +58,7 @@ class AnnotateTestCase(unittest.TestCase):
             self.assertEqual(num_commits, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, 'e1d2532', 'file-one.txt', 1, 0)
+        check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
 
 
     def test_column_num_commits_to_project_since_commit(self):
@@ -70,4 +71,18 @@ class AnnotateTestCase(unittest.TestCase):
             self.assertEqual(num_commits, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, 'e1d2532', 'file-one.txt', 1, 0)
+        check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
+
+
+    def test_column_num_days_since_modified(self):
+        def check_one(project, commit, filename, line, expected):
+            commit = project.repo.commit(commit)
+            num_days = column_num_days_since_modified(project,
+                                                      commit,
+                                                      filename,
+                                                      line)
+            self.assertEqual(num_days, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
+        check_one(project, 'e1d2532', 'file-one.txt', 3, '1')
