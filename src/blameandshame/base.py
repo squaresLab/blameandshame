@@ -118,14 +118,14 @@ class Project(object):
 
         Params:
           after: An optional parameter used to restrict the search to all
-            commits that have occurred since a given commit, inclusive.
+            commits that have occurred since a given commit, exclusive.
           before: An optional parameter used to restrict the search to all
             commits that have occurred up to and including a given commit.
         """
         if not before:
             before = self.repo.head.reference.commit
 
-        rev_range = '{}^..{}'.format(after, before) if after else before.hexsha
+        rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
         log = self.repo.git.log(rev_range)
         commit_hashes = \
@@ -145,7 +145,7 @@ class Project(object):
 
         Params:
           after: An optional parameter used to restrict the search to all
-            commits that have occurred since a given commit, inclusive.
+            commits that have occurred since a given commit, exclusive.
           before: An optional parameter used to restrict the search to all
             commits that have occurred up to and including a given commit.
         """
@@ -155,7 +155,7 @@ class Project(object):
         if not before:
             before = self.repo.head.reference.commit
 
-        rev_range = '{}^..{}'.format(after, before) if after else before.hexsha
+        rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
         # construct the range of lines that should be searched
         if lineno is None:
