@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.6
-import cProfile
 from blameandshame.base import Project
 from blameandshame.annotate import annotate, \
                                    column_last_commit, \
@@ -24,4 +23,4 @@ def benchmark_annotate_closure():
 
 
 if __name__ == '__main__':
-    cProfile.run('benchmark_annotate_closure()')
+    benchmark_annotate_closure()
