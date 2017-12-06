@@ -49,6 +49,7 @@ class ProjectTestCase(unittest.TestCase):
 
     def test_commits_to_repo(self):
         def check_one(project, expected, after = None, before = None):
+            expected = [project.repo.commit(sha) for sha in expected]
             self.assertEqual(project.commits_to_repo(after=after,
                                                      before=before), expected)
 
