@@ -75,7 +75,7 @@ class AnnotateTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
         check_one(project, 'e1d2532', 'file-one.txt', 2, '9')
-        check_one(project, 'e1d2532', 'file-one.txt', 4, '5')
+        check_one(project, 'e1d2532', 'file-one.txt', 4, '6')
 
 
     def test_column_num_days_since_modified(self):
