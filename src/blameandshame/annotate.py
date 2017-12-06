@@ -59,8 +59,8 @@ def column_num_file_commits_after_modified(project: Project,
     a line was modified.
     """
     line_modified_commit = project.last_commit_to_line(filename, line, commit)
-    commits = project.commits_to_file(filename, after = line_modified_commit,
-                                      before = commit)
+    commits = project.commits_to_file(filename, after=line_modified_commit,
+                                      before=commit)
     return str(len(commits))
 
 
@@ -74,8 +74,8 @@ def column_num_project_commits_after_modified(project: Project,
     since a line was modified.
     """
     line_modified_commit = project.last_commit_to_line(filename, line, commit)
-    commits = project.commits_to_repo(after = line_modified_commit,
-                                      before = commit)
+    commits = project.commits_to_repo(after=line_modified_commit,
+                                      before=commit)
     return str(len(commits))
 
 
