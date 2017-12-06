@@ -49,11 +49,11 @@ def column_last_commit(project: Project,
     return last.hexsha[:7] if last else '-'
 
 
-def column_num_commits_to_file_since_modified(project: Project,
-                                              commit: git.Commit,
-                                              filename: str,
-                                              line: int,
-                                              ) -> str:
+def column_num_commits_to_file_since_commit(project: Project,
+                                            commit: git.Commit,
+                                            filename: str,
+                                            line: int,
+                                            ) -> str:
     """
     Reports the number of commits that have been made to a given file since
     a specified commit.
@@ -62,14 +62,30 @@ def column_num_commits_to_file_since_modified(project: Project,
     return len(commits)
 
 
-def column_num_commits_to_project_since_modified(project: Project,
-                                                 commit: git.Commit,
-                                                 filename: str,
-                                                 line: int
-                                                 ) -> str:
+def column_num_commits_to_project_since_commit(project: Project,
+                                               commit: git.Commit,
+                                               filename: str,
+                                               line: int
+                                               ) -> str:
     """
     Reports the number of commits that have been made to a given project
     since a specified commit.
     """
     commits = project.commits_to_project(before=commit)
     return len(commits)
+
+
+def column_num_days_since_modified(project: Project,
+                                   commit: git.Commit,
+                                   filename: str,
+                                   line: int
+                                   ) -> str:
+    """
+    Reports the number of days that have passed, relative to a given commit,
+    since a given line was last changed.
+    """
+    last = project.last_commit_to_line(filename, line, before=commit)
+    if last:
+        delta = Project.time_between_commits(last, commit)
+        return str(delta.days)
+    return '-'
