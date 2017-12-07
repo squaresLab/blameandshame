@@ -15,15 +15,39 @@ __BENCHMARKS: Dict[str, Callable[[], None]] = {}
 
 
 def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
+    """
+    Registers a given function as a benchmark.
+    """
+    fn = f.__name__
     def run(repeats : int = 1):
-        print("Running benchmark: {}".format(f.__name__))
+        print("Running benchmark: {}".format(fn))
         t = Timer(f)
         print(t.timeit(number=repeats))
+    __BENCHMARKS[fn] = run
     return run
 
 
 @benchmark
+def last_commit_to_line() -> None:
+    """
+    Computes the last commit that was made to a given line in a historical
+    version of the closure compiler.
+    """
+    project = Project.from_url('https://github.com/google/closure-compiler')
+    fix_sha = '1dfad50'
+    commit = project.repo.commit('{}~1'.format(fix_sha))
+    filename = 'src/com/google/javascript/jscomp/RemoveUnusedVars.java'
+    line = 372
+
+    column_last_commit(project, commit, filename, line)
+
+
+@benchmark
 def annotate_closure() -> None:
+    """
+    Annotates the source code for a single file from a historical version
+    of the closure compiler project with four additional columns.
+    """
     project = Project.from_url('https://github.com/google/closure-compiler')
     fix_sha = '1dfad50'
     commit = project.repo.commit('{}~1'.format(fix_sha))
@@ -50,4 +74,4 @@ def build_parser() -> ArgumentParser:
 
 
 if __name__ == '__main__':
-    annotate_closure()
+    last_commit_to_line(repeats=30)
