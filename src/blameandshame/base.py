@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import FrozenSet, List, Tuple, Optional, Set
+from typing import Dict, FrozenSet, List, Tuple, Optional, Set
 import git
 import os
 import shutil
@@ -78,7 +78,8 @@ class Project(object):
     def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
         self.update()
-        self.blame_info_dict = dict()
+        self.blame_info_dict: Dict[Tuple[str, str],
+                                   List[git.BlameEntry]] = dict()
 
     def update(self):
         """
