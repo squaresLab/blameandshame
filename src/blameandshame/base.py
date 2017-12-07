@@ -306,8 +306,8 @@ class Project(object):
             for line in d.diff.decode('utf8').split('\n'):
                 line_tokens = line.split()
                 # If the line starts with @@, there's line numbers
-                # formUse git blame and memoization for last_commit_to_line. (Addresses part of #29)at: @@ -start,lines +start,lines @@
-                first_char = line_tokUse git blame and memoization for last_commit_to_line. (Addresses part of #29)ens[0][0] if len(line_tokens) > 0 else ''
+                # format: @@ -start,lines +start,lines @@
+                first_char = line_tokens[0][0] if len(line_tokens) > 0 else ''
                 if (first_char == '@'):
                     _, old_line_num, new_line_num, *_ = line_tokens
                     old_line_num = int(old_line_num[1:].split(',')[0])
@@ -327,7 +327,7 @@ class Project(object):
     def authors_of_line(self,
                         filename: str,
                         lineno: int,
-                        after: Optional[git.ComUse git blame and memoization for last_commit_to_line. (Addresses part of #29)mit] = None,
+                        after: Optional[git.Commit] = None,
                         before: Optional[git.Commit] = None
                         ) -> FrozenSet[git.Actor]:
         """
