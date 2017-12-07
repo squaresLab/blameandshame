@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
+import argparse
 from typing import Callable, Dict
 from argparse import ArgumentParser
 from timeit import Timer
@@ -69,15 +70,54 @@ def annotate_closure() -> None:
     annotate(project, commit, filename, cols)
 
 
+def list_benchmarks(args: argparse.Namespace) -> None:
+    """
+    Prints a list of all registered benchmarks to the stdout
+    """
+    for benchmark in __BENCHMARKS__.keys():
+        print('* {}'.format(benchmark))
+
+
+def run_benchmark(args: argparse.Namespace) -> None:
+    """
+    Uses arguments supplied by the command-line to execute a given benchmark
+    for an optionally specified number of repeats.
+    """
+    benchmark = __BENCHMARKS__[args.benchmark]
+    benchmark(repeats=args.repeats)
+
+
 def build_parser() -> ArgumentParser:
+    benchmark_names = list(__BENCHMARKS__.keys())
+
     parser = \
         ArgumentParser(description='Used to conduct performance benchmarks.')
+    subparsers = parser.add_subparsers()
+
+    # list benchmarks
+    parser_list = subparsers.add_parser('list')
+    parser_list.set_defaults(func=list_benchmarks)
+
+    # run benchmark
+    parser_run = subparsers.add_parser('run')
+    parser_run.add_argument('benchmark',
+                            choices=benchmark_names,
+                            help='name of the benchmark that should be executed.')
+    parser_run.add_argument('--repeats', '-n',
+                            type=int,
+                            default=1,
+                            help='number of times that the benchmark should be repeated.')
+    parser_run.set_defaults(func=run_benchmark)
+
+    return parser
 
 
-    # discover all benchmarks
-    benchmark_names = list(__BENCHMARKS__.keys())
-    parser.add_argument('')
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+    if 'func' in args:
+        args.func(args)
 
 
 if __name__ == '__main__':
-    last_commit_to_line(repeats=30)
+    main()
