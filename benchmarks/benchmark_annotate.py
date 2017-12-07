@@ -1,10 +1,18 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
+from timeit import Timer
 from blameandshame.base import Project
 from blameandshame.annotate import annotate, \
                                    column_last_commit, \
                                    column_num_file_commits_after_modified, \
                                    column_num_project_commits_after_modified, \
                                    column_num_days_since_modified
+
+
+def run(benchmark, repeats=1):
+    print("Running benchmark: {}".format(benchmark.__name__))
+    t = Timer(benchmark)
+    print(t.timeit(number=repeats))
+
 
 def benchmark_annotate_closure():
     project = Project.from_url('https://github.com/google/closure-compiler')
@@ -23,4 +31,4 @@ def benchmark_annotate_closure():
 
 
 if __name__ == '__main__':
-    benchmark_annotate_closure()
+    run(benchmark_annotate_closure)
