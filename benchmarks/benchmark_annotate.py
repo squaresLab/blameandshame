@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import numpy as np
 from typing import Callable, Dict
 from argparse import ArgumentParser
 from timeit import Timer
@@ -22,7 +23,11 @@ def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
     def run(repeats : int = 1):
         print("Running benchmark: {}".format(fn))
         t = Timer(f)
-        print(t.timeit(number=repeats))
+        times = t.repeat(number=1, repeat=repeats)
+        print("  num. executions: {}".format(len(time)))
+        print("  mean time: {%.2f} seconds".format(np.mean(times)))
+        print("  std. dev: {%.2f}".format(np.std(times)))
+        print("  median time: {%.2f} seconds\n".format(np.median(times)))
     __BENCHMARKS[fn] = run
     return run
 
@@ -69,8 +74,8 @@ def build_parser() -> ArgumentParser:
 
 
     # discover all benchmarks
+    benchmark_names = list(__BENCHMARKS__.keys())
     parser.add_argument('')
-
 
 
 if __name__ == '__main__':
