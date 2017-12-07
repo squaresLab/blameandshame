@@ -34,16 +34,11 @@ Running benchmark: last_commit_to_line
 
 ```
 
-Profiling
----------
-
 To obtain detailed profiling information using one of the benchmarks within
-this directory, simply execute the shell command below:
+this directory, the `--profile` flag can be passed to `run`, as shown below.
 
 ```
-python -m cProfile -s cumulative benchmark run last_commit_to_line --repeats 30
-```
+$ python benchmark run last_commit_to_line --repeats 30 --profile
 
-where `benchmark_annotate.py` should be replaced with the script for a given
-benchmark. `profile.txt` should be replaced with the name of the file to which
-the profiling information should be written.
+TODO
+```
