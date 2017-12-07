@@ -1,3 +1,7 @@
+pyvenv.cfg
+lib
+bin
+lib64
 .eggs
 dist
 build
