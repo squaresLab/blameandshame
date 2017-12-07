@@ -272,12 +272,10 @@ class Project(object):
                 blame_info = None
             self.__blame_info_dict[(before.hexsha, filename)] = blame_info
 
-        commit = None
         if blame_info:
-            for b in blame_info:
-                if lineno in b.linenos:
-                    commit = b.commit
-        return commit
+            return next(b.commit for b in blame_info if lineno in b.linenos)
+        else:
+            return None
 
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
