@@ -80,6 +80,8 @@ class Project(object):
         self.update()
         self.blame_info_dict: Dict[Tuple[str, str],
                                    List[git.BlameEntry]] = dict()
+        self.commits_to_file_dict: Dict[Tuple[str, str],
+                                        List[git.Commit]] = dict()
 
     def update(self):
         """
@@ -149,6 +151,8 @@ class Project(object):
         specified by its name.
 
         Note: after == before returns [], matching the behavior of git log
+        Note 2: This function is memoized when called without a line number,
+          but not when a line number is provided. This is a possible slowdown.
 
         Params:
           after: An optional parameter used to restrict the search to all
@@ -166,15 +170,22 @@ class Project(object):
 
         # construct the range of lines that should be searched
         if lineno is None:
-            log = self.repo.git.log(rev_range, '--follow', '--', filename)
+            try:
+                commits = self.commits_to_file_dict[(rev_range, filename)]
+            except KeyError:
+                log = self.repo.git.log(rev_range, '--follow', '--', filename)
+                # read the commit hashes from the log
+                commit_hashes = [l.strip() for l in log.splitlines()
+                                 if l.startswith('commit ')]
+                commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+                self.commits_to_file_dict[(rev_range, filename)] = commits
+
         else:
             line_range = '{},{}:{}'.format(lineno, lineno, filename)
             log = self.repo.git.log(rev_range, L=line_range)
-
-        # read the commit hashes from the log
-        commit_hashes = \
-            [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+            commit_hashes = [l.strip() for l in log.splitlines()
+                             if l.startswith('commit ')]
+            commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
 
     def commits_to_function(self,
