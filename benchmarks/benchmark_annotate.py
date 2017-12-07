@@ -12,7 +12,7 @@ from blameandshame.annotate import annotate, \
 
 
 # Maintains a registry of named benchmarks
-__BENCHMARKS: Dict[str, Callable[[], None]] = {}
+__BENCHMARKS__: Dict[str, Callable[[], None]] = {}
 
 
 def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
@@ -29,7 +29,7 @@ def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
         print("  mean time: {0:.2f} seconds".format(np.mean(times)))
         print("  std. dev: {0:.2f} seconds".format(np.std(times)))
         print("  median time: {0:.2f} seconds\n".format(np.median(times)))
-    __BENCHMARKS[fn] = run
+    __BENCHMARKS__[fn] = run
     return run
 
 
