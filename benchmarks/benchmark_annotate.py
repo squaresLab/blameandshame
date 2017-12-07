@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from typing import Callable, Dict
+from argparse import ArgumentParser
 from timeit import Timer
 from blameandshame.base import Project
 from blameandshame.annotate import annotate, \
@@ -8,13 +10,20 @@ from blameandshame.annotate import annotate, \
                                    column_num_days_since_modified
 
 
-def run(benchmark, repeats=1):
-    print("Running benchmark: {}".format(benchmark.__name__))
-    t = Timer(benchmark)
-    print(t.timeit(number=repeats))
+# Maintains a registry of named benchmarks
+__BENCHMARKS: Dict[str, Callable[[], None]] = {}
 
 
-def benchmark_annotate_closure():
+def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
+    def run(repeats : int = 1):
+        print("Running benchmark: {}".format(f.__name__))
+        t = Timer(f)
+        print(t.timeit(number=repeats))
+    return run
+
+
+@benchmark
+def annotate_closure() -> None:
     project = Project.from_url('https://github.com/google/closure-compiler')
     fix_sha = '1dfad50'
     commit = project.repo.commit('{}~1'.format(fix_sha))
@@ -30,5 +39,15 @@ def benchmark_annotate_closure():
     annotate(project, commit, filename, cols)
 
 
+def build_parser() -> ArgumentParser:
+    parser = \
+        ArgumentParser(description='Used to conduct performance benchmarks.')
+
+
+    # discover all benchmarks
+    parser.add_argument('')
+
+
+
 if __name__ == '__main__':
-    run(benchmark_annotate_closure)
+    annotate_closure()
