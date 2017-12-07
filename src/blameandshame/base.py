@@ -1,10 +1,11 @@
 from enum import Enum
-from typing import FrozenSet, List, Tuple, Optional, Set
+from typing import Dict, FrozenSet, List, Tuple, Optional, Set
 import git
 import os
 import shutil
 import urllib.parse
 from datetime import timedelta
+import warnings
 
 
 class Change(Enum):
@@ -77,6 +78,11 @@ class Project(object):
     def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
         self.update()
+        self.__blame_info_dict: Dict[Tuple[str, str],
+                                     List[git.BlameEntry]] = dict()
+        self.__commits_to_file_dict: Dict[Tuple[str, str],
+                                          List[git.Commit]] = dict()
+        self.__commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
 
     def update(self):
         """
@@ -129,10 +135,15 @@ class Project(object):
 
         rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
-        log = self.repo.git.log(rev_range)
-        commit_hashes = \
-            [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+        try:
+            commits = self.__commits_to_repo_dict[rev_range]
+        except KeyError:
+            log = self.repo.git.log(rev_range)
+            commit_hashes = [l.strip() for l in log.splitlines()
+                             if l.startswith('commit ')]
+            commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+            self.__commits_to_repo_dict[rev_range] = commits
+
         return commits
 
     def commits_to_file(self,
@@ -146,6 +157,8 @@ class Project(object):
         specified by its name.
 
         Note: after == before returns [], matching the behavior of git log
+        Note 2: This function is memoized when called without a line number,
+          but not when a line number is provided. This is a possible slowdown.
 
         Params:
           after: An optional parameter used to restrict the search to all
@@ -163,15 +176,22 @@ class Project(object):
 
         # construct the range of lines that should be searched
         if lineno is None:
-            log = self.repo.git.log(rev_range, '--follow', '--', filename)
+            try:
+                commits = self.__commits_to_file_dict[(rev_range, filename)]
+            except KeyError:
+                log = self.repo.git.log(rev_range, '--follow', '--', filename)
+                # read the commit hashes from the log
+                commit_hashes = [l.strip() for l in log.splitlines()
+                                 if l.startswith('commit ')]
+                commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+                self.__commits_to_file_dict[(rev_range, filename)] = commits
+
         else:
             line_range = '{},{}:{}'.format(lineno, lineno, filename)
             log = self.repo.git.log(rev_range, L=line_range)
-
-        # read the commit hashes from the log
-        commit_hashes = \
-            [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+            commit_hashes = [l.strip() for l in log.splitlines()
+                             if l.startswith('commit ')]
+            commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
 
     def commits_to_function(self,
@@ -240,12 +260,22 @@ class Project(object):
         Returns a Commit object corresponding to the last commit where lineno
         was touched before (and including) the Commit object passed in before.
         """
-        try:
-            commits = self.commits_to_line(filename, lineno, None, before)
-        except git.exc.GitCommandError:
-            commits = [None]
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-        return commits[0]
+        try:
+            blame_info = self.__blame_info_dict[(before.hexsha, filename)]
+        except KeyError:
+            try:
+                blame_info = list(self.repo.blame_incremental(before,
+                                                              filename))
+            except git.exc.GitCommandError:
+                blame_info = None
+            self.__blame_info_dict[(before.hexsha, filename)] = blame_info
+
+        if blame_info:
+            return next(b.commit for b in blame_info if lineno in b.linenos)
+        else:
+            return None
 
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
