@@ -82,6 +82,7 @@ class Project(object):
                                    List[git.BlameEntry]] = dict()
         self.commits_to_file_dict: Dict[Tuple[str, str],
                                         List[git.Commit]] = dict()
+        self.commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
 
     def update(self):
         """
@@ -134,10 +135,15 @@ class Project(object):
 
         rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
-        log = self.repo.git.log(rev_range)
-        commit_hashes = \
-            [l.strip() for l in log.splitlines() if l.startswith('commit ')]
-        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+        try:
+            commits = self.commits_to_repo_dict[rev_range]
+        except KeyError:
+            log = self.repo.git.log(rev_range)
+            commit_hashes = [l.strip() for l in log.splitlines()
+                             if l.startswith('commit ')]
+            commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+            self.commits_to_repo_dict[rev_range] = commits
+
         return commits
 
     def commits_to_file(self,
@@ -300,8 +306,8 @@ class Project(object):
             for line in d.diff.decode('utf8').split('\n'):
                 line_tokens = line.split()
                 # If the line starts with @@, there's line numbers
-                # format: @@ -start,lines +start,lines @@
-                first_char = line_tokens[0][0] if len(line_tokens) > 0 else ''
+                # formUse git blame and memoization for last_commit_to_line. (Addresses part of #29)at: @@ -start,lines +start,lines @@
+                first_char = line_tokUse git blame and memoization for last_commit_to_line. (Addresses part of #29)ens[0][0] if len(line_tokens) > 0 else ''
                 if (first_char == '@'):
                     _, old_line_num, new_line_num, *_ = line_tokens
                     old_line_num = int(old_line_num[1:].split(',')[0])
@@ -321,7 +327,7 @@ class Project(object):
     def authors_of_line(self,
                         filename: str,
                         lineno: int,
-                        after: Optional[git.Commit] = None,
+                        after: Optional[git.ComUse git blame and memoization for last_commit_to_line. (Addresses part of #29)mit] = None,
                         before: Optional[git.Commit] = None
                         ) -> FrozenSet[git.Actor]:
         """
