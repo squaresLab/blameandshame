@@ -24,7 +24,7 @@ def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
         print("Running benchmark: {}".format(fn))
         t = Timer(f)
         times = t.repeat(number=1, repeat=repeats)
-        print("  num. executions: {}".format(len(time)))
+        print("  num. executions: {}".format(len(times)))
         print("  mean time: {%.2f} seconds".format(np.mean(times)))
         print("  std. dev: {%.2f}".format(np.std(times)))
         print("  median time: {%.2f} seconds\n".format(np.median(times)))
