@@ -5,6 +5,7 @@ import os
 import shutil
 import urllib.parse
 from datetime import timedelta
+import warnings
 
 
 class Change(Enum):
@@ -77,6 +78,7 @@ class Project(object):
     def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
         self.update()
+        self.blame_info_dict = dict()
 
     def update(self):
         """
@@ -240,12 +242,23 @@ class Project(object):
         Returns a Commit object corresponding to the last commit where lineno
         was touched before (and including) the Commit object passed in before.
         """
-        try:
-            commits = self.commits_to_line(filename, lineno, None, before)
-        except git.exc.GitCommandError:
-            commits = [None]
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-        return commits[0]
+        try:
+            blame_info = self.blame_info_dict[(before.hexsha, filename)]
+        except KeyError:
+            try:
+                blame_info = list(self.repo.blame_incremental(before, filename))
+            except git.exc.GitCommandError:
+                blame_info = None
+            self.blame_info_dict[(before.hexsha, filename)] = blame_info
+
+        commit = None
+        if blame_info:
+            for l in blame_info:
+                if lineno in l.linenos:
+                    commit = l.commit
+        return commit
 
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
