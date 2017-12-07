@@ -16,20 +16,29 @@ from blameandshame.annotate import annotate, \
 __BENCHMARKS__: Dict[str, Callable[[], None]] = {}
 
 
-def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
+def benchmark(f: Callable[[], None]) -> Callable[[int, bool], None]:
     """
     Registers a given function as a benchmark.
     """
     fn = f.__name__
-    def run(repeats : int = 1):
-        print("Running benchmark: {}".format(fn))
+    def run(repeats: int = 1, profile: bool = False):
+        if not profile:
+            print("Running benchmark: {}".format(fn))
+
         t = Timer(f)
-        times = t.repeat(number=1, repeat=repeats)
-        print('')
-        print("  num. executions: {} executions".format(len(times)))
-        print("  mean time: {0:.2f} seconds".format(np.mean(times)))
-        print("  std. dev: {0:.2f} seconds".format(np.std(times)))
-        print("  median time: {0:.2f} seconds\n".format(np.median(times)))
+        if profile:
+            print("PROFILE!")
+        else:
+            times = t.repeat(number=1, repeat=repeats)
+
+
+        if not profile:
+            print('')
+            print("  num. executions: {} executions".format(len(times)))
+            print("  mean time: {0:.2f} seconds".format(np.mean(times)))
+            print("  std. dev: {0:.2f} seconds".format(np.std(times)))
+            print("  median time: {0:.2f} seconds\n".format(np.median(times)))
+
     __BENCHMARKS__[fn] = run
     return run
 
@@ -84,7 +93,7 @@ def run_benchmark(args: argparse.Namespace) -> None:
     for an optionally specified number of repeats.
     """
     benchmark = __BENCHMARKS__[args.benchmark]
-    benchmark(repeats=args.repeats)
+    benchmark(repeats=args.repeats, profile=args.profile)
 
 
 def build_parser() -> ArgumentParser:
@@ -107,6 +116,10 @@ def build_parser() -> ArgumentParser:
                             type=int,
                             default=1,
                             help='number of times that the benchmark should be repeated.')
+    parser_run.add_argument('--profile',
+                            default=False,
+                            action='store_true',
+                            help='Used to specify whether or not detailed profiling information should be produced.')
     parser_run.set_defaults(func=run_benchmark)
 
     return parser
