@@ -78,11 +78,11 @@ class Project(object):
     def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
         self.update()
-        self.blame_info_dict: Dict[Tuple[str, str],
-                                   List[git.BlameEntry]] = dict()
-        self.commits_to_file_dict: Dict[Tuple[str, str],
-                                        List[git.Commit]] = dict()
-        self.commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
+        self.__blame_info_dict: Dict[Tuple[str, str],
+                                     List[git.BlameEntry]] = dict()
+        self.__commits_to_file_dict: Dict[Tuple[str, str],
+                                          List[git.Commit]] = dict()
+        self.__commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
 
     def update(self):
         """
@@ -136,13 +136,13 @@ class Project(object):
         rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
         try:
-            commits = self.commits_to_repo_dict[rev_range]
+            commits = self.__commits_to_repo_dict[rev_range]
         except KeyError:
             log = self.repo.git.log(rev_range)
             commit_hashes = [l.strip() for l in log.splitlines()
                              if l.startswith('commit ')]
             commits = [self.repo.commit(l[7:]) for l in commit_hashes]
-            self.commits_to_repo_dict[rev_range] = commits
+            self.__commits_to_repo_dict[rev_range] = commits
 
         return commits
 
@@ -177,14 +177,14 @@ class Project(object):
         # construct the range of lines that should be searched
         if lineno is None:
             try:
-                commits = self.commits_to_file_dict[(rev_range, filename)]
+                commits = self.__commits_to_file_dict[(rev_range, filename)]
             except KeyError:
                 log = self.repo.git.log(rev_range, '--follow', '--', filename)
                 # read the commit hashes from the log
                 commit_hashes = [l.strip() for l in log.splitlines()
                                  if l.startswith('commit ')]
                 commits = [self.repo.commit(l[7:]) for l in commit_hashes]
-                self.commits_to_file_dict[(rev_range, filename)] = commits
+                self.__commits_to_file_dict[(rev_range, filename)] = commits
 
         else:
             line_range = '{},{}:{}'.format(lineno, lineno, filename)
@@ -263,14 +263,14 @@ class Project(object):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         try:
-            blame_info = self.blame_info_dict[(before.hexsha, filename)]
+            blame_info = self.__blame_info_dict[(before.hexsha, filename)]
         except KeyError:
             try:
                 blame_info = list(self.repo.blame_incremental(before,
                                                               filename))
             except git.exc.GitCommandError:
                 blame_info = None
-            self.blame_info_dict[(before.hexsha, filename)] = blame_info
+            self.__blame_info_dict[(before.hexsha, filename)] = blame_info
 
         commit = None
         if blame_info:
