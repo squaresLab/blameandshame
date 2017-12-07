@@ -80,6 +80,7 @@ class Project(object):
         self.update()
         self.blame_info_dict: Dict[Tuple[str, str],
                                    List[git.BlameEntry]] = dict()
+        self.commits_to_repo_dict: Dict[str, str] = dict()
 
     def update(self):
         """
@@ -132,7 +133,12 @@ class Project(object):
 
         rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
-        log = self.repo.git.log(rev_range)
+        try:
+            log = self.commits_to_repo_dict[rev_range]
+        except KeyError:
+            log = self.repo.git.log(rev_range)
+            self.commits_to_repo_dict[rev_range] = log
+
         commit_hashes = \
             [l.strip() for l in log.splitlines() if l.startswith('commit ')]
         commits = [self.repo.commit(l[7:]) for l in commit_hashes]
