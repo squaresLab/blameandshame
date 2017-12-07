@@ -248,16 +248,17 @@ class Project(object):
             blame_info = self.blame_info_dict[(before.hexsha, filename)]
         except KeyError:
             try:
-                blame_info = list(self.repo.blame_incremental(before, filename))
+                blame_info = list(self.repo.blame_incremental(before,
+                                                              filename))
             except git.exc.GitCommandError:
                 blame_info = None
             self.blame_info_dict[(before.hexsha, filename)] = blame_info
 
         commit = None
         if blame_info:
-            for l in blame_info:
-                if lineno in l.linenos:
-                    commit = l.commit
+            for b in blame_info:
+                if lineno in b.linenos:
+                    commit = b.commit
         return commit
 
     def lines_modified_by_commit(self,
