@@ -24,10 +24,11 @@ def benchmark(f: Callable[[], None]) -> Callable[[int], None]:
         print("Running benchmark: {}".format(fn))
         t = Timer(f)
         times = t.repeat(number=1, repeat=repeats)
-        print("  num. executions: {}".format(len(time)))
-        print("  mean time: {%.2f} seconds".format(np.mean(times)))
-        print("  std. dev: {%.2f}".format(np.std(times)))
-        print("  median time: {%.2f} seconds\n".format(np.median(times)))
+        print('')
+        print("  num. executions: {} executions".format(len(times)))
+        print("  mean time: {0:.2f} seconds".format(np.mean(times)))
+        print("  std. dev: {0:.2f} seconds".format(np.std(times)))
+        print("  median time: {0:.2f} seconds\n".format(np.median(times)))
     __BENCHMARKS[fn] = run
     return run
 
