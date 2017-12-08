@@ -439,6 +439,6 @@ class Project(object):
         abs_ages = self.age_of_all_lines(commit, filename)
         line_age = abs_ages[lineno - 1]
         
-        rage = stats.percentileofscore(line_age, abs_ages, 'strict')
-        assert 0 <= rage <= 1
-        return rage
+        page = stats.percentileofscore(line_age, abs_ages, 'strict')
+        assert 0 <= page <= 100
+        return page
