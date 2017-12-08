@@ -384,7 +384,7 @@ class Project(object):
         """
         num_lines = TODO
         ages = []
-        for line in range(num_lines + 1, 1):
+        for line in range(1, num_lines + 1):
             ages.append(age_of_line(commit, filename, line))
         return ages
 
