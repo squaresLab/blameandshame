@@ -130,7 +130,8 @@ def column_line_rage(project: Project,
     Computes the relative age of a given line for a particular version of a
     project, relative to all the lines in a given file.
     """
-    raise NotImplementedError
+    rage = project.relative_age_of_line(commit, filename, line)
+    return rage
 
 
 def column_line_page(project: Project,
@@ -142,4 +143,5 @@ def column_line_page(project: Project,
     Computes the percentile age of a given line for a particular version of a
     project.
     """
-    raise NotImplementedError
+    page = project.percentile_age_of_commit(commit, filename, line)
+    return page
