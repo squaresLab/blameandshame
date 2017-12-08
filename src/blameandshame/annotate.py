@@ -36,6 +36,19 @@ def annotate(project: Project,
     return tbl
 
 
+def use_different_commit(f: Callable[[Project, git.Commit, str, int], str],
+                         different_commit: git.Commit
+                         ) -> Callable[[Project, git.Commit, str, int], str]:
+    """
+    Returns a modified column function that ignores the commit parameter and
+    replaces it with different_commit.
+    """
+    def modified_fun(p: Project, c: git.Commit, fname: str, l: int) -> str:
+        return f(p, different_commit, fname, l)
+
+    return modified_fun
+
+
 def column_last_commit(project: Project,
                        commit: git.Commit,
                        filename: str,

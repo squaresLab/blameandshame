@@ -2,6 +2,7 @@
 import unittest
 from blameandshame.base import Project
 from blameandshame.annotate import  annotate, \
+                                    use_different_commit, \
                                     column_last_commit, \
                                     column_num_file_commits_after_modified, \
                                     column_num_project_commits_after_modified, \
@@ -37,6 +38,19 @@ class AnnotateTestCase(unittest.TestCase):
             (5, 'Debugging time!',  '0d841d1')
         ]
         self.assertEqual(actual, expected)
+
+
+    def test_use_different_commit(self):
+        def check_one(fun, project, commit, different_commit, filename, line, expected):
+            commit = project.repo.commit(commit)
+            different_commit = project.repo.commit(different_commit)
+            modified = use_different_commit(fun, different_commit)
+            result = modified(project, commit, filename, line)
+            self.assertEqual(result, expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(column_last_commit, project, '0d841d1', 'e1d2532', 'file-one.txt', 1, 'e1d2532')
+        check_one(column_num_file_commits_after_modified, project, '0d841d1', 'e1d2532',
+                  'file-one.txt', 2, '4')
 
 
     def test_column_last_commit(self):
