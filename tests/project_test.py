@@ -195,6 +195,9 @@ class ProjectTestCase(unittest.TestCase):
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'file-one.txt', '86c9401', 7)
+        check_one(project, 'file-one.txt', '0d841d1', 5)
+        check_one(project, 'file-one.txt', '4d6c7f4', 3)
+        check_one(project, 'file.txt', '422cab3', 1)
 
 
 if __name__ == '__main__':
