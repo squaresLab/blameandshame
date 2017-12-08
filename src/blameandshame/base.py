@@ -357,7 +357,7 @@ class Project(object):
                              commit: git.Commit,
                              filename: str,
                              lineno: int
-                             ) -> int:
+                             ) -> float:
         """
         Computes the relative age of a given line, where absolute age is
         measured in units of time, for a particular line in a file. The
@@ -372,7 +372,7 @@ class Project(object):
                                commit: git.Commit,
                                filename: str,
                                lineno: int
-                               ) -> int:
+                               ) -> float:
         """
         TODO
         """
