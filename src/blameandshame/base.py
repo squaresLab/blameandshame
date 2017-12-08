@@ -387,9 +387,8 @@ class Project(object):
         Returns:
             A count of the number of the lines in the file.
         """
-        blob = commit.tree.join(filename)
-        print(blob)
-        raise NotImplementedError
+        f = self.repo.git.show('{}:{}'.format(version.hexsha, filename))
+        return len(f.splitlines())
 
     def age_of_all_lines(self,
                          commit: git.Commit,
