@@ -434,9 +434,19 @@ class Project(object):
                                filename: str,
                                lineno: int
                                ) -> float:
+        """
+        Computes the percentile age of a given line.
+
+        See:
+            relative_age_of_line
+
+        Returns:
+            Normalized percentile age between [0, 1].
+        """
         abs_ages = self.age_of_all_lines(commit, filename)
         line_age = abs_ages[lineno - 1]
 
         page = scipy.stats.percentileofscore(abs_ages, line_age, 'strict')
-        assert 0 <= page <= 100
+        page /= 100
+        assert 0 <= page <= 1
         return page
