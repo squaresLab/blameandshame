@@ -360,7 +360,7 @@ class Project(object):
                     ) -> float:
         """
         Determines the age of a given line of code in a particular version of
-        this project.
+        a file within this project.
 
         Returns:
             Number of days since the line was last modified.
@@ -370,6 +370,19 @@ class Project(object):
             delta = Project.time_between_commits(last, commit)
         else:
             return 0
+
+    def age_of_all_lines(self,
+                         commit: git.Commit,
+                         filename: str
+                         ) -> List[float]:
+        """
+        Determines the age of all lines in a particular version of a file
+        within this project.
+
+        See:
+            age_of_line
+        """
+        raise NotImplementedError
 
     def relative_age_of_line(self,
                              commit: git.Commit,
@@ -382,12 +395,14 @@ class Project(object):
         oldest line in that file is assigned an age of one, and the newest line
         is assigned an age of zero.
         """
-        raise NotImplementedError
+
+        abs_ages = self.age_of_all_lines(commit, filename)
+        line_age = abs_ages[lineno - 1]
+        min_age = min(abs_ages)
+        max_age = max(abs_ages)
+
+        rage = 1 - ((line_age - min_age) / (max_age - min_age)
         assert 0 <= rage <= 1
-
-        # figure out the absolute age of each line
-        age_of_lines_in_file()
-
         return rage
 
     def percentile_age_of_line(self,
