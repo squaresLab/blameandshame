@@ -439,5 +439,5 @@ class Project(object):
         line_age = abs_ages[lineno - 1]
         
         page = stats.percentileofscore(line_age, abs_ages, 'strict')
-        assert 0 <= page <= 1
+        assert 0 <= page <= 100
         return page
