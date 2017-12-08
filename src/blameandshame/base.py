@@ -352,3 +352,18 @@ class Project(object):
         time_x = x.authored_datetime
         time_y = y.authored_datetime
         return abs(time_x - time_y)
+
+    def relative_age_of_line(self,
+                             commit: git.Commit,
+                             filename: str,
+                             lineno: int
+                             ) -> int:
+        """
+        Computes the relative age of a given line, where absolute age is
+        measured in units of time, for a particular line in a file. The
+        oldest line in that file is assigned an age of one, and the newest line
+        is assigned an age of zero.
+        """
+        raise NotImplementedError
+        assert 0 <= rage <= 1
+        return rage
