@@ -102,5 +102,5 @@ class AnnotateTestCase(unittest.TestCase):
             self.assertEqual(modified, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, 'e1d2532', 'file-one.txt', 1, 'M')
-        check_one(project, 'e1d2532', 'file-one.txt', 3, '')
+        check_one(project, 'e1d2532', 'file-one.txt', 1, 'Y')
+        check_one(project, 'e1d2532', 'file-one.txt', 3, 'N')
