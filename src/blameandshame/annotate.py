@@ -139,5 +139,5 @@ def column_line_page(project: Project,
     Computes the percentile age of a given line for a particular version of a
     project.
     """
-    page = project.percentile_age_of_commit(commit, filename, line)
+    page = project.percentile_age_of_line(commit, filename, line)
     return page
