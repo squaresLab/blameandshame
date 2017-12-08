@@ -426,7 +426,8 @@ class Project(object):
         max_age = max(abs_ages)
 
         rage = 1 - ((line_age - min_age) / (max_age - min_age)
-        assert 0 <= rage <= 1
+        assert rage >= 0
+        assert rage <= 1
         return rage
 
     def percentile_age_of_line(self,
