@@ -115,8 +115,8 @@ class ProjectTestCase(unittest.TestCase):
             self.assertEqual(
                 project.commits_to_function(filename,
                                             function,
-                                            after,
-                                            before),
+                                            after_commit,
+                                            before_commit),
                 expected
             )
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
