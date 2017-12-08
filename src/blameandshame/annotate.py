@@ -119,3 +119,27 @@ def column_was_modified_by_commit(project: Project,
     """
     _, new_lines = project.lines_modified_by_commit(commit)
     return "Y" if line in [l for f, l in new_lines if f == filename] else "N"
+
+
+def column_line_rage(project: Project,
+                     commit: git.Commit,
+                     filename: str,
+                     line: int
+                     ) -> str:
+    """
+    Computes the relative age of a given line for a particular version of a
+    project, relative to all the lines in a given file.
+    """
+    raise NotImplementedError
+
+
+def column_line_page(project: Project,
+                     commit: git.Commit,
+                     filename: str,
+                     line: int
+                     ) -> str:
+    """
+    Computes the percentile age of a given line for a particular version of a
+    project.
+    """
+    raise NotImplementedError
