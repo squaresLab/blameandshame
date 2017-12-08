@@ -194,7 +194,6 @@ class Project(object):
             commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
 
-
     def commits_to_function(self,
                             filename: str,
                             function: str,
@@ -217,13 +216,12 @@ class Project(object):
 
         rev_range = '{}..{}'.format(after, before) if after else before.hexsha
 
-        function_name = '-L:{}:{}'.format(function, filename)
+        function_name = ':{}:{}'.format(function, filename)
         log = self.repo.git.log(rev_range, L=function_name)
         commit_hashes = [l.strip() for l in log.splitlines()
                          if l.startswith('commit ')]
-        commits = [self.repo.commit(l) for l in commit_hashes]
+        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
         return commits
-
 
     def commits_to_line(self,
                         filename: str,
