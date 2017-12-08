@@ -371,6 +371,26 @@ class Project(object):
         else:
             return 0
 
+    def _num_lines_in_file(self,
+                           filename: str,
+                           version: git.Commit = None
+                           ) -> int:
+        """
+        Determines the number of lines in a given file.
+
+        Args:
+            filename: the path to the file, relative to the root of the
+                project's repository.
+            version: the version of the file. If unspecified, the latest
+                version of the file will be used.
+
+        Returns:
+            A count of the number of the lines in the file.
+        """
+        raise NotImplementedError
+        blob = commit.tree.join(filename)
+        print(blob)
+
     def age_of_all_lines(self,
                          commit: git.Commit,
                          filename: str
@@ -382,7 +402,7 @@ class Project(object):
         See:
             age_of_line
         """
-        num_lines = TODO
+        num_lines = self._num_lines_in_file(filename, commit)
         ages = []
         for line in range(1, num_lines + 1):
             ages.append(age_of_line(commit, filename, line))
