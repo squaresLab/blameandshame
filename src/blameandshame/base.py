@@ -367,3 +367,13 @@ class Project(object):
         raise NotImplementedError
         assert 0 <= rage <= 1
         return rage
+
+    def percentile_age_of_line(self,
+                               commit: git.Commit,
+                               filename: str,
+                               lineno: int
+                               ) -> int:
+        """
+        TODO
+        """
+        raise NotImplementedError
