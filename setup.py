@@ -14,7 +14,8 @@ setup(
     license='mit',
     install_requires=[
         'GitPython',
-        'tabulate'
+        'tabulate',
+        'scipy'
     ],
     packages=find_packages('src'),
     package_dir={'': 'src'},
