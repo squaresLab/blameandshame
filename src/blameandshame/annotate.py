@@ -93,3 +93,16 @@ def column_num_days_since_modified(project: Project,
         delta = Project.time_between_commits(last, commit)
         return str(delta.days)
     return '-'
+
+
+def column_was_modified_by_commit(project: Project,
+                                  commit: git.Commit,
+                                  filename: str,
+                                  line: int
+                                  ) -> str:
+    """
+    Returns the string 'Y' if the line was modified by the commit, otherwise
+    returns 'N'
+    """
+    _, new_lines = project.lines_modified_by_commit(commit)
+    return "Y" if line in [l for f, l in new_lines if f == filename] else "N"

@@ -5,7 +5,8 @@ from blameandshame.annotate import  annotate, \
                                     column_last_commit, \
                                     column_num_file_commits_after_modified, \
                                     column_num_project_commits_after_modified, \
-                                    column_num_days_since_modified
+                                    column_num_days_since_modified, \
+                                    column_was_modified_by_commit
 
 
 class AnnotateTestCase(unittest.TestCase):
@@ -90,3 +91,16 @@ class AnnotateTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'e1d2532', 'file-one.txt', 1, '0')
         check_one(project, 'e1d2532', 'file-one.txt', 3, '1')
+
+    def test_column_was_modified_by_commit(self):
+        def check_one(project, commit, filename, line, expected):
+            commit = project.repo.commit(commit)
+            modified = column_was_modified_by_commit(project,
+                                                     commit,
+                                                     filename,
+                                                     line)
+            self.assertEqual(modified, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'e1d2532', 'file-one.txt', 1, 'Y')
+        check_one(project, 'e1d2532', 'file-one.txt', 3, 'N')
