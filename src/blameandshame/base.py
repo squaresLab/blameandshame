@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Dict, FrozenSet, List, Tuple, Optional, Set
+import scipy.stats
 import git
 import os
 import shutil
@@ -404,7 +405,7 @@ class Project(object):
         num_lines = self._num_lines_in_file(filename, commit)
         ages = []
         for line in range(1, num_lines + 1):
-            ages.append(age_of_line(commit, filename, line))
+            ages.append(self.age_of_line(commit, filename, line))
         return ages
 
     def relative_age_of_line(self,
@@ -436,6 +437,6 @@ class Project(object):
         abs_ages = self.age_of_all_lines(commit, filename)
         line_age = abs_ages[lineno - 1]
 
-        page = stats.percentileofscore(line_age, abs_ages, 'strict')
+        page = scipy.stats.percentileofscore(line_age, abs_ages, 'strict')
         assert 0 <= page <= 100
         return page
