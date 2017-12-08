@@ -101,8 +101,8 @@ def column_was_modified_by_commit(project: Project,
                                   line: int
                                   ) -> str:
     """
-    Returns the string 'M' if the line was modified by the commit, otherwise
-    returns the empty string
+    Returns the string 'Y' if the line was modified by the commit, otherwise
+    returns 'N'
     """
     _, new_lines = project.lines_modified_by_commit(commit)
-    return "M" if line in [l for f, l in new_lines if f == filename] else ""
+    return "Y" if line in [l for f, l in new_lines if f == filename] else "N"
