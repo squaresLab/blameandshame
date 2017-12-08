@@ -187,6 +187,15 @@ class ProjectTestCase(unittest.TestCase):
                                              project.repo.commit("ac5371d"))
         self.assertEqual(delta, timedelta(seconds=10628))
 
+    def test_num_lines_in_file(self):
+        def check_one(project, filename, version, expected):
+            version = project.repo.commit(version)
+            actual = project._num_lines_in_file(filename, version)
+            self.assertEqual(actual, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file-one.txt', '86c9401', 7)
+
 
 if __name__ == '__main__':
     unittest.main()
