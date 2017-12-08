@@ -382,7 +382,11 @@ class Project(object):
         See:
             age_of_line
         """
-        raise NotImplementedError
+        num_lines = TODO
+        ages = []
+        for line in range(num_lines + 1, 1):
+            ages.append(age_of_line(commit, filename, line))
+        return ages
 
     def relative_age_of_line(self,
                              commit: git.Commit,
