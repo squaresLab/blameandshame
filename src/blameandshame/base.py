@@ -425,7 +425,7 @@ class Project(object):
         min_age = min(abs_ages)
         max_age = max(abs_ages)
 
-        rage = 1 - ((line_age - min_age) / (max_age - min_age))
+        rage = ((line_age - min_age) / (max_age - min_age))
         assert 0 <= rage <= 1
         return rage
 
@@ -445,7 +445,6 @@ class Project(object):
         """
         abs_ages = self.age_of_all_lines(commit, filename)
         line_age = abs_ages[lineno - 1]
-
         page = scipy.stats.percentileofscore(abs_ages, line_age, 'strict')
         page /= 100
         assert 0 <= page <= 1
