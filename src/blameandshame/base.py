@@ -344,8 +344,8 @@ class Project(object):
                                        before=before)
         return frozenset(c.author for c in commits)
 
-    def time_between_commits(self,
-                             x: git.Commit,
+    @staticmethod
+    def time_between_commits(x: git.Commit,
                              y: git.Commit
                              ) -> timedelta:
         """
@@ -371,7 +371,7 @@ class Project(object):
         """
         last = self.last_commit_to_line(filename, lineno, before=commit)
         if last:
-            return self.time_between_commits(last, commit)
+            return Project.time_between_commits(last, commit)
         else:
             return timedelta(0)
 
