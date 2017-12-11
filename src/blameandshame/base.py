@@ -84,8 +84,6 @@ class Project(object):
         self.__commits_to_file_dict: Dict[Tuple[str, str],
                                           List[git.Commit]] = dict()
         self.__commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
-        self.__time_between_commits_dict: Dict[Tuple[str, str],
-                                               timedelta] = dict()
 
     def update(self):
         """
@@ -352,13 +350,9 @@ class Project(object):
         Given two commits, this function should return the length of time
         between them as a timedelta.
         """
-        try:
-            time = self.__time_between_commits_dict[(x.hexsha, y.hexsha)]
-        except KeyError:
-            time_x = x.authored_datetime
-            time_y = y.authored_datetime
-            time = abs(time_x - time_y)
-            self.__time_between_commits_dict[(x.hexsha, y.hexsha)] = time
+        time_x = x.authored_datetime
+        time_y = y.authored_datetime
+        time = abs(time_x - time_y)
         return time
 
     def age_of_line(self,
