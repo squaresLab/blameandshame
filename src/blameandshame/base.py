@@ -84,6 +84,8 @@ class Project(object):
         self.__commits_to_file_dict: Dict[Tuple[str, str],
                                           List[git.Commit]] = dict()
         self.__commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
+        self.__age_of_all_lines_dict: Dict[Tuple[git.Commit, str],
+                                           List[float]] = dict()
 
     def update(self):
         """
@@ -403,11 +405,15 @@ class Project(object):
         See:
             age_of_line
         """
-        num_lines = self._num_lines_in_file(filename, commit)
-        ages = []
-        for line in range(1, num_lines + 1):
-            ages.append(self.age_of_line(commit, filename, line)
-                        .total_seconds())
+        try:
+            ages = self.__age_of_all_lines_dict[(commit, filename)]
+        except KeyError:
+            num_lines = self._num_lines_in_file(filename, commit)
+            ages = []
+            for line in range(1, num_lines + 1):
+                ages.append(self.age_of_line(commit, filename, line)
+                            .total_seconds())
+            self.__age_of_all_lines_dict[(commit, filename)] = ages
         return ages
 
     def relative_age_of_line(self,
