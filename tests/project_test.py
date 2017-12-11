@@ -179,11 +179,11 @@ class ProjectTestCase(unittest.TestCase):
     def test_time_between_commits(self):
         project = Project.from_url('https://github.com/google/protobuf')
 
-        delta = project.time_between_commits(project.repo.commit("ac5371d"),
+        delta = Project.time_between_commits(project.repo.commit("ac5371d"),
                                              project.repo.commit("9935829"))
         self.assertEqual(delta, timedelta(seconds=10628))
 
-        delta = project.time_between_commits(project.repo.commit("9935829"),
+        delta = Project.time_between_commits(project.repo.commit("9935829"),
                                              project.repo.commit("ac5371d"))
         self.assertEqual(delta, timedelta(seconds=10628))
 
@@ -205,7 +205,7 @@ class ProjectTestCase(unittest.TestCase):
             perc = project.percentile_age_of_line(commit, filename, line)
             rounded=round(perc,2)
             self.assertEqual(rounded, expected)
-            
+
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project,"file-one.txt" ,"0d841d1", 3, 0.40)
         check_one(project,"file-one.txt" ,"0d841d1", 1, 0.40)
