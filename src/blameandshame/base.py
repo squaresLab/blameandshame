@@ -405,7 +405,8 @@ class Project(object):
         num_lines = self._num_lines_in_file(filename, commit)
         ages = []
         for line in range(1, num_lines + 1):
-            ages.append(self.age_of_line(commit, filename, line).total_seconds())
+            ages.append(self.age_of_line(commit, filename, line)
+                        .total_seconds())
         return ages
 
     def relative_age_of_line(self,
