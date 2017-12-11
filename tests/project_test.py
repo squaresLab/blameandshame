@@ -220,7 +220,7 @@ class ProjectTestCase(unittest.TestCase):
             rage = project.relative_age_of_line(commit, filename, line)
             rounded=round(rage,2)
             self.assertEqual(rounded, expected)
-            
+
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project,"file-one.txt" ,"0d841d1", 3, 1)
         check_one(project,"file-one.txt" ,"0d841d1", 1, 1)
