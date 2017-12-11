@@ -13,6 +13,7 @@ setup(
     url='https://github.com/squaresLab/blameandshame',
     license='mit',
     install_requires=[
+        'numpy',
         'GitPython',
         'tabulate',
         'scipy'
