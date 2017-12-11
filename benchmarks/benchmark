@@ -1,0 +1,136 @@
+#!/usr/bin/env python
+import numpy as np
+import argparse
+from typing import Callable, Dict
+from argparse import ArgumentParser
+from timeit import Timer
+from blameandshame.base import Project
+from blameandshame.annotate import annotate, \
+                                   column_last_commit, \
+                                   column_num_file_commits_after_modified, \
+                                   column_num_project_commits_after_modified, \
+                                   column_num_days_since_modified
+
+
+# Maintains a registry of named benchmarks
+__BENCHMARKS__: Dict[str, Callable[[], None]] = {}
+
+
+def benchmark(f: Callable[[], None]) -> Callable[[int, bool], None]:
+    """
+    Registers a given function as a benchmark.
+    """
+    fn = f.__name__
+    def run(repeats: int = 1, profile: bool = False):
+        if not profile:
+            print("Running benchmark: {}".format(fn))
+
+        t = Timer(f)
+        if profile:
+            print("PROFILE!")
+        else:
+            times = t.repeat(number=1, repeat=repeats)
+
+
+        if not profile:
+            print('')
+            print("  num. executions: {} executions".format(len(times)))
+            print("  mean time: {0:.2f} seconds".format(np.mean(times)))
+            print("  std. dev: {0:.2f} seconds".format(np.std(times)))
+            print("  median time: {0:.2f} seconds\n".format(np.median(times)))
+
+    __BENCHMARKS__[fn] = run
+    return run
+
+
+@benchmark
+def last_commit_to_line() -> None:
+    """
+    Computes the last commit that was made to a given line in a historical
+    version of the closure compiler.
+    """
+    project = Project.from_url('https://github.com/google/closure-compiler')
+    fix_sha = '1dfad50'
+    commit = project.repo.commit('{}~1'.format(fix_sha))
+    filename = 'src/com/google/javascript/jscomp/RemoveUnusedVars.java'
+    line = 372
+
+    column_last_commit(project, commit, filename, line)
+
+
+@benchmark
+def annotate_closure() -> None:
+    """
+    Annotates the source code for a single file from a historical version
+    of the closure compiler project with four additional columns.
+    """
+    project = Project.from_url('https://github.com/google/closure-compiler')
+    fix_sha = '1dfad50'
+    commit = project.repo.commit('{}~1'.format(fix_sha))
+    filename = 'src/com/google/javascript/jscomp/RemoveUnusedVars.java'
+
+    cols = [
+        column_last_commit,
+        column_num_file_commits_after_modified,
+        column_num_project_commits_after_modified,
+        column_num_days_since_modified
+    ]
+
+    annotate(project, commit, filename, cols)
+
+
+def list_benchmarks(args: argparse.Namespace) -> None:
+    """
+    Prints a list of all registered benchmarks to the stdout
+    """
+    for benchmark in __BENCHMARKS__.keys():
+        print('* {}'.format(benchmark))
+
+
+def run_benchmark(args: argparse.Namespace) -> None:
+    """
+    Uses arguments supplied by the command-line to execute a given benchmark
+    for an optionally specified number of repeats.
+    """
+    benchmark = __BENCHMARKS__[args.benchmark]
+    benchmark(repeats=args.repeats, profile=args.profile)
+
+
+def build_parser() -> ArgumentParser:
+    benchmark_names = list(__BENCHMARKS__.keys())
+
+    parser = \
+        ArgumentParser(description='Used to conduct performance benchmarks.')
+    subparsers = parser.add_subparsers()
+
+    # list benchmarks
+    parser_list = subparsers.add_parser('list')
+    parser_list.set_defaults(func=list_benchmarks)
+
+    # run benchmark
+    parser_run = subparsers.add_parser('run')
+    parser_run.add_argument('benchmark',
+                            choices=benchmark_names,
+                            help='name of the benchmark that should be executed.')
+    parser_run.add_argument('--repeats', '-n',
+                            type=int,
+                            default=1,
+                            help='number of times that the benchmark should be repeated.')
+    parser_run.add_argument('--profile',
+                            default=False,
+                            action='store_true',
+                            help='Used to specify whether or not detailed profiling information should be produced.')
+    parser_run.set_defaults(func=run_benchmark)
+
+    return parser
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+    if 'func' in args:
+        args.func(args)
+
+
+if __name__ == '__main__':
+    main()
