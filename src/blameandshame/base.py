@@ -424,44 +424,40 @@ class Project(object):
         f = self.repo.git.show('{}:{}'.format(version.hexsha, filename))
         return len(f.splitlines())
 
-
     def age_commits_project(self,
                             before: git.Commit = None,
-                            after: git.commit = None
+                            after: git.Commit = None
                             ) -> int:
         """
         Returns the age of the project in commits.
         """
         raise NotImplementedError
 
-
     def age_commits_file(self,
                          filename: str,
                          before: git.Commit = None,
-                         after: git.commit = None,
+                         after: git.Commit = None,
                          relative_to: Commits = None
                          ) -> int:
         """
         Returns the age of a file in commits. relative_to can be either
         Commits.TO_PROJECT or Commits.TO_FILE, throws an exception if
-        relative_to is None or Commits.TO_PROJECT
+        relative_to is None or Commits.TO_LINE
         """
         raise NotImplementedError
-
 
     def age_commits_line(self,
                          line: int,
                          filename: str,
                          before: git.Commit = None,
-                         after: git.commit = None
-                         relative_to: Comits = None
+                         after: git.Commit = None
+                         relative_to: Commits = None
                          ) -> int:
         """
         Returns the age of a line in commits. relative_to can be any of the
         Commits enum values
         """
         raise NotImplementedError
-
 
     def age_of_all_lines(self,
                          commit: git.Commit,
