@@ -8,6 +8,30 @@ from datetime import timedelta
 import warnings
 
 
+class Line(object):
+    """
+    Represents a single line in a given file.
+    """
+    def __init__(self, filename: str, num: int):
+        assert num > 0
+        self.__filename = filename
+        self.__num = num
+
+    @property
+    def filename(self) -> str:
+        """
+        The name of the file to which this line belongs.
+        """
+        return self.__filename
+
+    @property
+    def num(self) -> int:
+        """
+        The one-indexed number of the line.
+        """
+        return self.__num
+
+
 class Change(Enum):
     """
     Enum of the possible types of git changes. These values can be used as
