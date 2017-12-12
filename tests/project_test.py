@@ -193,48 +193,6 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'file-one.txt', '4d6c7f4', 3)
         check_one(project, 'file.txt', '422cab3', 1)
 
-    def test_percentile_age_of_line(self):
-        def check_one(project, filename, version, line, expected, age_type):
-            commit = project.repo.commit(version)
-            perc = project.percentile_age_of_line(commit, filename, line, age_type)
-            rounded=round(perc,2)
-            self.assertEqual(rounded, expected)
-
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project,"file-one.txt" ,"0d841d1", 3, 0.40, Age.TIME)
-        check_one(project,"file-one.txt" ,"0d841d1", 1, 0.40, Age.TIME)
-        check_one(project,"file-one.txt" ,"0d841d1", 5, 0, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 1, 0.28999999999999998, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 5, 0.42999999999999999, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 6, 0, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 1, 0.85999999999999999, Age.COMMITS)
-        check_one(project,"file-one.txt" ,"86c9401", 6, 0, Age.COMMITS)
-
-    def test_relative_age_of_line(self):
-        def check_one(project,filename,version,line,expected,secOrCom):
-            commit = project.repo.commit(version)
-            rage = project.relative_age_of_line(commit, filename, line,secOrCom)
-            rounded=round(rage,2)
-            self.assertEqual(rounded, expected)
-
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project,"file-one.txt" ,"0d841d1", 3, 1, Age.TIME)
-        check_one(project,"file-one.txt" ,"0d841d1", 1, 1, Age.TIME)
-        check_one(project,"file-one.txt" ,"0d841d1", 5, 0, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 7, 0, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 2, 1, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 5, 0.88, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 1, 0.73, Age.TIME)
-        check_one(project,"file-one.txt" ,"86c9401", 5, 0, Age.COMMITS)
-        check_one(project,"file-one.txt" ,"86c9401", 1, 1, Age.COMMITS)
-
-    def test_age_of_line_com(self):
-        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        commit = project.repo.commit("a351329")
-        rage = project.age_of_line_com(commit, "testfile.c", 12)
-        rounded=round(rage,2)
-        self.assertEqual(rounded, 3)
-
 
 if __name__ == '__main__':
     unittest.main()
