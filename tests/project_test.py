@@ -240,7 +240,7 @@ class ProjectTestCase(unittest.TestCase):
         rage = project.age_of_line_com(commit, "testfile.c", 12)
         rounded=round(rage,2)
         self.assertEqual(rounded, 3)
-        
+
         
 if __name__ == '__main__':
     unittest.main()
