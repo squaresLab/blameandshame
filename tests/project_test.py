@@ -200,35 +200,35 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'file.txt', '422cab3', 1)
 
     def test_percentile_age_of_line(self):
-        def check_one(project,filename,version,line,expected):
+        def check_one(project,filename,version,line,expected,secOrCom):
             commit = project.repo.commit(version)
-            perc = project.percentile_age_of_line(commit, filename, line)
+            perc = project.percentile_age_of_line(commit, filename, line, secOrCom)
             rounded=round(perc,2)
             self.assertEqual(rounded, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project,"file-one.txt" ,"0d841d1", 3, 0.40)
-        check_one(project,"file-one.txt" ,"0d841d1", 1, 0.40)
-        check_one(project,"file-one.txt" ,"0d841d1", 5, 0)
-        check_one(project,"file-one.txt" ,"86c9401", 1, 0.28999999999999998)
-        check_one(project,"file-one.txt" ,"86c9401", 5, 0.42999999999999999)
-        check_one(project,"file-one.txt" ,"86c9401", 6, 0)
+        check_one(project,"file-one.txt" ,"0d841d1", 3, 0.40, 0)
+        check_one(project,"file-one.txt" ,"0d841d1", 1, 0.40, 0)
+        check_one(project,"file-one.txt" ,"0d841d1", 5, 0, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 1, 0.28999999999999998, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 5, 0.42999999999999999, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 6, 0, 0)
 
     def test_relative_age_of_line(self):
-        def check_one(project,filename,version,line,expected):
+        def check_one(project,filename,version,line,expected,secOrCom):
             commit = project.repo.commit(version)
-            rage = project.relative_age_of_line(commit, filename, line)
+            rage = project.relative_age_of_line(commit, filename, line,secOrCom)
             rounded=round(rage,2)
             self.assertEqual(rounded, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project,"file-one.txt" ,"0d841d1", 3, 1)
-        check_one(project,"file-one.txt" ,"0d841d1", 1, 1)
-        check_one(project,"file-one.txt" ,"0d841d1", 5, 0)
-        check_one(project,"file-one.txt" ,"86c9401", 7, 0)
-        check_one(project,"file-one.txt" ,"86c9401", 2, 1)
-        check_one(project,"file-one.txt" ,"86c9401", 5, 0.88)
-        check_one(project,"file-one.txt" ,"86c9401", 1, 0.73)
+        check_one(project,"file-one.txt" ,"0d841d1", 3, 1, 0)
+        check_one(project,"file-one.txt" ,"0d841d1", 1, 1, 0)
+        check_one(project,"file-one.txt" ,"0d841d1", 5, 0, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 7, 0, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 2, 1, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 5, 0.88, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 1, 0.73, 0)
         
 if __name__ == '__main__':
     unittest.main()

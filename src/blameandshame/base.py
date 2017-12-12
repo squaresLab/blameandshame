@@ -20,6 +20,11 @@ class Change(Enum):
     RENAMED = 'R'
 
 
+class Age_Type(object):
+    Seconds_option = 0
+    Commits_option = 1
+
+
 class Project(object):
 
     # Path to the directory used to hold downloaded Git repositories.
@@ -84,8 +89,10 @@ class Project(object):
         self.__commits_to_file_dict: Dict[Tuple[str, str],
                                           List[git.Commit]] = dict()
         self.__commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
-        self.__age_of_all_lines_dict: Dict[Tuple[git.Commit, str],
-                                           List[float]] = dict()
+        self.__age_of_all_lines_dict_sec: Dict[Tuple[git.Commit, str],
+                                               List[float]] = dict()
+        self.__age_of_all_lines_dict_com: Dict[Tuple[git.Commit, str],
+                                               List[float]] = dict()
 
     def update(self):
         """
@@ -357,11 +364,11 @@ class Project(object):
         time = abs(time_x - time_y)
         return time
 
-    def age_of_line(self,
-                    commit: git.Commit,
-                    filename: str,
-                    lineno: int
-                    ) -> timedelta:
+    def age_of_line_sec(self,
+                        commit: git.Commit,
+                        filename: str,
+                        lineno: int,
+                        ) -> timedelta:
         """
         Determines the age of a given line of code in a particular version of
         a file within this project.
@@ -374,6 +381,24 @@ class Project(object):
             return Project.time_between_commits(last, commit)
         else:
             return timedelta(0)
+
+    def age_of_line_com(self,
+                        commit: git.Commit,
+                        filename: str,
+                        lineno: int,
+                        ) -> int:
+        """
+        Determines the age of a given line of code in a particular version of
+        a file within this project.
+
+        Returns:
+            Number of commits since the line was last modified.
+        """
+        last = self.last_commit_to_line(filename, lineno, before=commit)
+        if last:
+            return len(self.commits_to_line(filename, lineno, before=commit))
+        else:
+            return 0
 
     def _num_lines_in_file(self,
                            filename: str,
@@ -396,7 +421,8 @@ class Project(object):
 
     def age_of_all_lines(self,
                          commit: git.Commit,
-                         filename: str
+                         filename: str,
+                         secondsOrCommits: int
                          ) -> List[float]:
         """
         Determines the age of all lines in a particular version of a file
@@ -405,21 +431,36 @@ class Project(object):
         See:
             age_of_line
         """
+        ages_sec = []
+        ages_com = []
         try:
-            ages = self.__age_of_all_lines_dict[(commit, filename)]
+            ages_sec = self.__age_of_all_lines_dict_sec[(commit, filename)]
+            ages_com = self.__age_of_all_lines_dict_com[(commit, filename)]
+
         except KeyError:
             num_lines = self._num_lines_in_file(filename, commit)
-            ages = []
+
             for line in range(1, num_lines + 1):
-                ages.append(self.age_of_line(commit, filename, line)
-                            .total_seconds())
-            self.__age_of_all_lines_dict[(commit, filename)] = ages
-        return ages
+                ages_sec.append(self.age_of_line_sec(commit,
+                                                     filename,
+                                                     line
+                                                     ).total_seconds())
+                ages_com.append(self.age_of_line_com(commit,
+                                                     filename,
+                                                     line
+                                                     ))
+            self.__age_of_all_lines_dict_sec[(commit, filename)] = ages_sec
+            self.__age_of_all_lines_dict_com[(commit, filename)] = ages_com
+        if secondsOrCommits == Age_Type.Seconds_option:
+            return ages_sec
+        elif secondsOrCommits == Age_Type.Commits_option:
+            return ages_com
 
     def relative_age_of_line(self,
                              commit: git.Commit,
                              filename: str,
-                             lineno: int
+                             lineno: int,
+                             secondsOrCommits: int
                              ) -> float:
         """
         Computes the relative age of a given line, where absolute age is
@@ -427,8 +468,7 @@ class Project(object):
         oldest line in that file is assigned an age of one, and the newest line
         is assigned an age of zero.
         """
-
-        abs_ages = self.age_of_all_lines(commit, filename)
+        abs_ages = self.age_of_all_lines(commit, filename, secondsOrCommits)
         line_age = abs_ages[lineno - 1]
         min_age = min(abs_ages)
         max_age = max(abs_ages)
@@ -440,7 +480,8 @@ class Project(object):
     def percentile_age_of_line(self,
                                commit: git.Commit,
                                filename: str,
-                               lineno: int
+                               lineno: int,
+                               secondsOrCommits: int
                                ) -> float:
         """
         Computes the percentile age of a given line.
@@ -451,7 +492,7 @@ class Project(object):
         Returns:
             Normalized percentile age between [0, 1].
         """
-        abs_ages = self.age_of_all_lines(commit, filename)
+        abs_ages = self.age_of_all_lines(commit, filename, secondsOrCommits)
         line_age = abs_ages[lineno - 1]
         page = scipy.stats.percentileofscore(abs_ages, line_age, 'strict')
         page /= 100
