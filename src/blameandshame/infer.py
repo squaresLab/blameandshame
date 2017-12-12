@@ -1,6 +1,7 @@
 import git
 from typing import Callable, List
 
+
 def infer(evidence: git.Commit,
           f: Callable[int, float]) -> Callable[float, float]:
     """
@@ -16,3 +17,14 @@ def infer(evidence: git.Commit,
 
     # compute P(modified | G=x)
     p_modified_given_factor = None
+
+
+def divergence(observed: Localization, expected: Localization) -> float:
+    """
+    Measures the Kullback-Leibler divergence between an observed probability
+    distribution, produced by a candidate model, and an expected probability,
+    used to represent the ideal probability distribution that could be produced
+    by a model, where each line that was modified is assigned a probability
+    of 1.
+    """
+    raise NotImplementedError
