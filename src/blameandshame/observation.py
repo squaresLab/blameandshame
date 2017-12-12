@@ -52,9 +52,9 @@ class Observation(object):
         they do not exist in the buggy version of the project, but because they
         contain no information relevant to fault localization. We could include
         files that were deleted by simply considering that all of their lines
-        were "modified", but those cases are likely to correspond to refactoring
-        rather than bug-fixing, and so we should avoid those to prevent skewing
-        the model.
+        were "modified", but those cases are likely to correspond to
+        refactoring rather than bug-fixing, and so we should avoid those to
+        prevent skewing the model.
         """
         raise NotImplementedError
 
