@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 from typing import Dict, FrozenSet, List, Tuple, Optional, Set
 import scipy.stats
 import git
@@ -20,9 +20,9 @@ class Change(Enum):
     RENAMED = 'R'
 
 
-class Age_Type(object):
-    Seconds_option = 0
-    Commits_option = 1
+class Age(Enum):
+    TIME = auto()
+    COMMITS = auto()
 
 
 class Project(object):
@@ -426,7 +426,7 @@ class Project(object):
     def age_of_all_lines(self,
                          commit: git.Commit,
                          filename: str,
-                         time_or_commits: int
+                         age_type: Age
                          ) -> List[float]:
         """
         Determines the age of all lines in a particular version of a file
@@ -455,16 +455,16 @@ class Project(object):
                                                      ))
             self.__age_of_all_lines_dict_sec[(commit, filename)] = ages_sec
             self.__age_of_all_lines_dict_com[(commit, filename)] = ages_com
-        if time_or_commits == Age_Type.Seconds_option:
+        if age_type == Age.TIME:
             return ages_sec
-        elif time_or_commits == Age_Type.Commits_option:
+        elif age_type == Age.COMMITS:
             return ages_com
 
     def relative_age_of_line(self,
                              commit: git.Commit,
                              filename: str,
                              lineno: int,
-                             time_or_commits: int
+                             age_type: Age
                              ) -> float:
         """
         Computes the relative age of a given line, where absolute age is
@@ -472,7 +472,7 @@ class Project(object):
         oldest line in that file is assigned an age of one, and the newest line
         is assigned an age of zero.
         """
-        abs_ages = self.age_of_all_lines(commit, filename, time_or_commits)
+        abs_ages = self.age_of_all_lines(commit, filename, age_type)
         line_age = abs_ages[lineno - 1]
         min_age = min(abs_ages)
         max_age = max(abs_ages)
@@ -485,7 +485,7 @@ class Project(object):
                                commit: git.Commit,
                                filename: str,
                                lineno: int,
-                               time_or_commits: int
+                               age_type: Age
                                ) -> float:
         """
         Computes the percentile age of a given line.
@@ -496,7 +496,7 @@ class Project(object):
         Returns:
             Normalized percentile age between [0, 1].
         """
-        abs_ages = self.age_of_all_lines(commit, filename, time_or_commits)
+        abs_ages = self.age_of_all_lines(commit, filename, age_type)
         line_age = abs_ages[lineno - 1]
         page = scipy.stats.percentileofscore(abs_ages, line_age, 'strict')
         page /= 100
