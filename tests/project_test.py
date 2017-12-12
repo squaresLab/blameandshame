@@ -85,12 +85,6 @@ class ProjectTestCase(unittest.TestCase):
                                         before = before_commit),
                 expected
             )
-
-        project = Project.from_url('https://github.com/php/php-src')
-        check_one(project, 'ext/ext_skel.php',
-                  ['216d711', 'f35f459', 'b079cc2', '941dc72'],
-                  before = '216d711')
-
         project = Project.from_url('https://github.com/google/protobuf')
         check_one(project, 'php/composer.json',
                   ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'],
