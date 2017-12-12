@@ -195,8 +195,8 @@ class ProjectTestCase(unittest.TestCase):
 
     def test_age_commits_project(self):
         def check_one(project, expected, before = None, after = None):
-            before = project.repo.commit(before)
-            after = project.repo.commit(after)
+            before = project.repo.commit(before) if before else None
+            after = project.repo.commit(after) if after else None
             age = project.age_commits_project(before=before, after=after)
             self.assertEqual(age, expected)
 
@@ -205,6 +205,33 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 2, before = '922e13d', after = '964adc5')
         check_one(project, 0, before = '2282c66', after = '2282c66')
         check_one(project, 2, before = '422cab3')
+
+    def test_age_commits_file(self):
+        def check_one(project, filename, relative_to, expected,
+                      before = None, after = None):
+            before = project.repo.commit(before) if before else None
+            after = project.repo.commit(after) if after else None
+            age = project.age_commits_file(filename=filename,
+                                           relative_to=relative_to,
+                                           before=before, after=after)
+            self.assertEqual(age, expected)
+
+        project = Project.from_url('https://github.com/google/protobuf')
+        check_one(project, 'php/composer.json', Commits.TO_FILE, 4, before = '21b0e55')
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+
+    def test_age_commits_line(self):
+        def check_one(project, line, filename, relative_to, expected,
+                      before = None, after = None):
+            before = project.repo.commit(before) if before else None
+            after = project.repo.commit(after) if after else None
+            age = project.age_commits_line(line=line,
+                                           filename=filename,
+                                           relative_to=relative_to,
+                                           before=before, after=after)
+            self.assertEqual(age, expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
 
 
 if __name__ == '__main__':
