@@ -193,6 +193,19 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'file-one.txt', '4d6c7f4', 3)
         check_one(project, 'file.txt', '422cab3', 1)
 
+    def test_age_commits_project(self):
+        def check_one(project, expected, before = None, after = None):
+            before = project.repo.commit(before)
+            after = project.repo.commit(after)
+            age = project.age_commits_project(before=before, after=after)
+            self.assertEqual(age, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 3, before = 'e1d2532', after = '2282c66')
+        check_one(project, 2, before = '922e13d', after = '964adc5')
+        check_one(project, 0, before = '2282c66', after = '2282c66')
+        check_one(project, 2, before = '422cab3')
+
 
 if __name__ == '__main__':
     unittest.main()
