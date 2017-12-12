@@ -118,4 +118,5 @@ def column_was_modified_by_commit(project: Project,
     returns 'N'
     """
     _, new_lines = project.lines_modified_by_commit(commit)
-    return "true" if line in [l for f, l in new_lines if f == filename] else "false"
+    return "true" if line in [l for f, l in new_lines if f == filename] \
+        else "false"
