@@ -552,3 +552,4 @@ class Project(object):
         page /= 100
         assert 0 <= page <= 1
         return page
+
