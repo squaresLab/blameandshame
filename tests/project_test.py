@@ -241,6 +241,6 @@ class ProjectTestCase(unittest.TestCase):
         rounded=round(rage,2)
         self.assertEqual(rounded, 3)
 
-        
+
 if __name__ == '__main__':
     unittest.main()
