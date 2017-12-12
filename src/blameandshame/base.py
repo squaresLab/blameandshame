@@ -450,7 +450,7 @@ class Project(object):
                          line: int,
                          filename: str,
                          before: git.Commit = None,
-                         after: git.Commit = None
+                         after: git.Commit = None,
                          relative_to: Commits = None
                          ) -> int:
         """
