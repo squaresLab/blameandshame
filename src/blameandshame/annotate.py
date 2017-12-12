@@ -114,7 +114,8 @@ def column_was_modified_by_commit(project: Project,
     returns 'N'
     """
     _, new_lines = project.lines_modified_by_commit(commit)
-    return "Y" if line in [l for f, l in new_lines if f == filename] else "N"
+    return "true" if line in [l for f, l in new_lines if f == filename] \
+        else "false"
 
 
 def column_line_rage(project: Project,
@@ -141,3 +142,14 @@ def column_line_page(project: Project,
     """
     page = str(project.percentile_age_of_line(commit, filename, line))
     return page
+
+
+def column_project_name(project: Project,
+                        commit: git.Commit,
+                        filename: str,
+                        line: int
+                        ) -> str:
+    """
+    Returns the name of the project.
+    """
+    return project.name
