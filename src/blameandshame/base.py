@@ -431,9 +431,8 @@ class Project(object):
         """
         Returns the age of the project in commits.
         """
+        return len(self.commits_to_repo(after, before))
 
-        return len(self.commits_to_repo(after, before)) 
-        
     def age_commits_file(self,
                          filename: str,
                          relative_to: Commits,
@@ -445,13 +444,13 @@ class Project(object):
         Commits.TO_PROJECT or Commits.TO_FILE, throws an exception if
         relative_to is None or Commits.TO_LINE
         """
-        if relative_to is None or relative_to == Commits.TO_LINE:
-            raise ValueError
         if relative_to == Commits.TO_FILE:
-            return len(self.commits_to_file(filename, after=after, before=before))
+            return len(self.commits_to_file(filename, after=after,
+                                            before=before))
         if relative_to == Commits.TO_REPO:
             return len(self.commits_to_repo(after, before))
 
+        raise ValueError
 
     def age_commits_line(self,
                          line: int,
@@ -464,11 +463,13 @@ class Project(object):
         Returns the age of a line in commits. relative_to can be any of the
         Commits enum values
         """
-        if relative_to is None:
-            raise ValueError
         if relative_to == Commits.TO_LINE:
-            return len(self.commits_to_line(filename, lineno, after=after, before=before))
+            return len(self.commits_to_line(filename, lineno,
+                                            after=after, before=before))
         if relative_to == Commits.TO_FILE:
-            return len(self.commits_to_file(filename, after=after, before=before))
+            return len(self.commits_to_file(filename, after=after,
+                                            before=before))
         if relative_to == Commits.TO_REPO:
             return len(self.commits_to_repo(after, before))
+
+        raise ValueError
