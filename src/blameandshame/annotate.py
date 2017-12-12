@@ -101,11 +101,7 @@ def column_num_days_since_modified(project: Project,
     Reports the number of days that have passed, relative to a given commit,
     since a given line was last changed.
     """
-    last = project.last_commit_to_line(filename, line, before=commit)
-    if last:
-        delta = Project.time_between_commits(last, commit)
-        return str(delta.days)
-    return '-'
+    return str(project.age_of_line_td(commit, filename, line).days)
 
 
 def column_was_modified_by_commit(project: Project,
@@ -118,4 +114,42 @@ def column_was_modified_by_commit(project: Project,
     returns 'N'
     """
     _, new_lines = project.lines_modified_by_commit(commit)
-    return "Y" if line in [l for f, l in new_lines if f == filename] else "N"
+    return "true" if line in [l for f, l in new_lines if f == filename] \
+        else "false"
+
+
+def column_line_rage(project: Project,
+                     commit: git.Commit,
+                     filename: str,
+                     line: int
+                     ) -> str:
+    """
+    Computes the relative age of a given line for a particular version of a
+    project, relative to all the lines in a given file.
+    """
+    rage = str(project.relative_age_of_line(commit, filename, line))
+    return rage
+
+
+def column_line_page(project: Project,
+                     commit: git.Commit,
+                     filename: str,
+                     line: int
+                     ) -> str:
+    """
+    Computes the percentile age of a given line for a particular version of a
+    project.
+    """
+    page = str(project.percentile_age_of_line(commit, filename, line))
+    return page
+
+
+def column_project_name(project: Project,
+                        commit: git.Commit,
+                        filename: str,
+                        line: int
+                        ) -> str:
+    """
+    Returns the name of the project.
+    """
+    return project.name
