@@ -6,6 +6,13 @@ class Observation(object):
     """
     Used to represent historical bug fixes.
     """
+    @staticmethod
+    def build(repo_url: str,
+              before_sha: str,
+              after_sha: str) -> 'Observation':
+        raise NotImplementedError
+
+
     def __init__(self,
                  project: Project,
                  before: git.Commit,
