@@ -12,7 +12,6 @@ class Observation(object):
               after_sha: str) -> 'Observation':
         raise NotImplementedError
 
-
     def __init__(self,
                  project: Project,
                  before: git.Commit,
@@ -21,14 +20,12 @@ class Observation(object):
         self.__before = before
         self.__after = after
 
-
     @property
     def project(self) -> Project:
         """
         The project that this bug fix occurred in.
         """
         return self.__project
-
 
     @property
     def before(self) -> git.Commit:
@@ -37,14 +34,12 @@ class Observation(object):
         """
         return self.__before
 
-
     @property
     def after(self) -> git.Commit:
         """
         The state of the project immediately after the bug-fix.
         """
         return self.__after
-
 
     @property
     def modified_files(self) -> FrozenSet[str]:
@@ -61,7 +56,6 @@ class Observation(object):
         the model.
         """
         raise NotImplementedError
-
 
     @property
     def modified_lines(self) -> FrozenSet[Line]:
