@@ -97,6 +97,13 @@ class Project(object):
         """
         return self.__repo
 
+    @property
+    def name(self) -> str:
+        """
+        The name of the project, as the basename for the working directory.
+        """
+        return os.path.basename(self.repo.working_dir)
+
     def files_in_commit(self,
                         fix_commit: git.Commit,
                         filter_by: Set[Change] = {f for f in Change}

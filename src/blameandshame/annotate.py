@@ -120,3 +120,14 @@ def column_was_modified_by_commit(project: Project,
     _, new_lines = project.lines_modified_by_commit(commit)
     return "true" if line in [l for f, l in new_lines if f == filename] \
         else "false"
+
+
+def column_project_name(project: Project,
+                        commit: git.Commit,
+                        filename: str,
+                        line: int
+                        ) -> str:
+    """
+    Returns the name of the project.
+    """
+    return project.name
