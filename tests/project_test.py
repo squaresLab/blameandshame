@@ -213,6 +213,8 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project,"file-one.txt" ,"86c9401", 1, 0.28999999999999998, 0)
         check_one(project,"file-one.txt" ,"86c9401", 5, 0.42999999999999999, 0)
         check_one(project,"file-one.txt" ,"86c9401", 6, 0, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 1, 0.85999999999999999, 1)
+        check_one(project,"file-one.txt" ,"86c9401", 6, 0, 1)
 
     def test_relative_age_of_line(self):
         def check_one(project,filename,version,line,expected,secOrCom):
@@ -229,6 +231,16 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project,"file-one.txt" ,"86c9401", 2, 1, 0)
         check_one(project,"file-one.txt" ,"86c9401", 5, 0.88, 0)
         check_one(project,"file-one.txt" ,"86c9401", 1, 0.73, 0)
+        check_one(project,"file-one.txt" ,"86c9401", 5, 0, 1)
+        check_one(project,"file-one.txt" ,"86c9401", 1, 1, 1)
+     
+    def test_age_of_line_com(self):
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        commit = project.repo.commit("a351329")
+        rage = project.age_of_line_com(commit, "testfile.c", 12)
+        rounded=round(rage,2)
+        self.assertEqual(rounded, 3)
+        
         
 if __name__ == '__main__':
     unittest.main()

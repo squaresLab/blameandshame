@@ -101,7 +101,7 @@ def column_num_days_since_modified(project: Project,
     Reports the number of days that have passed, relative to a given commit,
     since a given line was last changed.
     """
-    return str(project.age_of_line_sec(commit, filename, line).days)
+    return str(project.age_of_line_td(commit, filename, line).days)
 
 
 def column_was_modified_by_commit(project: Project,
