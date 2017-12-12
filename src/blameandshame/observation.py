@@ -61,3 +61,12 @@ class Observation(object):
         the model.
         """
         raise NotImplementedError
+
+
+    @property
+    def modified_lines(self) -> FrozenSet[Line]:
+        """
+        The set of lines in the buggy version of the project that were modified
+        as part of the bug fix.
+        """
+        raise NotImplementedError
