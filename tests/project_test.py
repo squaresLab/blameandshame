@@ -107,6 +107,24 @@ class ProjectTestCase(unittest.TestCase):
                   after = '964adc5', before = '474ea04')
 
 
+    def test_commits_to_function(self):
+        def check_one(project, filename, function, expected, after=None, before=None):
+            expected = [project.repo.commit(sha) for sha in expected]
+            after_commit = project.repo.commit(after) if after else None
+            before_commit = project.repo.commit(before) if before else None
+            self.assertEqual(
+                project.commits_to_function(filename,
+                                            function,
+                                            after_commit,
+                                            before_commit),
+                expected
+            )
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'testfile.c', 'testfun', ['7f167cb', '33de835'], '9ca70f7', '7f167cb')
+        check_one(project, 'testfile.c', 'testfun', ['a351329', '7f167cb', '33de835'])
+        check_one(project, 'testfile.c', 'testfun2', ['ec9002e', 'ec922df'])
+
+
     def test_commits_to_line(self):
         def check_one(project, filename, lineno, expected):
             expected = [project.repo.commit(sha) for sha in expected]

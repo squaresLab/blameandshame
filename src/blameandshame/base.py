@@ -196,7 +196,7 @@ class Project(object):
 
     def commits_to_function(self,
                             filename: str,
-                            regex: str,
+                            function: str,
                             after: Optional[git.Commit] = None,
                             before: Optional[git.Commit] = None,
                             ) -> List[git.Commit]:
@@ -211,7 +211,17 @@ class Project(object):
           before: An optional parameter used to restrict the search to all
             commits that have occurred up to and including a given commit.
         """
-        raise NotImplementedError
+        if not before:
+            before = self.repo.head.reference.commit
+
+        rev_range = '{}..{}'.format(after, before) if after else before.hexsha
+
+        function_name = ':{}:{}'.format(function, filename)
+        log = self.repo.git.log(rev_range, L=function_name)
+        commit_hashes = [l.strip() for l in log.splitlines()
+                         if l.startswith('commit ')]
+        commits = [self.repo.commit(l[7:]) for l in commit_hashes]
+        return commits
 
     def commits_to_line(self,
                         filename: str,
