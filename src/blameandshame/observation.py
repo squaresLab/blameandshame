@@ -66,6 +66,10 @@ class Observation(object):
     def modified_lines(self) -> FrozenSet[Line]:
         """
         The set of lines in the buggy version of the project that were modified
-        as part of the bug fix.
+        as part of the bug fix. Note that lines belonging to files that were
+        deleted by the bug fix are not considered to have been modified.
         """
-        raise NotImplementedError
+        files = list(self.modified_files)
+        return self.project.lines_modified_between_commits(before=self.before,
+                                                           after=self.after,
+                                                           in_files=files)
