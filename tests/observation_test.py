@@ -16,9 +16,9 @@ class ObservationTestCase(unittest.TestCase):
 
         test_one("https://github.com/php/php-src", "fe4c789",
                  ["main/php_variables.c"])
+        # should not include added file: 'ext/gmp/tests/gmp_kronecker.phpt'
         test_one("https://github.com/php/php-src", "fc80114",
-                 ["ext/gmp/tests/gmp_kronecker.phpt",
-                  "ext/gmp/php_gmp.h",
+                 ["ext/gmp/php_gmp.h",
                   "ext/gmp/gmp.c",
                   "UPGRADING",
                   "NEWS"])
