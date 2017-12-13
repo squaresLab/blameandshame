@@ -238,7 +238,10 @@ class ProjectTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 5, 'testfile.c', Commits.TO_LINE, 2,
                   before = 'ec922df', after = '71622b3')
-
+        check_one(project, 5, 'testfile.c', Commits.TO_FILE, 3,
+                  before = 'ec922df', after = '71622b3')
+        check_one(project, 5, 'testfile.c', Commits.TO_PROJECT, 4,
+                  before = 'ec922df', after = '71622b3')
 
 if __name__ == '__main__':
     unittest.main()
