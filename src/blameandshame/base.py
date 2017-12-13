@@ -1,6 +1,5 @@
 from enum import Enum, auto
 from typing import Dict, FrozenSet, List, Tuple, Optional, Set
-import scipy.stats
 import git
 import os
 import shutil
