@@ -37,6 +37,11 @@ class Line(object):
     def __str__(self) -> str:
         return "{}:{}".format(self.__filename, self.__num)
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, Line) \
+               and other.filename == self.filename \
+               and other.num == self.num
+
 
 class Change(Enum):
     """
