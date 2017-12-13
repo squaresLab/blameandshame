@@ -16,7 +16,7 @@ class Observation(object):
     def __init__(self,
                  project: Project,
                  before: git.Commit,
-                 after: git.Commit):
+                 after: git.Commit) -> None:
         self.__project = project
         self.__before = before
         self.__after = after
