@@ -11,7 +11,10 @@ class Observation(object):
     def build(repo_url: str,
               before_sha: str,
               after_sha: str) -> 'Observation':
-        raise NotImplementedError
+        project = Project.from_url(repo_url)
+        before = project.repo.commit(before_sha)
+        after = project.repo.commit(after_sha)
+        return Observation(project, before, after)
 
     def __init__(self,
                  project: Project,
@@ -56,7 +59,8 @@ class Observation(object):
         refactoring rather than bug-fixing, and so we should avoid those to
         prevent skewing the model.
         """
-        raise NotImplementedError
+        diff = self.before.diff(self.after)
+        return frozenset(d.a_path for d in diff.iter_change_type('M'))
 
     @property
     def modified_lines(self) -> FrozenSet[Line]:
