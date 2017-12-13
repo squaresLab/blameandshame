@@ -453,8 +453,8 @@ class Project(object):
         raise ValueError
 
     def age_commits_line(self,
-                         line: int,
                          filename: str,
+                         lineno: int,
                          relative_to: Commits,
                          before: Optional[git.Commit] = None,
                          after: Optional[git.Commit] = None
@@ -465,7 +465,7 @@ class Project(object):
         """
         if relative_to == Commits.TO_LINE:
             return len(self.commits_to_line(filename,
-                                            line,
+                                            lineno,
                                             after=after,
                                             before=before))
         if relative_to == Commits.TO_FILE:

@@ -226,16 +226,18 @@ class ProjectTestCase(unittest.TestCase):
                           lambda: project.age_commits_file("", relative_to=Commits.TO_LINE))
 
     def test_age_commits_line(self):
-        def check_one(project, line, filename, relative_to, expected,
+        def check_one(project, lineno, filename, relative_to, expected,
                       before = None, after = None):
             before = project.repo.commit(before) if before else None
             after = project.repo.commit(after) if after else None
-            age = project.age_commits_line(line=line,
-                                           filename=filename,
+            age = project.age_commits_line(filename,
+                                           lineno,
                                            relative_to=relative_to,
                                            before=before, after=after)
             self.assertEqual(age, expected)
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 5, 'testfile.c', Commits.TO_LINE, 2,
+                  before = 'ec922df', after = '71622b3')
 
 
 if __name__ == '__main__':
