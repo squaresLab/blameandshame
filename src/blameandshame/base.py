@@ -350,7 +350,6 @@ class Project(object):
                     _, old, __, *_ = line.split()
                     line_num_s, *_ = old.split(',')
                     line_num = int(line_num_s[1:])
-                    print(line_num)
                 elif line.startswith('- '):         # removed line
                     modified.add(Line(fn, line_num))
                     line_num += 1
