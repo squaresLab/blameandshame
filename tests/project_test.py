@@ -249,6 +249,8 @@ class ProjectTestCase(unittest.TestCase):
                   before = 'ec922df', after = '71622b3')
         check_one(project, 5, 'testfile.c', Commits.TO_PROJECT, 4,
                   before = 'ec922df', after = '71622b3')
+        self.assertRaises(ValueError,
+                          lambda: project.age_commits_line(project, 0, '', None, 0))
 
 if __name__ == '__main__':
     unittest.main()
