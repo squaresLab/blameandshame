@@ -301,6 +301,28 @@ class Project(object):
         else:
             return None
 
+    def lines_modified_between_commits(self,
+                                       before: git.Commit,
+                                       after: git.Commit,
+                                       in_files: List[str] = None,
+                                       ) -> FrozenSet[Line]:
+        """
+        Returns the set of lines in the `before` version of the project that
+        were modified by all commits up to and including an `after` version
+        of the project.
+
+        Params:
+            before: The version of the project whose changes we should
+                track up to and including an `after` commit.
+            after: The version of the project after one or more commits.
+            in_files: An optional list of files, given by their names in the
+                `before` version of the project, that should be checked for
+                modifications. If `None` is provided, this method will look
+                at changes to all files within the `before` version of the
+                project, including those that no longer exist.
+        """
+        raise NotImplementedError
+
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
                                  ) -> Tuple[FrozenSet[Line], FrozenSet[Line]]:
