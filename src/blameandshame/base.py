@@ -303,8 +303,7 @@ class Project(object):
 
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
-                                 ) -> Tuple[FrozenSet[Tuple[str, int]],
-                                            FrozenSet[Tuple[str, int]]]:
+                                 ) -> Tuple[FrozenSet[Line], FrozenSet[Line]]:
         """
         Returns the set of lines that were modified by a given commit. Each
         line is represented by a tuple of the form: (file name, line number).
@@ -335,10 +334,10 @@ class Project(object):
                     old_line_num = int(old_line_num[1:].split(',')[0])
                     new_line_num = int(new_line_num[1:].split(',')[0])
                 elif (first_char == '-'):
-                    old_lines.add((old_file, old_line_num))
+                    old_lines.add(Line(old_file, old_line_num))
                     old_line_num += 1
                 elif (first_char == '+'):
-                    new_lines.add((new_file, new_line_num))
+                    new_lines.add(Line(new_file, new_line_num))
                     new_line_num += 1
                 else:
                     old_line_num += 1
