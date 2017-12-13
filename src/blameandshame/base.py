@@ -389,21 +389,6 @@ class Project(object):
         else:
             return timedelta(0)
 
-    def age_of_line_com(self,
-                        commit: git.Commit,
-                        filename: str,
-                        lineno: int,
-                        ) -> int:
-        """
-        Determines the age of a given line of code in a particular version of
-        a file within this project.
-
-        Returns:
-            Number of commits that have modified a line from its creation up
-            the given commit
-        """
-        return len(self.commits_to_line(filename, lineno, before=commit))
-
     def _num_lines_in_file(self,
                            filename: str,
                            version: git.Commit = None
