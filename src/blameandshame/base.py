@@ -31,6 +31,12 @@ class Line(object):
         """
         return self.__num
 
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return "{}:{}".format(self.__filename, self.__num)
+
 
 class Change(Enum):
     """
@@ -304,7 +310,7 @@ class Project(object):
     def lines_modified_between_commits(self,
                                        before: git.Commit,
                                        after: git.Commit,
-                                       in_files: List[str] = None,
+                                       in_files: Optional[List[str]] = None,
                                        ) -> FrozenSet[Line]:
         """
         Returns the set of lines in the `before` version of the project that
@@ -321,7 +327,31 @@ class Project(object):
                 at changes to all files within the `before` version of the
                 project, including those that no longer exist.
         """
-        raise NotImplementedError
+        modified = set()
+        for file_diff in before.diff(after, create_patch=True, unified=0):
+            fn = file_diff.a_path
+            if fn not in in_files:
+                continue
+
+            line_num = None
+            for line in file_diff.diff.decode('utf8').split('\n'):
+
+                # If the line starts with @@, there's line numbers
+                # format: @@ -start,lines +start,lines @@
+                if line.startswith('@@ '):          # start of hunk
+                    _, old, __, *_ = line.split()
+                    line_num_s, *_ = old.split(',')
+                    line_num = int(line_num_s[1:])
+                    print(line_num)
+                elif line.startswith('- '):         # removed line
+                    modified.add(Line(fn, line_num))
+                    line_num += 1
+                elif line.startswith('+ '):         # added line
+                    pass
+                else:                               # context line
+                    line_num += 1
+
+        return frozenset(modified)
 
     def lines_modified_by_commit(self,
                                  fix_commit: git.Commit
