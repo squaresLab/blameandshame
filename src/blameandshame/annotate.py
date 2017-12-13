@@ -1,4 +1,4 @@
-from blameandshame.base import Project
+from blameandshame.base import Project, Commits
 from typing import Callable, Optional, List, Tuple, Any
 import git
 
@@ -118,32 +118,6 @@ def column_was_modified_by_commit(project: Project,
         else "false"
 
 
-def column_line_rage(project: Project,
-                     commit: git.Commit,
-                     filename: str,
-                     line: int
-                     ) -> str:
-    """
-    Computes the relative age of a given line for a particular version of a
-    project, relative to all the lines in a given file.
-    """
-    rage = str(project.relative_age_of_line(commit, filename, line))
-    return rage
-
-
-def column_line_page(project: Project,
-                     commit: git.Commit,
-                     filename: str,
-                     line: int
-                     ) -> str:
-    """
-    Computes the percentile age of a given line for a particular version of a
-    project.
-    """
-    page = str(project.percentile_age_of_line(commit, filename, line))
-    return page
-
-
 def column_project_name(project: Project,
                         commit: git.Commit,
                         filename: str,
@@ -153,3 +127,38 @@ def column_project_name(project: Project,
     Returns the name of the project.
     """
     return project.name
+
+
+def column_project_age_commits(project: Project,
+                               commit: git.Commit,
+                               filename: str,
+                               line: int
+                               ) -> str:
+    """
+    Returns the age of the project in commits.
+    """
+    return str(project.age_commits_project(before=commit))
+
+
+def column_file_age_commits_to_project(project: Project,
+                                       commit: git.Commit,
+                                       filename: str,
+                                       line: int
+                                       ) -> str:
+    """
+    Returns the age of the file in commits to the project.
+    """
+    return str(project.age_commits_file(filename, Commits.TO_PROJECT,
+                                        before=commit))
+
+
+def column_file_age_commits_to_file(project: Project,
+                                    commit: git.Commit,
+                                    filename: str,
+                                    line: int
+                                    ) -> str:
+    """
+    Returns the age of the file in commits to the file.
+    """
+    return str(project.age_commits_file(filename, Commits.TO_FILE,
+                                        before=commit))
