@@ -8,7 +8,8 @@ from blameandshame.annotate import  annotate, \
                                     column_num_project_commits_after_modified, \
                                     column_num_days_since_modified, \
                                     column_was_modified_by_commit, \
-                                    column_project_name
+                                    column_project_name, \
+                                    column_project_age_commits
 
 
 class AnnotateTestCase(unittest.TestCase):
@@ -129,3 +130,12 @@ class AnnotateTestCase(unittest.TestCase):
         check_one(project, 'blameandshame-test-repo')
         project = Project.from_url('https://github.com/google/protobuf')
         check_one(project, 'protobuf')
+
+    def test_column_project_age_commits(self):
+        def check_one(project, commit, expected):
+            commit = project.repo.commit(commit)
+            self.assertEqual(column_project_age_commits(project, commit, "", 0),
+                             expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'a351329', '18')
+        check_one(project, '71622b3', '11')
