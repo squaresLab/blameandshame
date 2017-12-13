@@ -433,7 +433,10 @@ class Project(object):
                                             after=after,
                                             before=before))
         if relative_to == Commits.TO_PROJECT:
-            return len(self.commits_to_repo(after, before))
+            commits_to_file = self.commits_to_file(filename,
+                                                   after=after, before=before)
+            earliest = commits_to_file[-1]
+            return len(self.commits_to_repo(earliest, before))
         raise ValueError
 
     def age_commits_line(self,
