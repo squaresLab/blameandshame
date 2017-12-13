@@ -222,6 +222,8 @@ class ProjectTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'file-one.txt', Commits.TO_FILE, 6, before = 'e1d2532')
         check_one(project, 'file-one.txt', Commits.TO_PROJECT, 12, before = 'e1d2532')
+        self.assertRaises(ValueError,
+                          lambda: project.age_commits_file("", relative_to=Commits.TO_LINE))
 
     def test_age_commits_line(self):
         def check_one(project, line, filename, relative_to, expected,
