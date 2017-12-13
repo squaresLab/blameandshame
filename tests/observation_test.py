@@ -1,7 +1,8 @@
 import os
 import unittest
-from typing import List
+from typing import List, Dict
 from blameandshame.observation import Observation
+from blameandshame.base import Line
 
 
 class ObservationTestCase(unittest.TestCase):
@@ -30,3 +31,17 @@ class ObservationTestCase(unittest.TestCase):
 
         # adds one file
         test_one('https://github.com/ruby/ruby', 'ec2f913', [])
+
+    def test_modified_lines(self):
+        def test_one(repo_url: str, fix_sha: str, expected: Dict[str, List[int]]) -> None:
+            obs = self.__build_simple(repo_url, fix_sha)
+
+            lines = []
+            for (filename, lines_in_file) in expected.items():
+                lines += [Line(filename, line) for line in lines_in_file]
+            lines = frozenset(lines)
+
+            self.assertEqual(obs.modified_lines, frozenset(lines))
+
+        test_one('https://github.com/squaresLab/blameandshame-test-repo', 'a351329',
+                 {'testfile.c': [8, 25]})
