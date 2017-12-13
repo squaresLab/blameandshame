@@ -9,7 +9,9 @@ from blameandshame.annotate import  annotate, \
                                     column_num_days_since_modified, \
                                     column_was_modified_by_commit, \
                                     column_project_name, \
-                                    column_project_age_commits
+                                    column_project_age_commits, \
+                                    column_file_age_commits_to_project, \
+                                    column_file_age_commits_to_file
 
 
 class AnnotateTestCase(unittest.TestCase):
@@ -139,3 +141,21 @@ class AnnotateTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'a351329', '18')
         check_one(project, '71622b3', '11')
+
+    def test_column_file_age_commits_to_project(self):
+        def check_one(project, commit, filename, expected):
+            commit = project.repo.commit(commit)
+            self.assertEqual(column_file_age_commits_to_project(project, commit, filename, 0),
+                             expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'a351329', 'testfile.c', '6')
+        check_one(project, '71622b3', 'file-one.txt', '10')
+
+    def test_column_file_age_commits_to_file(self):
+        def check_one(project, commit, filename, expected):
+            commit = project.repo.commit(commit)
+            self.assertEqual(column_file_age_commits_to_file(project, commit, filename, 0),
+                             expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'a351329', 'testfile.c', '5')
+        check_one(project, '86c9401', 'file-one.txt', '7')
