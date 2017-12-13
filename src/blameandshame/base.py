@@ -42,6 +42,9 @@ class Line(object):
                and other.filename == self.filename \
                and other.num == self.num
 
+    def __hash__(self) -> int:
+        return hash((self.__filename, self.__num))
+
 
 class Change(Enum):
     """
