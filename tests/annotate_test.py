@@ -149,7 +149,7 @@ class AnnotateTestCase(unittest.TestCase):
                              expected)
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 'a351329', 'testfile.c', '5')
-        check_one(project, '71622b3', 'file-one.txt', '10')
+        check_one(project, '71622b3', 'file-one.txt', '9')
 
     def test_column_file_age_commits_to_file(self):
         def check_one(project, commit, filename, expected):

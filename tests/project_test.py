@@ -245,11 +245,13 @@ class ProjectTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
         check_one(project, 5, 'testfile.c', Commits.TO_LINE, 2,
                   before = 'ec922df', after = '71622b3')
-        check_one(project, 5, 'testfile.c', Commits.TO_FILE, 3,
+        check_one(project, 5, 'testfile.c', Commits.TO_FILE, 2,
                   before = 'ec922df', after = '71622b3')
-        check_one(project, 5, 'testfile.c', Commits.TO_PROJECT, 4,
+        check_one(project, 5, 'testfile.c', Commits.TO_PROJECT, 2,
                   before = 'ec922df', after = '71622b3')
-        check_one(project, 5, 'testfile.c', Commits.TO_PROJECT, 4,
+        check_one(project, 4, 'testfile.c', Commits.TO_PROJECT, 2,
+                  before = 'ec922df')
+        check_one(project, 4, 'testfile.c', Commits.TO_LINE, 1,
                   before = 'ec922df')
         self.assertRaises(ValueError,
                           lambda: project.age_commits_line(project, 0, '', None, 0))

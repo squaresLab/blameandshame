@@ -456,10 +456,20 @@ class Project(object):
                                             after=after,
                                             before=before))
         if relative_to == Commits.TO_FILE:
+            commits_to_line = self.commits_to_line(filename,
+                                                   lineno,
+                                                   after=after,
+                                                   before=before)
+            earliest = commits_to_line[-1]
             return len(self.commits_to_file(filename,
-                                            after=after,
+                                            after=earliest,
                                             before=before))
         if relative_to == Commits.TO_PROJECT:
-            return len(self.commits_to_repo(after, before))
+            commits_to_line = self.commits_to_line(filename,
+                                                   lineno,
+                                                   after=after,
+                                                   before=before)
+            earliest = commits_to_line[-1]
+            return len(self.commits_to_repo(earliest, before))
 
         raise ValueError
