@@ -448,7 +448,7 @@ class Project(object):
             return len(self.commits_to_file(filename,
                                             after=after,
                                             before=before))
-        if relative_to == Commits.TO_REPO:
+        if relative_to == Commits.TO_PROJECT:
             return len(self.commits_to_repo(after, before))
         raise ValueError
 
@@ -465,14 +465,14 @@ class Project(object):
         """
         if relative_to == Commits.TO_LINE:
             return len(self.commits_to_line(filename,
-                                            lineno,
+                                            line,
                                             after=after,
                                             before=before))
         if relative_to == Commits.TO_FILE:
             return len(self.commits_to_file(filename,
                                             after=after,
                                             before=before))
-        if relative_to == Commits.TO_REPO:
+        if relative_to == Commits.TO_PROJECT:
             return len(self.commits_to_repo(after, before))
 
         raise ValueError

@@ -220,6 +220,8 @@ class ProjectTestCase(unittest.TestCase):
         check_one(project, 'php/composer.json', Commits.TO_FILE, 4, before = '21b0e55')
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file-one.txt', Commits.TO_FILE, 6, before = 'e1d2532')
+        check_one(project, 'file-one.txt', Commits.TO_PROJECT, 12, before = 'e1d2532')
 
     def test_age_commits_line(self):
         def check_one(project, line, filename, relative_to, expected,
