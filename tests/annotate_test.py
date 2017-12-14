@@ -7,7 +7,11 @@ from blameandshame.annotate import  annotate, \
                                     column_num_file_commits_after_modified, \
                                     column_num_project_commits_after_modified, \
                                     column_num_days_since_modified, \
-                                    column_was_modified_by_commit
+                                    column_was_modified_by_commit, \
+                                    column_project_name, \
+                                    column_project_age_commits, \
+                                    column_file_age_commits_to_project, \
+                                    column_file_age_commits_to_file
 
 
 class AnnotateTestCase(unittest.TestCase):
@@ -116,5 +120,42 @@ class AnnotateTestCase(unittest.TestCase):
             self.assertEqual(modified, expected)
 
         project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
-        check_one(project, 'e1d2532', 'file-one.txt', 1, 'Y')
-        check_one(project, 'e1d2532', 'file-one.txt', 3, 'N')
+        check_one(project, 'e1d2532', 'file-one.txt', 1, 'true')
+        check_one(project, 'e1d2532', 'file-one.txt', 3, 'false')
+
+    def test_column_project_name(self):
+        def check_one(project, expected):
+            name = column_project_name(project, None, "", 1)
+            self.assertEqual(name, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'blameandshame-test-repo')
+        project = Project.from_url('https://github.com/google/protobuf')
+        check_one(project, 'protobuf')
+
+    def test_column_project_age_commits(self):
+        def check_one(project, commit, expected):
+            commit = project.repo.commit(commit)
+            self.assertEqual(column_project_age_commits(project, commit, "", 0),
+                             expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'a351329', '18')
+        check_one(project, '71622b3', '11')
+
+    def test_column_file_age_commits_to_project(self):
+        def check_one(project, commit, filename, expected):
+            commit = project.repo.commit(commit)
+            self.assertEqual(column_file_age_commits_to_project(project, commit, filename, 0),
+                             expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'a351329', 'testfile.c', '5')
+        check_one(project, '71622b3', 'file-one.txt', '9')
+
+    def test_column_file_age_commits_to_file(self):
+        def check_one(project, commit, filename, expected):
+            commit = project.repo.commit(commit)
+            self.assertEqual(column_file_age_commits_to_file(project, commit, filename, 0),
+                             expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'a351329', 'testfile.c', '5')
+        check_one(project, '86c9401', 'file-one.txt', '7')

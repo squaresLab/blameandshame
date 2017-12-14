@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import unittest
-from blameandshame.base import Project, Change
+from blameandshame.base import Project, Change, Commits
 from datetime import timedelta
 
 class ProjectTestCase(unittest.TestCase):
@@ -85,12 +85,6 @@ class ProjectTestCase(unittest.TestCase):
                                         before = before_commit),
                 expected
             )
-
-        project = Project.from_url('https://github.com/php/php-src')
-        check_one(project, 'ext/ext_skel.php',
-                  ['216d711', 'f35f459', 'b079cc2', '941dc72'],
-                  before = '216d711')
-
         project = Project.from_url('https://github.com/google/protobuf')
         check_one(project, 'php/composer.json',
                   ['21b0e55', 'b9b34e9', '6b27c1f', '46ae90d'],
@@ -187,6 +181,80 @@ class ProjectTestCase(unittest.TestCase):
                                              project.repo.commit("ac5371d"))
         self.assertEqual(delta, timedelta(seconds=10628))
 
+    def test_age_of_line_td(self):
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        commit = project.repo.commit('86c9401')
+        self.assertEqual(project.age_of_line_td(commit, 'file-one.txt', 5).seconds, 69850)
+        commit = project.repo.commit('964adc5')
+        self.assertEqual(project.age_of_line_td(commit, 'file-one.txt', 3).seconds, 0)
+
+    def test_num_lines_in_file(self):
+        def check_one(project, filename, version, expected):
+            version = project.repo.commit(version)
+            actual = project._num_lines_in_file(filename, version)
+            self.assertEqual(actual, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file-one.txt', '86c9401', 7)
+        check_one(project, 'file-one.txt', '0d841d1', 5)
+        check_one(project, 'file-one.txt', '4d6c7f4', 3)
+        check_one(project, 'file.txt', '422cab3', 1)
+
+    def test_age_commits_project(self):
+        def check_one(project, expected, before = None, after = None):
+            before = project.repo.commit(before) if before else None
+            after = project.repo.commit(after) if after else None
+            age = project.age_commits_project(before=before, after=after)
+            self.assertEqual(age, expected)
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 3, before = 'e1d2532', after = '2282c66')
+        check_one(project, 2, before = '922e13d', after = '964adc5')
+        check_one(project, 0, before = '2282c66', after = '2282c66')
+        check_one(project, 2, before = '422cab3')
+
+    def test_age_commits_file(self):
+        def check_one(project, filename, relative_to, expected,
+                      before = None, after = None):
+            before = project.repo.commit(before) if before else None
+            after = project.repo.commit(after) if after else None
+            age = project.age_commits_file(filename=filename,
+                                           relative_to=relative_to,
+                                           before=before, after=after)
+            self.assertEqual(age, expected)
+
+        project = Project.from_url('https://github.com/google/protobuf')
+        check_one(project, 'php/composer.json', Commits.TO_FILE, 4, before = '21b0e55')
+
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 'file-one.txt', Commits.TO_FILE, 6, before = 'e1d2532')
+        check_one(project, 'file-one.txt', Commits.TO_PROJECT, 10, before = 'e1d2532')
+        self.assertRaises(ValueError,
+                          lambda: project.age_commits_file("", relative_to=Commits.TO_LINE))
+
+    def test_age_commits_line(self):
+        def check_one(project, lineno, filename, relative_to, expected,
+                      before = None, after = None):
+            before = project.repo.commit(before) if before else None
+            after = project.repo.commit(after) if after else None
+            age = project.age_commits_line(filename,
+                                           lineno,
+                                           relative_to=relative_to,
+                                           before=before, after=after)
+            self.assertEqual(age, expected)
+        project = Project.from_url('https://github.com/squaresLab/blameandshame-test-repo')
+        check_one(project, 5, 'testfile.c', Commits.TO_LINE, 2,
+                  before = 'ec922df', after = '71622b3')
+        check_one(project, 5, 'testfile.c', Commits.TO_FILE, 2,
+                  before = 'ec922df', after = '71622b3')
+        check_one(project, 5, 'testfile.c', Commits.TO_PROJECT, 2,
+                  before = 'ec922df', after = '71622b3')
+        check_one(project, 4, 'testfile.c', Commits.TO_PROJECT, 2,
+                  before = 'ec922df')
+        check_one(project, 4, 'testfile.c', Commits.TO_LINE, 1,
+                  before = 'ec922df')
+        self.assertRaises(ValueError,
+                          lambda: project.age_commits_line(project, 0, '', None, 0))
 
 if __name__ == '__main__':
     unittest.main()

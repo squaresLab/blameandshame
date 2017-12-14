@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 from typing import Dict, FrozenSet, List, Tuple, Optional, Set
 import git
 import os
@@ -17,6 +17,12 @@ class Change(Enum):
     DELETED = 'D'
     MODIFIED = 'M'
     RENAMED = 'R'
+
+
+class Commits(Enum):
+    TO_PROJECT = auto()
+    TO_FILE = auto()
+    TO_LINE = auto()
 
 
 class Project(object):
@@ -83,6 +89,10 @@ class Project(object):
         self.__commits_to_file_dict: Dict[Tuple[str, str],
                                           List[git.Commit]] = dict()
         self.__commits_to_repo_dict: Dict[str, List[git.Commit]] = dict()
+        self.__age_of_all_lines_dict_sec: Dict[Tuple[git.Commit, str],
+                                               List[float]] = dict()
+        self.__age_of_all_lines_dict_com: Dict[Tuple[git.Commit, str],
+                                               List[float]] = dict()
 
     def update(self):
         """
@@ -96,6 +106,13 @@ class Project(object):
         The Git repository associated with this project.
         """
         return self.__repo
+
+    @property
+    def name(self) -> str:
+        """
+        The name of the project, as the basename for the working directory.
+        """
+        return os.path.basename(self.repo.working_dir)
 
     def files_in_commit(self,
                         fix_commit: git.Commit,
@@ -351,4 +368,108 @@ class Project(object):
         """
         time_x = x.authored_datetime
         time_y = y.authored_datetime
-        return abs(time_x - time_y)
+        time = abs(time_x - time_y)
+        return time
+
+    def age_of_line_td(self,
+                       commit: git.Commit,
+                       filename: str,
+                       lineno: int,
+                       ) -> timedelta:
+        """
+        Determines the age of a given line of code in a particular version of
+        a file within this project.
+
+        Returns:
+            Number of days since the line was last modified.
+        """
+        last = self.last_commit_to_line(filename, lineno, before=commit)
+        if last:
+            return Project.time_between_commits(last, commit)
+        else:
+            return timedelta(0)
+
+    def _num_lines_in_file(self,
+                           filename: str,
+                           version: git.Commit = None
+                           ) -> int:
+        """
+        Determines the number of lines in a given file.
+
+        Args:
+            filename: the path to the file, relative to the root of the
+                project's repository.
+            version: the version of the file. If unspecified, the latest
+                version of the file will be used.
+
+        Returns:
+            A count of the number of the lines in the file.
+        """
+        f = self.repo.git.show('{}:{}'.format(version.hexsha, filename))
+        return len(f.splitlines())
+
+    def age_commits_project(self,
+                            before: Optional[git.Commit] = None,
+                            after: Optional[git.Commit] = None
+                            ) -> int:
+        """
+        Returns the age of the project in commits.
+        """
+        return len(self.commits_to_repo(after, before))
+
+    def age_commits_file(self,
+                         filename: str,
+                         relative_to: Commits,
+                         after: Optional[git.Commit] = None,
+                         before: Optional[git.Commit] = None
+                         ) -> int:
+        """
+        Returns the age of a file in commits. relative_to can be either
+        Commits.TO_PROJECT or Commits.TO_FILE, throws an exception if
+        relative_to is None or Commits.TO_LINE
+        """
+        if relative_to == Commits.TO_FILE:
+            return len(self.commits_to_file(filename,
+                                            after=after,
+                                            before=before))
+        if relative_to == Commits.TO_PROJECT:
+            commits_to_file = self.commits_to_file(filename,
+                                                   after=after, before=before)
+            earliest = commits_to_file[-1]
+            return len(self.commits_to_repo(earliest, before))
+        raise ValueError
+
+    def age_commits_line(self,
+                         filename: str,
+                         lineno: int,
+                         relative_to: Commits,
+                         before: Optional[git.Commit] = None,
+                         after: Optional[git.Commit] = None
+                         ) -> int:
+        """
+        Returns the age of a line in commits. relative_to can be any of the
+        Commits enum values
+        """
+        if relative_to == Commits.TO_LINE:
+            return len(self.commits_to_line(filename,
+                                            lineno,
+                                            after=after,
+                                            before=before))
+        if relative_to == Commits.TO_FILE:
+            commits_to_line = self.commits_to_line(filename,
+                                                   lineno,
+                                                   after=after,
+                                                   before=before)
+            earliest = commits_to_line[-1]
+            return len(self.commits_to_file(filename,
+                                            after=earliest,
+                                            before=before))
+        if relative_to == Commits.TO_PROJECT:
+            commits_to_line = self.commits_to_line(filename,
+                                                   lineno,
+                                                   after=after,
+                                                   before=before)
+            earliest = commits_to_line[-1]
+            return len(self.commits_to_repo(earliest, before))
+
+        raise ValueError
