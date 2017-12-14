@@ -15,7 +15,8 @@ setup(
     install_requires=[
         'numpy',
         'GitPython',
-        'tabulate'
+        'tabulate',
+        'scipy'
     ],
     packages=find_packages('src'),
     package_dir={'': 'src'},

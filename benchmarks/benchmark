@@ -9,7 +9,9 @@ from blameandshame.annotate import annotate, \
                                    column_last_commit, \
                                    column_num_file_commits_after_modified, \
                                    column_num_project_commits_after_modified, \
-                                   column_num_days_since_modified
+                                   column_num_days_since_modified, \
+                                   column_line_rage, \
+                                   column_line_page
 
 
 # Maintains a registry of named benchmarks
@@ -56,6 +58,34 @@ def last_commit_to_line() -> None:
     line = 372
 
     column_last_commit(project, commit, filename, line)
+
+
+@benchmark
+def line_rage() -> None:
+    """
+    Computes the relative age of each line in a historical version of the
+    closure compiler.
+    """
+    project = Project.from_url('https://github.com/google/closure-compiler')
+    fix_sha = '1dfad50'
+    commit = project.repo.commit('{}~1'.format(fix_sha))
+    filename = 'src/com/google/javascript/jscomp/RemoveUnusedVars.java'
+
+    annotate(project, commit, filename, [column_line_rage])
+
+
+@benchmark
+def line_page() -> None:
+    """
+    Computes the relative age of each line in a historical version of the
+    closure compiler.
+    """
+    project = Project.from_url('https://github.com/google/closure-compiler')
+    fix_sha = '1dfad50'
+    commit = project.repo.commit('{}~1'.format(fix_sha))
+    filename = 'src/com/google/javascript/jscomp/RemoveUnusedVars.java'
+
+    annotate(project, commit, filename, [column_line_page])
 
 
 @benchmark
