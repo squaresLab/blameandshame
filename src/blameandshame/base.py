@@ -12,7 +12,7 @@ class Line(object):
     """
     Represents a single line in a given file.
     """
-    def __init__(self, filename: str, num: int):
+    def __init__(self, filename: str, num: int) -> None:
         assert num > 0
         self.__filename = filename
         self.__num = num
