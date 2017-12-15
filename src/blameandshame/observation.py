@@ -70,6 +70,6 @@ class Observation(object):
         deleted by the bug fix are not considered to have been modified.
         """
         files = list(self.modified_files)
-        return self.project.lines_modified_between_commits(before=self.before,
-                                                           after=self.after,
-                                                           in_files=files)
+        return Project.lines_modified_between_commits(before=self.before,
+                                                      after=self.after,
+                                                      in_files=files)

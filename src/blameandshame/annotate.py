@@ -113,7 +113,7 @@ def column_was_modified_by_commit(project: Project,
     Returns the string 'Y' if the line was modified by the commit, otherwise
     returns 'N'
     """
-    _, new_lines = project.lines_modified_by_commit(commit)
+    _, new_lines = Project.lines_modified_by_commit(commit)
     for modified_line in new_lines:
         if modified_line.filename == filename and modified_line.num == line:
             return "true"
