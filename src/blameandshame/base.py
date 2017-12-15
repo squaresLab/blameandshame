@@ -8,6 +8,44 @@ from datetime import timedelta
 import warnings
 
 
+class Line(object):
+    """
+    Represents a single line in a given file.
+    """
+    def __init__(self, filename: str, num: int) -> None:
+        assert num > 0
+        self.__filename = filename
+        self.__num = num
+
+    @property
+    def filename(self) -> str:
+        """
+        The name of the file to which this line belongs.
+        """
+        return self.__filename
+
+    @property
+    def num(self) -> int:
+        """
+        The one-indexed number of the line.
+        """
+        return self.__num
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return "{}:{}".format(self.__filename, self.__num)
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, Line) \
+               and other.filename == self.filename \
+               and other.num == self.num
+
+    def __hash__(self) -> int:
+        return hash((self.__filename, self.__num))
+
+
 class Change(Enum):
     """
     Enum of the possible types of git changes. These values can be used as
@@ -80,6 +118,95 @@ class Project(object):
         Retrieves a project whose repository is stored at a given local path.
         """
         return Project(git.Repo(path))
+
+    @staticmethod
+    def lines_modified_between_commits(before: git.Commit,
+                                       after: git.Commit,
+                                       in_files: Optional[List[str]] = None,
+                                       ) -> FrozenSet[Line]:
+        """
+        Returns the set of lines in the `before` version of the project that
+        were modified by all commits up to and including an `after` version
+        of the project.
+
+        Params:
+            before: The version of the project whose changes we should
+                track up to and including an `after` commit.
+            after: The version of the project after one or more commits.
+            in_files: An optional list of files, given by their names in the
+                `before` version of the project, that should be checked for
+                modifications. If `None` is provided, this method will look
+                at changes to all files within the `before` version of the
+                project, including those that no longer exist.
+        """
+        modified = set()
+        for file_diff in before.diff(after, create_patch=True, unified=0):
+            fn = file_diff.a_path
+            if fn not in in_files:
+                continue
+
+            line_num = None
+            for line in file_diff.diff.decode('utf8').split('\n'):
+
+                # If the line starts with @@, there's line numbers
+                # format: @@ -start,lines +start,lines @@
+                if line.startswith('@@ '):          # start of hunk
+                    _, old, __, *_ = line.split()
+                    line_num_s, *_ = old.split(',')
+                    line_num = int(line_num_s[1:])
+                elif line.startswith('- '):         # removed line
+                    modified.add(Line(fn, line_num))
+                    line_num += 1
+                elif line.startswith('+ '):         # added line
+                    pass
+                else:                               # context line
+                    line_num += 1
+
+        return frozenset(modified)
+
+    @staticmethod
+    def lines_modified_by_commit(fix_commit: git.Commit
+                                 ) -> Tuple[FrozenSet[Line], FrozenSet[Line]]:
+        """
+        Returns the set of lines that were modified by a given commit. Each
+        line is represented by a tuple of the form: (file name, line number).
+        Two sets are created, one containing lines deleted from the old version
+        of the file and one containing lines added in the new version of the
+        file. These are returned in a tuple of the form (old version, new
+        version).
+        """
+        old_lines = set()
+        new_lines = set()
+
+        prev_sha = "{}~1".format(fix_commit.hexsha)
+        prev_commit = fix_commit.repo.commit(prev_sha)
+
+        # unified=0 shows zero lines of context
+        diff = prev_commit.diff(fix_commit, create_patch=True, unified=0)
+        for d in diff:
+            old_file = d.a_path
+            new_file = d.b_path
+
+            for line in d.diff.decode('utf8').split('\n'):
+                line_tokens = line.split()
+                # If the line starts with @@, there's line numbers
+                # format: @@ -start,lines +start,lines @@
+                first_char = line_tokens[0][0] if len(line_tokens) > 0 else ''
+                if (first_char == '@'):
+                    _, old_line_num, new_line_num, *_ = line_tokens
+                    old_line_num = int(old_line_num[1:].split(',')[0])
+                    new_line_num = int(new_line_num[1:].split(',')[0])
+                elif (first_char == '-'):
+                    old_lines.add(Line(old_file, old_line_num))
+                    old_line_num += 1
+                elif (first_char == '+'):
+                    new_lines.add(Line(new_file, new_line_num))
+                    new_line_num += 1
+                else:
+                    old_line_num += 1
+                    new_line_num += 1
+
+        return (frozenset(old_lines), frozenset(new_lines))
 
     def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
@@ -293,51 +420,6 @@ class Project(object):
             return next(b.commit for b in blame_info if lineno in b.linenos)
         else:
             return None
-
-    def lines_modified_by_commit(self,
-                                 fix_commit: git.Commit
-                                 ) -> Tuple[FrozenSet[Tuple[str, int]],
-                                            FrozenSet[Tuple[str, int]]]:
-        """
-        Returns the set of lines that were modified by a given commit. Each
-        line is represented by a tuple of the form: (file name, line number).
-        Two sets are created, one containing lines deleted from the old version
-        of the file and one containing lines added in the new version of the
-        file. These are returned in a tuple of the form (old version, new
-        version).
-        """
-        old_lines = set()
-        new_lines = set()
-
-        prev_sha = "{}~1".format(fix_commit.hexsha)
-        prev_commit = fix_commit.repo.commit(prev_sha)
-
-        # unified=0 shows zero lines of context
-        diff = prev_commit.diff(fix_commit, create_patch=True, unified=0)
-        for d in diff:
-            old_file = d.a_path
-            new_file = d.b_path
-
-            for line in d.diff.decode('utf8').split('\n'):
-                line_tokens = line.split()
-                # If the line starts with @@, there's line numbers
-                # format: @@ -start,lines +start,lines @@
-                first_char = line_tokens[0][0] if len(line_tokens) > 0 else ''
-                if (first_char == '@'):
-                    _, old_line_num, new_line_num, *_ = line_tokens
-                    old_line_num = int(old_line_num[1:].split(',')[0])
-                    new_line_num = int(new_line_num[1:].split(',')[0])
-                elif (first_char == '-'):
-                    old_lines.add((old_file, old_line_num))
-                    old_line_num += 1
-                elif (first_char == '+'):
-                    new_lines.add((new_file, new_line_num))
-                    new_line_num += 1
-                else:
-                    old_line_num += 1
-                    new_line_num += 1
-
-        return (frozenset(old_lines), frozenset(new_lines))
 
     def authors_of_line(self,
                         filename: str,
