@@ -1,4 +1,3 @@
-import os
 import unittest
 from typing import List, Dict
 from blameandshame.observation import Observation
