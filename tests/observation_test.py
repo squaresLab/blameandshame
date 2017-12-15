@@ -5,13 +5,14 @@ from blameandshame.base import Line
 
 
 class ObservationTestCase(unittest.TestCase):
-    def __build_simple(self, repo_url: str, fix_sha: str) -> Observation:
+    @staticmethod
+    def __build_simple(repo_url: str, fix_sha: str) -> Observation:
         bug_sha = "{}~1".format(fix_sha)
         return Observation.build(repo_url, bug_sha, fix_sha)
 
     def test_modified_files(self):
         def test_one(repo_url: str, fix_sha: str, expected: List[str]) -> None:
-            obs = self.__build_simple(repo_url, fix_sha)
+            obs = ObservationTestCase.__build_simple(repo_url, fix_sha)
             self.assertEqual(obs.modified_files, frozenset(expected))
 
         test_one("https://github.com/php/php-src", "fe4c789",
@@ -33,7 +34,7 @@ class ObservationTestCase(unittest.TestCase):
 
     def test_modified_lines(self):
         def test_one(repo_url: str, fix_sha: str, expected: Dict[str, List[int]]) -> None:
-            obs = self.__build_simple(repo_url, fix_sha)
+            obs = ObservationTestCase.__build_simple(repo_url, fix_sha)
 
             lines = []
             for (filename, lines_in_file) in expected.items():
