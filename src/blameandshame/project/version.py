@@ -30,8 +30,28 @@ class ProjectVersion(object):
         return self.__commit
 
     @property
-    def tests(self) -> 'TestSuite':
+    def tests(self) -> 'bugzoo.testing.TestSuite':
         """
         The test suite used by this project version.
         """
+        # TODO: The TestSuite class should be provided by BugZoo. It's
+        #   likely that the existing TestSuite class within BugZoo doesn't
+        #   quite meet our needs; in that case, we should modify and extend
+        #   it.
+        raise NotImplementedError
+
+    @property
+    def coverage(self) -> 'bugzoo.coverage.ProjectLineCoverage':
+        """
+        The line coverage achieved by each test within the test suite for this
+        project version.
+        """
+        # TODO
+        # If possible, read existing coverage information from disk.
+
+        # TODO
+        # - provision a container for the project version using BugZoo
+        # - use BugZoo to collect coverage information for the project version
+        # - save coverage to disk
+
         raise NotImplementedError
