@@ -29,6 +29,12 @@ class ProjectVersion(object):
         """
         return self.__commit
 
+    def provision(self) -> 'bugzoo.Container':
+        """
+        Provisions a fresh BugZoo container for this project version.
+        """
+        raise NotImplementedError
+
     @property
     def tests(self) -> 'bugzoo.testing.TestSuite':
         """
