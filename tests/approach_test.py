@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import unittest
 from blameandshame.approach import Approach
 
