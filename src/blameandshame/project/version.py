@@ -52,12 +52,26 @@ class ProjectVersion(object):
         The line coverage achieved by each test within the test suite for this
         project version.
         """
+        raise NotImplementedError
+
+        # TODO
+        # determine the location of the coverage file(s) on disk
+
         # TODO
         # If possible, read existing coverage information from disk.
 
-        # TODO
-        # - provision a container for the project version using BugZoo
-        # - use BugZoo to collect coverage information for the project version
-        # - save coverage to disk
+        try:
+            # TODO: provision container for program version
+            container = self.provision()
 
-        raise NotImplementedError
+            # TODO: attempt to compile the program inside the container
+            container.compile() # mode=CompliationMode.COVERAGE
+
+            # TODO: collect coverage information for the entire test suite
+            coverage = container.coverage()
+
+            # TODO: save coverage to disk
+            #
+        finally:
+            if container:
+                container.destroy()
