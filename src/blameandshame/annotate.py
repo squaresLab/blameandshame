@@ -1,4 +1,5 @@
-from blameandshame.base import Project, Commits
+from blameandshame.project import Project
+from blameandshame.base import Commits
 from typing import Callable, Optional, List, Tuple, Any
 import git
 
