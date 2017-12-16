@@ -1,5 +1,4 @@
 from blameandshame.project import Project
-from blameandshame.base import Commits
 # from blameandshame.component import Component
 # from blameandshame.localization import Localization
 import git
