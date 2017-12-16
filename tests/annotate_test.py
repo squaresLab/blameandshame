@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import unittest
-from blameandshame.base import Project
+from blameandshame.project  import  Project
 from blameandshame.annotate import  annotate, \
                                     use_different_commit, \
                                     column_last_commit, \

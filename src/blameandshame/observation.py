@@ -1,6 +1,7 @@
 import git
 from typing import FrozenSet
-from blameandshame.base import Project, Line
+from blameandshame.project import Project
+from blameandshame.base import Line
 
 
 class Observation(object):

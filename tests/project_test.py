@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 import unittest
-from blameandshame.base import Project, Change, Commits, Line
+from blameandshame.project  import Project
+from blameandshame.base     import Change, Commits, Line
 from datetime import timedelta
 
 class ProjectTestCase(unittest.TestCase):
