@@ -150,4 +150,24 @@ class FunctionLocalization(Localization):
 
 
 class FileLocalization(Localization):
-    pass
+
+    @staticmethod
+    def read_mapping(mapping: Dict[str, str]) -> Dict[File_C, float]:
+        """
+        Reads in a mapping from a FileLocalization YAML file.
+
+        The dictionary that is returned maps File_C components to scores.
+        """
+        files: Dict[File_C, float] = dict()
+        for file_name, score in mapping:
+            files[File_C(file_name)] = float(score)
+        return files
+
+    def __init__(self,
+                 scope: List[Component],
+                 mapping: Dict,
+                 version: str) -> None:
+        self.scope = scope
+        self.mapping = FileLocalization.read_mapping(mapping)
+        self.__version = version
+        self.__granularity = "Function"
