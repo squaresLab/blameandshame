@@ -106,7 +106,46 @@ class LineLocalization(Localization):
 
 
 class FunctionLocalization(Localization):
-    pass
+
+    @staticmethod
+    def read_mapping(mapping: Dict[str, Dict[str, str]]
+                     ) -> Dict[File_C,
+                               Dict[Function_C,
+                                    Dict[Line_C, float]]]:
+        """
+        Reads in a mapping from a LineLocalization YAML file.
+
+        The dictionary that is returned maps File_C components to dictionaries
+        that map Line_C components to scores
+        """
+        files: Dict[File_C,
+                    Dict[Function_C,
+                         Dict[Line_C, float]]] = dict()
+
+        for file_name, functions in mapping:
+            function_mapping: Dict[Function_C, Dict[Line_C, float]] = dict()
+            for function_name, lines in functions:
+                line_mapping: Dict[Line_C, float] = dict()
+                min_line = min(map(int, lines))
+                max_line = max(map(int, lines))
+                for line_number, score in lines:
+                    line_mapping[Line_C(file_name,
+                                        int(line_number))] = float(score)
+                function_mapping[Function_C(function_name,
+                                            File_C(file_name),
+                                            min_line,
+                                            max_line)] = line_mapping
+            files[File_C(file_name)] = function_mapping
+        return files
+
+    def __init__(self,
+                 scope: List[Component],
+                 mapping: Dict,
+                 version: str) -> None:
+        self.scope = scope
+        self.mapping = FunctionLocalization.read_mapping(mapping)
+        self.__version = version
+        self.__granularity = "Function"
 
 
 class FileLocalization(Localization):
