@@ -1,35 +1,10 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 from blameandshame.components import Component, Line_C, Function_C, File_C
 import yaml
 
+VERSION = "1.0"
 
 class Localization (object):
-
-    mapping = dict()
-    scope = []
-
-    def __init__(self, mapping: dict = {}, scope: list = []):
-        self.mapping = mapping
-        self.scope = scope
-
-    def add_comp_score(self, comp: Component, score: float) -> None:
-        """
-        Adds a component and its respective score to the mapping
-        of localizations
-        """
-        self.mapping[comp] = score
-        
-    def set_scope(self, scope: list = []):
-        """
-        Sets a list of File_C as the scope list
-        """
-        self.scope = scope
-        
-    def add_file_to_scope(self, filename: File_C):
-        """
-        Adds a file to the scope list
-        """
-        self.scope.append(filename)
 
     @staticmethod
     def from_file(self, filename: str) -> 'Localization':
@@ -37,99 +12,102 @@ class Localization (object):
         Builds a Localization object from a file
         """
         with open(filename) as f:
-            data_map = yaml.safe_load(f)
-            loc = map_to_loc(data_map) 
-        return loc
+            data = yaml.safe_load(f)
+            try:
+                version = data['version']
+                granularity = data['granularity']
+                scope = data['scope']
+                mapping = data['mapping']
 
-    #@abstractmethod
-    def map_to_loc(self, data_map: map = {}) -> 'Localization':
+                if granularity == "Line":
+                    return LineLocalization(mapping, scope, version)
+                if granularity == "Function":
+                    return FunctionLocalization(mapping, scope, version)
+                if granularity == "File":
+                    return FileLocalization(mapping, scope, version)
+
+                # If we don't get a reasonable granularity, raise an exception
+                raise IOError
+            except KeyError as err:
+                print('Error when importing', filename, '.', err)
+                raise IOError
+
+    @staticmethod
+    def read_mapping(mapping: Dict) -> Dict:
         """
         Builds a Localization objecct from a map
         """
-        pass
+        raise NotImplementedError
 
     def to_file(self, filename: str) -> None:
         """
         Stores its internal data in a file
         """
         with open(filename, "w") as f:
-            data_map = build_map()
-            yaml.dump(data_map, f)
+            data: Dict[str, Any] = dict()
+            data['mapping'] = self.mapping
+            data['scope'] = self.scope
+            data['version'] = self.__version
+            data['granularity'] = self.__granularity
+            yaml.dump(data, f)
 
-    #@abstractmethod
-    def build_map(self) -> map:
-        """
-        Builds a map in the proper format to be stored in a YAML file
-        """
-        pass
+    def __init__(self,
+                 mapping: Dict,
+                 scope: List[Component],
+                 version: str = VERSION,) -> None:
 
+        self.mapping = mapping
+        self.scope = scope
+        self.__version = version
+        self.__granularity = ""
 
-class Line_Localization(Localization):
+    @property
+    def version(self) -> str:
+        """
+        The version number of this localization object.
+        """
+        return self.__version
 
-    def map_to_loc(self, data_map: map = {}) -> Localization:
+    @property
+    def granularity(self) -> str:
         """
-        Builds a Localization objecct from a map 
+        The granularity of this object
         """
-        sco_list = data_map['scope']
-        loc_dic = data_map['localization']
-        
-        loc = Localization()
-
-        for sco_file in sco_list:
-            loc.add_file_to_scope(sco_file)
-
-        for filename in loc_dic.keys():
-            for line in loc_dic[filename].keys():
-                l = Line_C(filename,loc_dic[filename])
-                loc.add_comp_score(l, loc_dic[filename][line])
-        
-        return loc
-
-    def build_map(self) -> map:
-        """
-        Builds a map of a line in yaml format to be stored in a YAML file
-        """
-        ret = {}
-        ret['version'] = "1.0"
-        ret['granularity'] = "line" 
-        ret['scope'] = [x for x in self.scope]
-        
-        files_to_lines = {}
-        files_list = [linec.filename for linec in mapping.keys()]
-        files_set = set(files_list)
-        for files in files_set:
-            line_map = {}
-            for linec in mapping.keys():
-                if linec.filename == files:
-                    line_map[linec.lineno] = mapping[linec]
-            files_to_lines[files] = line_map
-        ret['localization'] = files_to_lines
-
-class Function_Localization(Localization):
-
-    def map_to_loc(self, data_map: map = {}) -> Localization:
-        """
-        Builds a Localization objecct from a map 
-        """
-        pass
-
-    def build_map(self) -> map:
-        """
-        Builds a map of a func to be stored in a YAML file
-        """
-        pass
+        return self.__granularity
 
 
-class File_Localization(Localization):
+class LineLocalization(Localization):
 
-    def map_to_loc(self, data_map: map = {}) -> Localization:
+    @staticmethod
+    def read_mapping(mapping: Dict[str, Dict[str, str]]
+                     ) -> Dict[File_C, Dict[Line_C, float]]:
         """
-        Builds a Localization objecct from a map 
-        """
-        pass
+        Reads in a mapping from a LineLocalization YAML file.
 
-    def build_map(self) -> map:
+        The dictionary that is returned maps File_C components to dictionaries
+        that map Line_C components to scores
         """
-        Builds a map of a file to be stored in a YAML file
-        """
-        pass
+        files: Dict[File_C, Dict[Line_C, float]] = dict()
+        for file_name, lines in mapping:
+            line_mapping: Dict[Line_C, float] = dict()
+            for line_number, score in lines:
+                line_mapping[Line_C(file_name, int(line_number))] = float(score)
+            files[File_C(file_name)] = line_mapping
+        return files
+
+    def __init__(self,
+                 scope: List[Component],
+                 mapping: Dict,
+                 version: str) -> None:
+        self.scope = scope
+        self.mapping = LineLocalization.read_mapping(mapping)
+        self.__version = version
+        self.__granularity = "Line"
+
+
+class FunctionLocalization(Localization):
+    pass
+
+
+class FileLocalization(Localization):
+    pass
