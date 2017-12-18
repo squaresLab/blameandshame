@@ -113,10 +113,11 @@ class FunctionLocalization(Localization):
                                Dict[Function_C,
                                     Dict[Line_C, float]]]:
         """
-        Reads in a mapping from a LineLocalization YAML file.
+        Reads in a mapping from a FunctionLocalization YAML file.
 
         The dictionary that is returned maps File_C components to dictionaries
-        that map Line_C components to scores
+        that map Function_C components to dictionaries that map Line_C
+        components to scores.
         """
         files: Dict[File_C,
                     Dict[Function_C,
