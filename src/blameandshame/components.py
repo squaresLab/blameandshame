@@ -24,7 +24,7 @@ class Line_C(Component):
 
 
 class Function_C(Component):
-    
+
     def __init__(self,
                  funcname: str = "",
                  filename: File_C = None,
@@ -34,4 +34,3 @@ class Function_C(Component):
         self.filename = filename
         self.line_start = linestart
         self.line_end = lineend
-
