@@ -1,4 +1,5 @@
-from blameandshame.base import Project, Commits
+from blameandshame.project import Project
+from blameandshame.base import Commits
 from typing import Callable, Optional, List, Tuple, Any
 import git
 
@@ -113,9 +114,11 @@ def column_was_modified_by_commit(project: Project,
     Returns the string 'Y' if the line was modified by the commit, otherwise
     returns 'N'
     """
-    _, new_lines = project.lines_modified_by_commit(commit)
-    return "true" if line in [l for f, l in new_lines if f == filename] \
-        else "false"
+    _, new_lines = Project.lines_modified_by_commit(commit)
+    for modified_line in new_lines:
+        if modified_line.filename == filename and modified_line.num == line:
+            return "true"
+    return "false"
 
 
 def column_project_name(project: Project,

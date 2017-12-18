@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 import unittest
-from blameandshame.base import Project, Change, Commits
+from blameandshame.project  import Project
+from blameandshame.base     import Change, Commits, Line
 from datetime import timedelta
 
 class ProjectTestCase(unittest.TestCase):
@@ -144,18 +145,18 @@ class ProjectTestCase(unittest.TestCase):
         project = Project.from_url('https://github.com/google/protobuf')
         self.assertEqual(
             project.lines_modified_by_commit(project.repo.commit('baed06e')),
-            (frozenset({('objectivec/GPBCodedOutputStream.m', 177)}),
-             frozenset({('objectivec/GPBCodedOutputStream.m', 180)}))
+            (frozenset({Line('objectivec/GPBCodedOutputStream.m', 177)}),
+             frozenset({Line('objectivec/GPBCodedOutputStream.m', 180)}))
         )
         # Only add
         self.assertEqual(
             project.lines_modified_by_commit(project.repo.commit('ac5371d')),
-            (frozenset(), frozenset({('BUILD', 27), ('BUILD', 28)}))
+            (frozenset(), frozenset({Line('BUILD', 27), Line('BUILD', 28)}))
         )
         # Only delete
         self.assertEqual(
             project.lines_modified_by_commit(project.repo.commit('d680159')),
-            (frozenset({('src/google/protobuf/stubs/time.cc', 24)}),
+            (frozenset({Line('src/google/protobuf/stubs/time.cc', 24)}),
              frozenset())
         )
 
