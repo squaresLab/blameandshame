@@ -1,6 +1,3 @@
-from typing import Dict, FrozenSet, List, Tuple, Optional, Set
-
-
 class Component(object):
 
     def __init__(self):

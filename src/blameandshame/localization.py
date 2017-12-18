@@ -1,5 +1,5 @@
-from typing import Any, Dict, List
-from blameandshame.components import Component, Line_C, Function_C, File_C
+from typing import Dict, List
+from blameandshame.components import Component
 import yaml
 
 VERSION = "1.0"
