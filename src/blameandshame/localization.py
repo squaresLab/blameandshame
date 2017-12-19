@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Type
 from blameandshame.components import Component
 import yaml
 
@@ -30,12 +30,13 @@ class Localization (object):
     def __init__(self,
                  mapping: Dict,
                  scope: List[Component],
+                 granularity: Type[Component],
                  version: str = VERSION) -> None:
 
         self.mapping = mapping
         self.scope = scope
         self.__version = version
-        self.__granularity = ""
+        self.__granularity = granularity
 
     @property
     def version(self) -> str:
@@ -45,7 +46,7 @@ class Localization (object):
         return self.__version
 
     @property
-    def granularity(self) -> str:
+    def granularity(self) -> Type[Component]:
         """
         The granularity of this object
         """
