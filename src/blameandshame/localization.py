@@ -14,7 +14,7 @@ class Localization (object):
         """
         with open(filename) as f:
             try:
-                loc = yaml.safe_load(f)
+                loc = yaml.load(f)
             except KeyError as err:
                 print('Error when importing', filename, '.', err)
                 raise IOError
