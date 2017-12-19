@@ -10,7 +10,6 @@ class LocalizationTestCase(unittest.TestCase):
 #         loc_res = Localization.from_file(file_name)
 #         #self.assertEqual(loc_res, expected)
 #         self.assertEqual(1,1)
-        
 #     scope = [File_C("File1.java")]
 #     mapping = {Line_C("File1.java", 3): 0.3,
 #                Line_C("File1.java", 5): 0.5}
