@@ -59,6 +59,7 @@ class LocalizationTestCase(unittest.TestCase):
             """
         )
         check_one(simple_localization, Line_C, "0.0", {}, [])
-        
+
+
 if __name__ == '__main__':
     unittest.main()

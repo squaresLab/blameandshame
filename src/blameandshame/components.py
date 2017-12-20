@@ -8,7 +8,7 @@ class File_C(Component):
 
     def __init__(self,
                  filename: str = "") -> None:
-        self.file_name = filename
+        self.filename = filename
 
 
 class Line_C(Component):
@@ -25,9 +25,9 @@ class Function_C(Component):
     def __init__(self,
                  funcname: str = "",
                  filename: File_C = None,
-                 linestart: int = 0,
-                 lineend: int = 0) -> None:
-        self.func_name = funcname
+                 line_start: int = 0,
+                 line_end: int = 0) -> None:
+        self.funcname = funcname
         self.filename = filename
-        self.line_start = linestart
-        self.line_end = lineend
+        self.line_start = line_start
+        self.line_end = line_end
