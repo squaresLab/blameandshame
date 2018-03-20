@@ -88,7 +88,7 @@ class ObservationCollection(object):
             for row in reader:
                 # We aren't using the Travis URLs yet
                 repo_url, bug_sha, bug_build_url, fix_sha, fix_build_url = row
-                observation = Observation.build(repo_url, fix_sha, bug_sha)
+                observation = Observation.build(repo_url, bug_sha, fix_sha)
                 observations.append(observation)
         return ObservationCollection(observations)
 
