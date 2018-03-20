@@ -83,7 +83,8 @@ class ObservationCollection(object):
         observations = []
         with open(fn, 'r') as f:
             reader = csv.reader(f)
-            next(reader, None) # skip header
+            # skip header
+            next(reader, None)
             for row in reader:
                 # We aren't using the Travis URLs yet
                 repo_url, bug_sha, bug_build_url, fix_sha, fix_build_url = row
