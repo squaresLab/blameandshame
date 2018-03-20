@@ -93,7 +93,7 @@ class ObservationCollection(object):
         return ObservationCollection(observations)
 
     def __init__(self, observations: List[Observation]) -> None:
-        self.__observations = observations[:]
+        self.__observations = list(observations)
 
     def __iter__(self) -> Iterator[Observation]:
         return self.__observations.__iter__()
