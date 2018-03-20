@@ -1,5 +1,6 @@
+import csv
 import git
-from typing import FrozenSet
+from typing import FrozenSet, Iterator, List
 from blameandshame.project import Project
 from blameandshame.base import Line
 
@@ -74,3 +75,44 @@ class Observation(object):
         return Project.lines_modified_between_commits(before=self.before,
                                                       after=self.after,
                                                       in_files=files)
+
+
+class ObservationCollection(object):
+    @staticmethod
+    def load(fn: str) -> 'ObservationCollection':
+        observations = []
+        with open(fn, 'r') as f:
+            reader = csv.reader(f)
+            next(reader, None) # skip header
+            for row in reader:
+                # We aren't using the Travis URLs yet
+                repo_url, bug_sha, bug_build_url, fix_sha, fix_build_url = row
+                observation = Observation.build(repo_url, fix_sha, bug_sha)
+                observations.append(observation)
+        return ObservationCollection(observations)
+
+    def __init__(self, observations: List[Observation]) -> None:
+        self.__observations = observations[:]
+
+    def __iter__(self) -> Iterator[Observation]:
+        return self.__observations.__iter__()
+
+    def __len__(self) -> int:
+        return len(self.__observations)
+
+    def save(self, fn: str) -> None:
+        # with open(fn, 'w') as f:
+        #     writer = csv.writer(f)
+        #     writer.writerow(["Repository URL",
+        #                      "Bug Commit",
+        #                      "Bug Build URL",
+        #                      "Fix Commit",
+        #                      "Fix Build URL"])
+        #     for observation in self.__observations:
+        #         row = [observation.repository,
+        #                observation.commit_bug,
+        #                observation.build_url_bug,
+        #                observation.commit_fix,
+        #                observation.build_url_fix]
+        #         writer.writerow(row)
+        raise NotImplementedError
