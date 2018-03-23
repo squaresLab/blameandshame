@@ -97,7 +97,8 @@ class ObservationCollection(Generator):
             except ValueError:
                 pass
 
-    def throw(self, type=None, value=None, traceback=None) -> None:
+    @classmethod
+    def throw(self, typ=None, val=None, tb=None) -> None:
         raise StopIteration
 
     def save(self, fn: str) -> None:
