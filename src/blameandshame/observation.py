@@ -1,6 +1,6 @@
 import csv
 import git
-from typing import FrozenSet, Generator, List
+from typing import FrozenSet, Generator
 from blameandshame.project import Project
 from blameandshame.base import Line
 
