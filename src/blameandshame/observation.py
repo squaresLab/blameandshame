@@ -1,6 +1,6 @@
 import csv
 import git
-from typing import FrozenSet, Iterator, List
+from typing import FrozenSet, Generator, Iterator, List
 from blameandshame.project import Project
 from blameandshame.base import Line
 
@@ -25,6 +25,9 @@ class Observation(object):
         self.__project = project
         self.__before = before
         self.__after = after
+
+    def __str__(self):
+        return '{} {}:{}'.format(self.__project, self.__before, self.__after)
 
     @property
     def project(self) -> Project:
@@ -77,29 +80,25 @@ class Observation(object):
                                                       in_files=files)
 
 
-class ObservationCollection(object):
-    @staticmethod
-    def load(fn: str) -> 'ObservationCollection':
-        observations = []
-        with open(fn, 'r') as f:
+class ObservationCollection(Generator):
+    def __init__(self, filename: str) -> None:
+        with open(filename, 'r') as f:
             reader = csv.reader(f)
             # skip header
             next(reader, None)
-            for row in reader:
-                # We aren't using the Travis URLs yet
-                repo_url, bug_sha, bug_build_url, fix_sha, fix_build_url = row
-                observation = Observation.build(repo_url, bug_sha, fix_sha)
-                observations.append(observation)
-        return ObservationCollection(observations)
+            observations = list(reader)
+        self.__observations = iter(observations)
 
-    def __init__(self, observations: List[Observation]) -> None:
-        self.__observations = observations.copy()
+    def send(self, _) -> Observation:
+        while True:
+            try:
+                repo_url, bug_sha, _, fix_sha, _ = next(self.__observations)
+                return Observation.build(repo_url, bug_sha, fix_sha)
+            except ValueError:
+                pass
 
-    def __iter__(self) -> Iterator[Observation]:
-        return self.__observations.__iter__()
-
-    def __len__(self) -> int:
-        return len(self.__observations)
+    def throw(self, type=None, value=None, traceback=None) -> None:
+        raise StopIteration
 
     def save(self, fn: str) -> None:
         # with open(fn, 'w') as f:

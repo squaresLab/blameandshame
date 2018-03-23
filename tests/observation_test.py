@@ -1,8 +1,10 @@
+import os
 import unittest
 from typing import List, Dict
-from blameandshame.observation import Observation
+from blameandshame.observation import Observation, ObservationCollection
 from blameandshame.base import Line
 
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class ObservationTestCase(unittest.TestCase):
     @staticmethod
@@ -45,3 +47,17 @@ class ObservationTestCase(unittest.TestCase):
 
         test_one('https://github.com/squaresLab/blameandshame-test-repo', 'a351329',
                  {'testfile.c': [8, 25]})
+
+
+class ObservationCollectionTestCase(unittest.TestCase):
+    def test_load(self):
+        data_path = os.path.join(THIS_DIR, os.pardir, 'data/test-bugs.csv')
+        oc = ObservationCollection(data_path)
+
+        obs = next(oc)
+        self.assertEqual(str(obs.before)[:8], '0446364f')
+        obs = next(oc)
+        self.assertEqual(str(obs.before)[:8], '27d3d40f')
+        obs = next(oc)
+        self.assertEqual(str(obs.before)[:8], '314b6b56')
+        self.assertRaises(StopIteration, lambda: next(oc))
