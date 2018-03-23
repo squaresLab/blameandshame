@@ -166,7 +166,7 @@ class Project(object):
         self.__age_of_all_lines_dict_com: Dict[Tuple[git.Commit, str],
                                                List[float]] = dict()
 
-    def __str__ (self) -> str:
+    def __str__(self) -> str:
         return str(self.__repo.remotes[0].url)
 
     def update(self):
