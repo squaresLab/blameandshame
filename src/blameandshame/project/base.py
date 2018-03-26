@@ -105,7 +105,7 @@ class Project(object):
                 elif line.startswith('+ '):         # added line
                     pass
                 elif line.startswith('Binary files'):  # Binary diff
-                    pass
+                    break
                 else:                               # context line
                     line_num += 1
 
