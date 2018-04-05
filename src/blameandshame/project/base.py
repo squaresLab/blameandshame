@@ -95,18 +95,18 @@ class Project(object):
 
                 # If the line starts with @@, there's line numbers
                 # format: @@ -start,lines +start,lines @@
-                if line.startswith('@@ '):          # start of hunk
+                if line.startswith('@@ '):             # start of hunk
                     _, old, __, *_ = line.split()
                     line_num_s, *_ = old.split(',')
                     line_num = int(line_num_s[1:])
-                elif line.startswith('- '):         # removed line
+                elif line.startswith('- '):            # removed line
                     modified.add(Line(fn, line_num))
                     line_num += 1
-                elif line.startswith('+ '):         # added line
+                elif line.startswith('+ '):            # added line
                     pass
-                elif line.startswith('Binary files'): # Binary diff
+                elif line.startswith('Binary files'):  # Binary diff
                     pass
-                else:                               # context line
+                else:                                  # context line
                     line_num += 1
 
         return frozenset(modified)
