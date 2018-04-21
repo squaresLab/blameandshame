@@ -10,3 +10,6 @@ build
 *.swo
 *.pyc
 .repos
+
+.mypy_cache
+mypy.ini
