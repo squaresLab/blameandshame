@@ -130,10 +130,15 @@ class Project(object):
 
         # unified=0 shows zero lines of context
         diff = prev_commit.diff(fix_commit, create_patch=True, unified=0)
+        # lines_changed is a list of ((old_file_name, old_lines),(new_file_name, new_lines)) tuples
+        # lines_changed = list()
         for d in diff:
             old_file = d.a_path
             new_file = d.b_path
-
+            # file_old_lines = list()
+            # file_new_lines = list()
+            
+            #collect all the lines in old_lines and new_lines
             for line in d.diff.decode('utf8').split('\n'):
                 line_tokens = line.split()
                 # If the line starts with @@, there's line numbers
@@ -144,16 +149,16 @@ class Project(object):
                     old_line_num = int(old_line_num[1:].split(',')[0])
                     new_line_num = int(new_line_num[1:].split(',')[0])
                 elif (first_char == '-'):
-                    old_lines.add(Line(old_file, old_line_num))
+                    # file_old_lines.add((line[1:], old_line_num))
                     old_line_num += 1
                 elif (first_char == '+'):
-                    new_lines.add(Line(new_file, new_line_num))
+                    # file_new_lines.add((line[1:], new_line_num))
                     new_line_num += 1
                 else:
                     old_line_num += 1
                     new_line_num += 1
-
-        return (frozenset(old_lines), frozenset(new_lines))
+            # lines_changed.add(((old_file, file_old_lines),(new_file, file_new_lines)))
+        return lines_changed
 
     def __init__(self, repo: git.Repo) -> None:
         self.__repo: git.Repo = repo
